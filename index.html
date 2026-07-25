@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>EcoHero 3D: Petualangan Pemilah Sampah | HIMA TI</title>
+  <meta name="description" content="Game Edukasi 3D Pemilahan Sampah Interaktif untuk Anak Sekolah Dasar oleh HIMA TI Pengabdian Masyarakat">
+  
+  <!-- Google Fonts: Fredoka & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Three.js CDN & GLTFLoader (Global THREE object - File Protocol Compatible) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
+
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- PWA Manifest & Theme -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#10b981">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="stylesheet" href="css/style.css?v=4.0">
+</head>
+<body>
+
+  <!-- Orientation Lock Warning for Mobile Portrait -->
+  <div id="portrait-warning" class="hidden">
+    <div class="warning-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+    <h2>Mohon Putar HP ke Posisi Landscape</h2>
+    <p>Game EcoHero 3D lebih seru dan optimal jika dimainkan dalam posisi layar tiduran (Landscape).</p>
+  </div>
+
+  <!-- App Wrapper -->
+  <div id="app">
+
+    <!-- 3D Canvas Background Container -->
+    <div id="canvas-container"></div>
+
+    <!-- UI Overlay Screens -->
+    
+    <!-- 1. SCREEN MENU / TITLE -->
+    <section id="screen-menu" class="screen active">
+      <div class="glass-card title-card animate-bounce-in">
+        <div class="badge-hima">
+          <i class="fa-solid fa-graduation-cap"></i> HIMA TI Pengabdian Masyarakat
+        </div>
+        <h1 class="game-title">
+          <span class="text-green">Eco</span><span class="text-orange">Hero</span> <span class="text-blue">3D</span>
+        </h1>
+        <p class="game-subtitle">Petualangan Pemilah Sampah Lingkungan</p>
+
+        <div class="mascot-badge">
+          <i class="fa-solid fa-recycle"></i>
+          <p>Jadilah Pahlawan Lingkungan! Milah sampah dengan benar & raih skor tertinggi!</p>
+        </div>
+
+        <div class="menu-actions">
+          <button id="btn-start-game" class="btn btn-primary btn-lg pulse">
+            <i class="fa-solid fa-play"></i> Mulai Petualangan
+          </button>
+          <button id="btn-open-edu" class="btn btn-secondary">
+            <i class="fa-solid fa-book-open"></i> Pelajari Dampak Sampah
+          </button>
+          <button id="btn-open-leaderboard" class="btn btn-outline">
+            <i class="fa-solid fa-trophy"></i> Papan Skor Kelas
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. SCREEN EDUKASI (INTERACTIVE SLIDE DECK) -->
+    <section id="screen-edu" class="screen hidden">
+      <div class="glass-card edu-card">
+        <div class="edu-header">
+          <div class="edu-progress-bar">
+            <div id="edu-progress-fill" style="width: 25%;"></div>
+          </div>
+          <span id="edu-slide-counter">Slide 1 dari 4</span>
+        </div>
+
+        <div id="edu-slide-content" class="edu-slide-body">
+          <!-- Dynamically populated via eduSlides.js -->
+        </div>
+
+        <div class="edu-footer">
+          <button id="btn-edu-prev" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Kembali
+          </button>
+          <button id="btn-edu-next" class="btn btn-primary">
+            Lanjut <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <button id="btn-edu-skip-game" class="btn btn-success hidden">
+            <i class="fa-solid fa-gamepad"></i> Siap Bermain 3D!
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SCREEN GAMEPLAY 3D (HUD OVERLAY) -->
+    <section id="screen-game" class="screen hidden">
+
+      <!-- Top HUD Area (Stats + 4-Column Bin Guide Bar pinned at Top) -->
+      <div class="hud-top-wrapper">
+        <div class="hud-top-bar">
+          <div class="hud-item score-box">
+            <span class="hud-label"><i class="fa-solid fa-star text-gold"></i> SKOR</span>
+            <span id="hud-score" class="hud-value">0</span>
+          </div>
+
+          <div id="hud-combo-badge" class="hud-combo hidden">
+            <i class="fa-solid fa-fire text-orange"></i> <span id="hud-combo-text">COMBO x2</span>
+          </div>
+
+          <div class="hud-item timer-box">
+            <span class="hud-label"><i class="fa-solid fa-stopwatch"></i> WAKTU</span>
+            <span id="hud-timer" class="hud-value">60s</span>
+          </div>
+
+          <div class="hud-item lives-box">
+            <span class="hud-label">NYAWA</span>
+            <div id="hud-lives" class="stars-container">
+              <i class="fa-solid fa-heart text-red"></i>
+              <i class="fa-solid fa-heart text-red"></i>
+              <i class="fa-solid fa-heart text-red"></i>
+            </div>
+          </div>
+
+          <div class="hud-actions">
+            <button id="btn-toggle-sound" class="btn-icon" title="Suara">
+              <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+            </button>
+            <button id="btn-home-from-hud" class="btn-icon" title="Kembali ke Menu Utama">
+              <i class="fa-solid fa-house"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dedicated 4-Column Bin Identification Guide Bar -->
+        <div class="bin-guide-bar">
+          <div class="bin-guide-pill bin-organik">
+            <i class="fa-solid fa-leaf"></i> 1. ORGANIK
+          </div>
+          <div class="bin-guide-pill bin-anorganik">
+            <i class="fa-solid fa-bottle-water"></i> 2. ANORGANIK
+          </div>
+          <div class="bin-guide-pill bin-b3">
+            <i class="fa-solid fa-bolt"></i> 3. B3 BERBAHAYA
+          </div>
+          <div class="bin-guide-pill bin-daurulang">
+            <i class="fa-solid fa-box"></i> 4. DAUR ULANG
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom HUD Area (Target Banner + Cara Main Hint pinned at Bottom) -->
+      <div class="hud-bottom-wrapper">
+        <div id="target-item-banner" class="target-banner">
+          <i class="fa-solid fa-hand-pointer"></i>
+          <span id="target-item-name">Klik/Tap Sampah untuk Mengambil!</span>
+          <span id="target-item-cat" class="target-hint"></span>
+        </div>
+
+        <div class="hud-hint-pill">
+          <i class="fa-solid fa-gamepad"></i> <strong>Cara Main:</strong> Klik Sampah ➡ Klik Tempat Sampah yang Cocok!
+        </div>
+      </div>
+
+      <!-- Educational Wrong Choice Modal Popup -->
+      <div id="edu-feedback-modal" class="modal-overlay hidden">
+        <div class="glass-card feedback-card animate-pop">
+          <div class="feedback-header red-bg">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <h3>Tempat Sampahnya Belum Tepat</h3>
+          </div>
+          <div class="feedback-body">
+            <p id="feedback-item-info"><strong>Botol Plastik</strong> tidak cocok di tempat sampah ini.</p>
+            <div id="feedback-tip-box" class="tip-box">
+              <i class="fa-solid fa-lightbulb text-gold"></i>
+              <span id="feedback-tip-text">Sampah plastik masuk ke Anorganik (Kuning) karena tidak bisa membusuk alami!</span>
+            </div>
+          </div>
+          <button id="btn-close-feedback" class="btn btn-primary" style="margin-top: 14px;">
+            Saya Paham! Lanjut <i class="fa-solid fa-thumbs-up"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. SCREEN GAME OVER / RESULT -->
+    <section id="screen-gameover" class="screen hidden">
+      <div class="glass-card gameover-card animate-bounce-in">
+        <div class="result-badge-icon"><i class="fa-solid fa-trophy"></i></div>
+        <h2 id="result-title">Hebat! Kamu Pahlawan Sampah!</h2>
+        <p class="result-subtext">Kamu berhasil membantu menjaga kebersihan lingkungan!</p>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <i class="fa-solid fa-trophy text-gold"></i>
+            <span class="stat-val" id="res-score">0</span>
+            <span class="stat-lbl">Skor Akhir</span>
+          </div>
+          <div class="stat-card">
+            <i class="fa-solid fa-check-double text-green"></i>
+            <span class="stat-val" id="res-accuracy">0%</span>
+            <span class="stat-lbl">Akurasi Pilah</span>
+          </div>
+          <div class="stat-card">
+            <i class="fa-solid fa-fire text-orange"></i>
+            <span class="stat-val" id="res-maxcombo">x0</span>
+            <span class="stat-lbl">Combo Tertinggi</span>
+          </div>
+        </div>
+
+        <!-- Name Input Section for Certificate & Leaderboard -->
+        <div class="name-entry-box">
+          <label for="input-student-name"><i class="fa-solid fa-user-pen"></i> Masukkan Nama Lengkap Kamu:</label>
+          <input type="text" id="input-student-name" placeholder="Contoh: Budi Santoso" maxlength="25">
+        </div>
+
+        <!-- Webcam Face Photo Capture Section for Certificate -->
+        <div class="photo-capture-box">
+          <label><i class="fa-solid fa-camera"></i> Foto Muka Kamu untuk Sertifikat:</label>
+          
+          <div class="camera-preview-container">
+            <video id="webcam-video" autoplay playsinline class="hidden"></video>
+            <canvas id="photo-canvas" class="hidden"></canvas>
+            <img id="photo-preview" class="hidden" alt="Foto Muka">
+            <div id="camera-placeholder" class="camera-placeholder">
+              <i class="fa-solid fa-user-astronaut"></i>
+              <p>Klik Buka Kamera untuk Ambil Foto Muka!</p>
+            </div>
+          </div>
+
+          <div class="camera-controls">
+            <button id="btn-start-camera" class="btn btn-outline btn-sm">
+              <i class="fa-solid fa-video"></i> Buka Kamera
+            </button>
+            <button id="btn-capture-photo" class="btn btn-primary btn-sm hidden">
+              <i class="fa-solid fa-camera"></i> Jepret Foto
+            </button>
+            <button id="btn-retake-photo" class="btn btn-outline btn-sm hidden">
+              <i class="fa-solid fa-rotate-right"></i> Foto Ulang
+            </button>
+            <label for="input-photo-file" class="btn btn-outline btn-sm" style="cursor: pointer; margin: 0;">
+              <i class="fa-solid fa-upload"></i> Unggah Foto
+            </label>
+            <input type="file" id="input-photo-file" accept="image/*" style="display: none !important;">
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button id="btn-claim-certificate" class="btn btn-success">
+            <i class="fa-solid fa-certificate"></i> Dapatkan Sertifikat
+          </button>
+          <button id="btn-restart-game" class="btn btn-primary">
+            <i class="fa-solid fa-rotate-right"></i> Main Lagi
+          </button>
+          <button id="btn-view-leaderboard" class="btn btn-outline">
+            <i class="fa-solid fa-trophy"></i> Lihat Papan Skor
+          </button>
+          <button id="btn-home-from-gameover" class="btn btn-outline">
+            <i class="fa-solid fa-house"></i> Menu Utama
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GLOBAL MODAL OVERLAYS -->
+
+    <!-- 1. Educational Wrong Choice Modal Popup -->
+    <div id="edu-feedback-modal" class="modal-overlay hidden">
+      <div class="glass-card feedback-card animate-pop">
+        <div class="feedback-header red-bg">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <h3>Tempat Sampahnya Belum Tepat</h3>
+        </div>
+        <div class="feedback-body">
+          <p id="feedback-item-info"><strong>Botol Plastik</strong> tidak cocok di tempat sampah ini.</p>
+          <div id="feedback-tip-box" class="tip-box">
+            <i class="fa-solid fa-lightbulb text-gold"></i>
+            <span id="feedback-tip-text">Sampah plastik masuk ke Anorganik (Kuning) karena tidak bisa membusuk alami!</span>
+          </div>
+        </div>
+        <button id="btn-close-feedback" class="btn btn-primary" style="margin-top: 14px;">
+          Saya Paham! Lanjut <i class="fa-solid fa-thumbs-up"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. MODAL SERTIFIKAT DIGITAL -->
+    <div id="modal-certificate" class="modal-overlay hidden">
+      <div class="glass-card cert-modal-card">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-award text-gold"></i> Sertifikat Pahlawan Lingkungan</h3>
+          <button class="btn-close-modal" id="btn-close-cert"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body center-content">
+          <canvas id="certificate-canvas" width="800" height="560"></canvas>
+        </div>
+        <div class="modal-footer" style="margin-top: 14px;">
+          <button id="btn-download-cert" class="btn btn-success btn-lg">
+            <i class="fa-solid fa-download"></i> Unduh Sertifikat (PNG)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. MODAL LEADERBOARD -->
+    <div id="modal-leaderboard" class="modal-overlay hidden">
+      <div class="glass-card leaderboard-modal-card">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-trophy text-gold"></i> Papan Skor Pahlawan Sampah</h3>
+          <button class="btn-close-modal" id="btn-close-leaderboard"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Peringkat</th>
+                <th>Nama Siswa</th>
+                <th>Skor</th>
+                <th>Waktu & Tanggal</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Non-Module Sequential Scripts with Cache-Busting Version Query -->
+  <script src="js/audio.js?v=3.0"></script>
+  <script src="js/leaderboard.js?v=3.0"></script>
+  <script src="js/certificate.js?v=3.0"></script>
+  <script src="js/eduSlides.js?v=3.0"></script>
+  <script src="js/three/scene.js?v=3.0"></script>
+  <script src="js/three/gltfData.js?v=3.0"></script>
+  <script src="js/three/models.js?v=3.0"></script>
+  <script src="js/three/gameLogic3D.js?v=3.0"></script>
+  <script src="js/app.js?v=3.0"></script>
+
+  <!-- PWA Service Worker Registration & Cache Busting -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          for (let registration of registrations) {
+            registration.update();
+          }
+        });
+        navigator.serviceWorker.register('./sw.js?v=3.0')
+          .then(reg => {
+            console.log('[PWA] Service Worker registered fresh:', reg.scope);
+            reg.update();
+          })
+          .catch(err => console.warn('[PWA] Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>

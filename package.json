@@ -1,0 +1,12 @@
+{
+  "name": "game-pemilahan-sampah-hima-ti",
+  "version": "1.0.0",
+  "description": "Game 3D Pemilahan Sampah untuk Pengabdian Masyarakat HIMA TI",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx -y serve ."
+  },
+  "keywords": ["game", "threejs", "education", "hima-ti", "sampah"],
+  "author": "HIMA TI",
+  "license": "MIT"
+}
