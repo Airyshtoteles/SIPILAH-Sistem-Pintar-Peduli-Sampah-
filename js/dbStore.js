@@ -267,6 +267,12 @@
       if (!activeSesi && list.length > 0) {
         this.setActiveSesi(list[0].id_sesi);
       }
+
+      // Sync delete to Cloud
+      if (window.cloudDB && typeof window.cloudDB.deleteSesi === 'function') {
+        window.cloudDB.deleteSesi(idSesi);
+      }
+
       return { success: true };
     }
 
@@ -444,6 +450,56 @@
       return filtered;
     }
 
+    deleteHasilBermain(idHasil) {
+      idHasil = Number(idHasil);
+      let hasilList = this._get('tb_hasil_bermain') || [];
+      const itemToDelete = hasilList.find(h => h.id_hasil === idHasil);
+      if (!itemToDelete) return { success: false, message: 'Data hasil bermain tidak ditemukan.' };
+
+      // 1. Remove from tb_hasil_bermain
+      hasilList = hasilList.filter(h => h.id_hasil !== idHasil);
+      this._set('tb_hasil_bermain', hasilList);
+
+      // 2. Cascade delete from tb_log_pemilahan
+      let logs = this._get('tb_log_pemilahan') || [];
+      logs = logs.filter(l => l.id_hasil !== idHasil);
+      this._set('tb_log_pemilahan', logs);
+
+      // 3. Sync delete to Cloud Supabase
+      if (window.cloudDB && typeof window.cloudDB.deleteHasilBermain === 'function') {
+        window.cloudDB.deleteHasilBermain(idHasil);
+      }
+
+      return { success: true, message: `Data bermain "${itemToDelete.nama_siswa}" berhasil dihapus!` };
+    }
+
+    resetHasilBySesi(idSesi) {
+      idSesi = Number(idSesi);
+      let hasilList = this._get('tb_hasil_bermain') || [];
+      const targets = hasilList.filter(h => h.id_sesi === idSesi);
+      const targetIds = targets.map(h => h.id_hasil);
+
+      if (targetIds.length === 0) {
+        return { success: false, message: 'Belum ada data nilai siswa pada sesi ini untuk dibersihkan.' };
+      }
+
+      // 1. Remove from tb_hasil_bermain
+      hasilList = hasilList.filter(h => h.id_sesi !== idSesi);
+      this._set('tb_hasil_bermain', hasilList);
+
+      // 2. Cascade delete logs
+      let logs = this._get('tb_log_pemilahan') || [];
+      logs = logs.filter(l => !targetIds.includes(l.id_hasil));
+      this._set('tb_log_pemilahan', logs);
+
+      // 3. Sync delete to Cloud Supabase
+      if (window.cloudDB && typeof window.cloudDB.resetHasilBySesi === 'function') {
+        window.cloudDB.resetHasilBySesi(idSesi);
+      }
+
+      return { success: true, message: `Berhasil membersihkan ${targetIds.length} data siswa pada sesi ini!` };
+    }
+
     getLogsByHasilId(idHasil) {
       const logs = this._get('tb_log_pemilahan') || [];
       const items = this.getAllItems();
@@ -555,7 +611,11 @@
       const report = this.getSesiReportSummary(idSesi);
 
       if (report.totalSiswa === 0) {
-        alert('Sesi ini belum memiliki data nilai siswa untuk diekspor!');
+        if (window.uiFeedback) {
+          window.uiFeedback.toast('Sesi ini belum memiliki data nilai siswa untuk diekspor!', 'warning');
+        } else {
+          alert('Sesi ini belum memiliki data nilai siswa untuk diekspor!');
+        }
         return;
       }
 

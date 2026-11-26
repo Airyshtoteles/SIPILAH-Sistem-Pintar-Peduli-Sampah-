@@ -166,6 +166,55 @@
       }
       return null;
     }
+
+    // 3. Hapus Data Siswa Bermain dari Cloud
+    async deleteHasilBermain(idHasil) {
+      if (!this.isConnected || !this.client) return false;
+      try {
+        await this.client.from('tb_log_pemilahan').delete().eq('id_hasil', Number(idHasil));
+        const { error } = await this.client.from('tb_hasil_bermain').delete().eq('id_hasil', Number(idHasil));
+        if (!error) {
+          console.log(`🗑️ [CloudDB] Data hasil ID #${idHasil} berhasil dihapus dari Supabase!`);
+          return true;
+        }
+      } catch (e) {
+        console.warn('[CloudDB] Delete hasil exception:', e);
+      }
+      return false;
+    }
+
+    // 4. Bersihkan Seluruh Data Siswa dalam Sesi Terpilih dari Cloud
+    async resetHasilBySesi(idSesi) {
+      if (!this.isConnected || !this.client) return false;
+      try {
+        const { data } = await this.client.from('tb_hasil_bermain').select('id_hasil').eq('id_sesi', Number(idSesi));
+        if (data && data.length > 0) {
+          const ids = data.map(d => d.id_hasil);
+          await this.client.from('tb_log_pemilahan').delete().in('id_hasil', ids);
+          await this.client.from('tb_hasil_bermain').delete().eq('id_sesi', Number(idSesi));
+          console.log(`🗑️ [CloudDB] Seluruh hasil sesi #${idSesi} berhasil dibersihkan dari Supabase!`);
+          return true;
+        }
+      } catch (e) {
+        console.warn('[CloudDB] Reset sesi exception:', e);
+      }
+      return false;
+    }
+
+    // 5. Hapus Sesi Kelas dari Cloud
+    async deleteSesi(idSesi) {
+      if (!this.isConnected || !this.client) return false;
+      try {
+        const { error } = await this.client.from('tb_sesi_kelas').delete().eq('id_sesi', Number(idSesi));
+        if (!error) {
+          console.log(`🗑️ [CloudDB] Sesi #${idSesi} berhasil dihapus dari Supabase!`);
+          return true;
+        }
+      } catch (e) {
+        console.warn('[CloudDB] Delete sesi exception:', e);
+      }
+      return false;
+    }
   }
 
   window.cloudDB = new CloudDatabaseConnector();

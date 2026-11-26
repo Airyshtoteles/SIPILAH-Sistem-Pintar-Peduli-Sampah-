@@ -399,9 +399,14 @@
                 <!-- Populated dynamically -->
               </select>
             </div>
-            <button id="btn-export-rapor-csv" class="btn btn-success">
-              <i class="fa-solid fa-file-csv"></i> Unduh Rekap Nilai (CSV)
-            </button>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button id="btn-export-rapor-csv" class="btn btn-success">
+                <i class="fa-solid fa-file-csv"></i> Unduh CSV
+              </button>
+              <button id="btn-reset-rapor-sesi" class="btn btn-danger btn-outline" title="Hapus semua nilai siswa pada sesi ini agar database tetap bersih">
+                <i class="fa-solid fa-broom"></i> Bersihkan Sesi Ini
+              </button>
+            </div>
           </div>
 
           <!-- 4 KPI Summary Cards -->
@@ -455,7 +460,7 @@
                     <th style="width: 150px; text-align: center;">Predikat Pemahaman</th>
                     <th style="width: 130px; text-align: center;">Sertifikat</th>
                     <th style="width: 160px;">Waktu Bermain</th>
-                    <th style="width: 110px; text-align: center;">Rincian Log</th>
+                    <th style="width: 140px; text-align: center;">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="rapor-table-tbody">
@@ -711,21 +716,44 @@
       </div>
     </div>
 
+    <!-- 7. GLOBAL CUSTOM CONFIRMATION & ALERT MODAL -->
+    <div id="modal-custom-confirm" class="modal-overlay hidden">
+      <div class="glass-card modal-confirm-card animate-pop">
+        <div id="confirm-modal-icon-wrap" class="confirm-icon-wrap warning">
+          <i id="confirm-modal-icon" class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 id="confirm-modal-title">Konfirmasi Aksi</h3>
+        <p id="confirm-modal-message">Apakah Bapak/Ibu Guru yakin ingin melanjutkan?</p>
+        <div class="confirm-modal-actions">
+          <button id="btn-confirm-cancel" class="btn btn-outline btn-confirm-action">
+            <i class="fa-solid fa-xmark"></i> Batal
+          </button>
+          <button id="btn-confirm-ok" class="btn btn-danger btn-confirm-action">
+            <i class="fa-solid fa-check"></i> Ya, Lanjutkan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. TOAST NOTIFICATIONS CONTAINER -->
+    <div id="toast-container" class="toast-container"></div>
+
   </div>
 
   <!-- Non-Module Sequential Scripts with Cache-Busting Version Query -->
-  <script src="js/audio.js?v=5.0"></script>
-  <script src="js/cloudDB.js?v=5.0"></script>
-  <script src="js/dbStore.js?v=5.0"></script>
-  <script src="js/leaderboard.js?v=5.0"></script>
-  <script src="js/certificate.js?v=5.0"></script>
-  <script src="js/eduSlides.js?v=5.0"></script>
-  <script src="js/three/scene.js?v=5.0"></script>
-  <script src="js/three/gltfData.js?v=5.0"></script>
-  <script src="js/three/models.js?v=5.0"></script>
-  <script src="js/three/gameLogic3D.js?v=5.0"></script>
-  <script src="js/teacherDashboard.js?v=5.0"></script>
-  <script src="js/app.js?v=5.0"></script>
+  <script src="js/audio.js?v=5.1"></script>
+  <script src="js/uiFeedback.js?v=5.1"></script>
+  <script src="js/cloudDB.js?v=5.1"></script>
+  <script src="js/dbStore.js?v=5.1"></script>
+  <script src="js/leaderboard.js?v=5.1"></script>
+  <script src="js/certificate.js?v=5.1"></script>
+  <script src="js/eduSlides.js?v=5.1"></script>
+  <script src="js/three/scene.js?v=5.1"></script>
+  <script src="js/three/gltfData.js?v=5.1"></script>
+  <script src="js/three/models.js?v=5.1"></script>
+  <script src="js/three/gameLogic3D.js?v=5.1"></script>
+  <script src="js/teacherDashboard.js?v=5.1"></script>
+  <script src="js/app.js?v=5.1"></script>
 
   <!-- PWA Service Worker Registration & Cache Busting -->
   <script>
@@ -736,7 +764,7 @@
             registration.update();
           }
         });
-        navigator.serviceWorker.register('./sw.js?v=4.0')
+        navigator.serviceWorker.register('./sw.js?v=5.1')
           .then(reg => {
             console.log('[PWA] Service Worker registered fresh:', reg.scope);
             reg.update();

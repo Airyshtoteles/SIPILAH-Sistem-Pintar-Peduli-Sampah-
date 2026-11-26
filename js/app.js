@@ -118,8 +118,20 @@
 
       const homeFromHudBtn = document.getElementById('btn-home-from-hud');
       if (homeFromHudBtn) {
-        homeFromHudBtn.addEventListener('click', () => {
-          if (confirm('Apakah kamu yakin ingin kembali ke Menu Utama? Game akan direset.')) {
+        homeFromHudBtn.addEventListener('click', async () => {
+          let ok = true;
+          if (window.uiFeedback) {
+            ok = await window.uiFeedback.confirm({
+              title: 'Kembali ke Menu Utama?',
+              message: 'Permainan yang sedang berjalan akan direset. Apakah kamu yakin ingin kembali ke Menu Utama?',
+              confirmText: 'Ya, Kembali',
+              cancelText: 'Lanjut Main',
+              type: 'warning'
+            });
+          } else {
+            ok = confirm('Apakah kamu yakin ingin kembali ke Menu Utama? Game akan direset.');
+          }
+          if (ok) {
             this.stopCamera();
             this.showScreen('screen-menu');
           }
@@ -400,7 +412,11 @@
       const studentName = nameInput ? nameInput.value.trim() : '';
 
       if (!studentName) {
-        alert('Mohon masukkan Nama Lengkap kamu terlebih dahulu untuk dicatat di Rapor Kelas & dicetak di sertifikat!');
+        if (window.uiFeedback) {
+          window.uiFeedback.toast('Mohon masukkan Nama Lengkap kamu terlebih dahulu!', 'warning');
+        } else {
+          alert('Mohon masukkan Nama Lengkap kamu terlebih dahulu untuk dicatat di Rapor Kelas & dicetak di sertifikat!');
+        }
         if (nameInput) nameInput.focus();
         return;
       }

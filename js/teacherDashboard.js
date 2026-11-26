@@ -65,12 +65,19 @@
 
       const btnLogout = document.getElementById('btn-teacher-logout');
       if (btnLogout) {
-        btnLogout.addEventListener('click', () => {
-          if (confirm('Apakah Bapak/Ibu Guru yakin ingin keluar dari Mode Guru?')) {
+        btnLogout.addEventListener('click', async () => {
+          const ok = await window.uiFeedback.confirm({
+            title: 'Keluar dari Mode Guru?',
+            message: 'Sesi kelas aktif saat ini akan tetap berjalan untuk siswa saat bermain. Apakah Bapak/Ibu Guru ingin keluar ke Menu Utama?',
+            confirmText: 'Ya, Keluar',
+            cancelText: 'Batal',
+            type: 'warning'
+          });
+          if (ok) {
             window.dbStore.teacherLogout();
             this.closeTeacherDashboard();
             this.updateActiveSesiBadges();
-            alert('Berhasil keluar dari Mode Guru.');
+            window.uiFeedback.toast('Berhasil keluar dari Mode Guru.', 'info');
           }
         });
       }
@@ -96,17 +103,17 @@
 
           const res = window.dbStore.createSesi(namaKelas, kodeSesi, idGuru);
           if (res.success) {
-            alert(`Sesi "${namaKelas}" (${kodeSesi.toUpperCase()}) berhasil dibuat dan diaktifkan!`);
+            window.uiFeedback.toast(`Sesi "${namaKelas}" (${kodeSesi.toUpperCase()}) berhasil dibuat & aktif!`, 'success');
             formNewSesi.reset();
             this.renderSesiTab();
             this.updateActiveSesiBadges();
           } else {
-            alert(res.message);
+            window.uiFeedback.toast(res.message, 'danger');
           }
         });
       }
 
-      // 6. Tab 2 - Rapor Dropdown Selector & Ekspor CSV
+      // 6. Tab 2 - Rapor Dropdown Selector, Ekspor CSV, & Reset Sesi
       const selectRapor = document.getElementById('select-rapor-sesi');
       if (selectRapor) {
         selectRapor.addEventListener('change', () => {
@@ -123,6 +130,35 @@
         });
       }
 
+      const btnResetRapor = document.getElementById('btn-reset-rapor-sesi');
+      if (btnResetRapor) {
+        btnResetRapor.addEventListener('click', async () => {
+          const sesiId = this.selectedRaporSesiId || (window.dbStore.getActiveSesi() ? window.dbStore.getActiveSesi().id_sesi : 1);
+          const sesi = window.dbStore.getSesiById(sesiId);
+          const sesiName = sesi ? sesi.nama_kelas : 'sesi ini';
+
+          const ok = await window.uiFeedback.confirm({
+            title: 'Bersihkan Rekap Nilai Sesi Ini?',
+            message: `Semua data hasil bermain siswa pada <strong>${sesiName}</strong> akan dihapus permanen agar database tetap bersih dan hemat penyimpanan.`,
+            confirmText: 'Bersihkan Semua',
+            cancelText: 'Batal',
+            type: 'danger'
+          });
+
+          if (ok) {
+            const res = window.dbStore.resetHasilBySesi(sesiId);
+            if (res.success) {
+              window.uiFeedback.toast(res.message, 'success');
+              this.renderRaporTab();
+              this.renderSesiTab();
+              this.updateActiveSesiBadges();
+            } else {
+              window.uiFeedback.toast(res.message, 'warning');
+            }
+          }
+        });
+      }
+
       // 7. Tab 3 - Bank Sampah Add & Reset Buttons
       const btnAddNewItem = document.getElementById('btn-add-item-modal');
       if (btnAddNewItem) {
@@ -133,11 +169,18 @@
 
       const btnResetItems = document.getElementById('btn-reset-items-default');
       if (btnResetItems) {
-        btnResetItems.addEventListener('click', () => {
-          if (confirm('Kembalikan seluruh Bank Sampah ke 16 item standar bawaan sistem?')) {
+        btnResetItems.addEventListener('click', async () => {
+          const ok = await window.uiFeedback.confirm({
+            title: 'Kembalikan ke Default?',
+            message: 'Kembalikan seluruh Bank Sampah ke 16 item standar bawaan sistem?',
+            confirmText: 'Reset Default',
+            cancelText: 'Batal',
+            type: 'warning'
+          });
+          if (ok) {
             window.dbStore.resetItemsToDefault();
             this.renderBankSampahTab();
-            alert('Bank Sampah berhasil dikembalikan ke default!');
+            window.uiFeedback.toast('Bank Sampah berhasil dikembalikan ke 16 item default!', 'success');
           }
         });
       }
@@ -194,8 +237,9 @@
         const modal = document.getElementById('modal-teacher-login');
         if (modal) modal.classList.add('hidden');
         this.openTeacherDashboard();
+        window.uiFeedback.toast(`Selamat datang, ${res.teacher.nama_guru}!`, 'success');
       } else {
-        alert(res.message);
+        window.uiFeedback.toast(res.message, 'danger');
       }
     }
 
@@ -358,13 +402,21 @@
       });
 
       tbody.querySelectorAll('.btn-delete-sesi').forEach(b => {
-        b.addEventListener('click', (e) => {
+        b.addEventListener('click', async (e) => {
           const id = Number(e.currentTarget.getAttribute('data-id'));
-          if (confirm('Hapus sesi kelas ini beserta seluruh rekap nilai siswa di dalamnya?')) {
+          const ok = await window.uiFeedback.confirm({
+            title: 'Hapus Sesi Kelas Ini?',
+            message: 'Hapus sesi kelas ini beserta seluruh rekap nilai siswa di dalamnya secara permanen?',
+            confirmText: 'Hapus Sesi',
+            cancelText: 'Batal',
+            type: 'danger'
+          });
+          if (ok) {
             const res = window.dbStore.deleteSesi(id);
             if (!res.success) {
-              alert(res.message);
+              window.uiFeedback.toast(res.message, 'danger');
             } else {
+              window.uiFeedback.toast('Sesi kelas berhasil dihapus!', 'success');
               this.renderSesiTab();
               this.updateActiveSesiBadges();
             }
@@ -459,9 +511,12 @@
             <td style="text-align: center;"><span class="badge-predicate ${s.predikatClass}">${s.predikat}</span></td>
             <td style="text-align: center;">${certBadge}</td>
             <td><span style="white-space: nowrap; font-size: 0.82rem; color: #64748b;"><i class="fa-regular fa-clock" style="margin-right: 4px;"></i>${s.waktu_bermain}</span></td>
-            <td style="text-align: center;">
-              <button class="btn btn-sm btn-outline btn-view-student-log" data-id="${s.id_hasil}" data-name="${s.nama_siswa}">
+            <td class="action-buttons-cell" style="justify-content: center;">
+              <button class="btn btn-sm btn-outline btn-view-student-log" data-id="${s.id_hasil}" data-name="${s.nama_siswa}" title="Lihat Rincian Pilah">
                 <i class="fa-solid fa-list-check"></i> Detail
+              </button>
+              <button class="btn btn-sm btn-danger btn-delete-student" data-id="${s.id_hasil}" data-name="${s.nama_siswa}" data-score="${s.skor_akhir}" title="Hapus Data Siswa Ini">
+                <i class="fa-solid fa-trash-can"></i>
               </button>
             </td>
           </tr>
@@ -473,6 +528,34 @@
           const idHasil = Number(e.currentTarget.getAttribute('data-id'));
           const sName = e.currentTarget.getAttribute('data-name');
           this.openStudentLogModal(idHasil, sName);
+        });
+      });
+
+      tbody.querySelectorAll('.btn-delete-student').forEach(b => {
+        b.addEventListener('click', async (e) => {
+          const idHasil = Number(e.currentTarget.getAttribute('data-id'));
+          const sName = e.currentTarget.getAttribute('data-name');
+          const sScore = e.currentTarget.getAttribute('data-score');
+
+          const ok = await window.uiFeedback.confirm({
+            title: 'Hapus Data Siswa Ini?',
+            message: `Data hasil bermain siswa <strong>${sName}</strong> (${Number(sScore).toLocaleString('id-ID')} PTS) beserta rincian log pilahnya akan dihapus permanen agar database tetap bersih.`,
+            confirmText: 'Hapus Data',
+            cancelText: 'Batal',
+            type: 'danger'
+          });
+
+          if (ok) {
+            const res = window.dbStore.deleteHasilBermain(idHasil);
+            if (res.success) {
+              window.uiFeedback.toast(`Data bermain "${sName}" berhasil dihapus dari database!`, 'success');
+              this.renderRaporTab();
+              this.renderSesiTab();
+              this.updateActiveSesiBadges();
+            } else {
+              window.uiFeedback.toast(res.message, 'danger');
+            }
+          }
         });
       });
     }
@@ -556,12 +639,23 @@
       });
 
       tbody.querySelectorAll('.btn-delete-item').forEach(b => {
-        b.addEventListener('click', (e) => {
+        b.addEventListener('click', async (e) => {
           const id = Number(e.currentTarget.getAttribute('data-id'));
-          if (confirm('Apakah Bapak/Ibu yakin ingin menghapus item sampah ini dari game?')) {
+          const ok = await window.uiFeedback.confirm({
+            title: 'Hapus Item Sampah Ini?',
+            message: 'Apakah Bapak/Ibu yakin ingin menghapus item sampah ini dari game?',
+            confirmText: 'Hapus Item',
+            cancelText: 'Batal',
+            type: 'danger'
+          });
+          if (ok) {
             const res = window.dbStore.deleteItem(id);
-            if (!res.success) alert(res.message);
-            else this.renderBankSampahTab();
+            if (!res.success) {
+              window.uiFeedback.toast(res.message, 'danger');
+            } else {
+              window.uiFeedback.toast('Item sampah berhasil dihapus!', 'success');
+              this.renderBankSampahTab();
+            }
           }
         });
       });
@@ -609,7 +703,7 @@
       const inputTip = document.getElementById('item-input-tip').value;
 
       if (!inputNama.trim()) {
-        alert('Nama item sampah tidak boleh kosong!');
+        window.uiFeedback.toast('Nama item sampah tidak boleh kosong!', 'warning');
         return;
       }
 
@@ -621,7 +715,7 @@
           poin_dasar: inputPoin,
           pesan_edukasi_salah: inputTip
         });
-        alert('Item sampah berhasil diperbarui!');
+        window.uiFeedback.toast('Item sampah berhasil diperbarui!', 'success');
       } else {
         window.dbStore.addItem({
           nama_item: inputNama,
@@ -630,7 +724,7 @@
           poin_dasar: inputPoin,
           pesan_edukasi_salah: inputTip
         });
-        alert('Item sampah baru berhasil ditambahkan ke Bank Sampah!');
+        window.uiFeedback.toast('Item sampah baru berhasil ditambahkan!', 'success');
       }
 
       document.getElementById('modal-item-editor').classList.add('hidden');
