@@ -79,13 +79,13 @@
 
         <div class="menu-actions">
           <button id="btn-start-game" class="btn btn-primary btn-lg pulse">
-            <i class="fa-solid fa-play"></i> Mulai Main (Estafet Siswa)
+            <i class="fa-solid fa-play"></i> Mulai Main (Pilih Level)
           </button>
           <button id="btn-open-edu" class="btn btn-secondary">
-            <i class="fa-solid fa-book-open"></i> Pelajari Dampak Sampah
+            <i class="fa-solid fa-book-open"></i> Panduan Bermain & Info B3
           </button>
           <button id="btn-open-leaderboard" class="btn btn-outline">
-            <i class="fa-solid fa-trophy"></i> Papan Skor Sesi Kelas
+            <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Sesi Permainan
           </button>
         </div>
 
@@ -95,7 +95,73 @@
       </div>
     </section>
 
-    <!-- 2. SCREEN EDUKASI (INTERACTIVE SLIDE DECK) -->
+    <!-- 2. SCREEN PILIH LEVEL PERMAINAN (#screen-level) -->
+    <section id="screen-level" class="screen hidden">
+      <div class="glass-card level-card-container animate-bounce-in">
+        <div class="level-header">
+          <div class="badge-hima">
+            <i class="fa-solid fa-layer-group"></i> Tingkatan Permainan Siswa SD
+          </div>
+          <h2 class="level-title">Pilih Level Permainan</h2>
+          <p class="level-subtitle">Pilih tingkat kesulitan yang sesuai dengan kelas dan kemampuan siswa (Kelas 1–3 SD):</p>
+        </div>
+
+        <div class="level-grid">
+          <!-- Level 1: Mudah -->
+          <div class="level-card-item level-easy" data-level="1">
+            <div class="level-badge-tag easy">Kelas 1 SD</div>
+            <div class="level-icon-wrap"><i class="fa-solid fa-seedling"></i></div>
+            <h3>Level 1: Pemula (Mudah)</h3>
+            <p class="level-desc">Durasi santai dengan jenis sampah harian yang sangat sering ditemui di lingkungan kelas.</p>
+            <div class="level-specs">
+              <span><i class="fa-solid fa-stopwatch text-blue"></i> 60 Detik</span>
+              <span><i class="fa-solid fa-star text-gold"></i> Target 300 PTS</span>
+            </div>
+            <button class="btn btn-success btn-block btn-select-level" data-level="1">
+              <i class="fa-solid fa-play"></i> Main Level 1
+            </button>
+          </div>
+
+          <!-- Level 2: Sedang -->
+          <div class="level-card-item level-medium" data-level="2">
+            <div class="level-badge-tag medium">Kelas 2 SD</div>
+            <div class="level-icon-wrap"><i class="fa-solid fa-tree"></i></div>
+            <h3>Level 2: Terampil (Sedang)</h3>
+            <p class="level-desc">Durasi lebih menantang dengan kombinasi beragam sampah organik dan anorganik sekolah.</p>
+            <div class="level-specs">
+              <span><i class="fa-solid fa-stopwatch text-orange"></i> 45 Detik</span>
+              <span><i class="fa-solid fa-star text-gold"></i> Target 500 PTS</span>
+            </div>
+            <button class="btn btn-primary btn-block btn-select-level" data-level="2">
+              <i class="fa-solid fa-play"></i> Main Level 2
+            </button>
+          </div>
+
+          <!-- Level 3: Tantangan -->
+          <div class="level-card-item level-hard" data-level="3">
+            <div class="level-badge-tag hard">Kelas 3 SD</div>
+            <div class="level-icon-wrap"><i class="fa-solid fa-medal"></i></div>
+            <h3>Level 3: Juara (Tantangan)</h3>
+            <p class="level-desc">Durasi cepat untuk melatih ketangkasan dan fokus memilah seluruh bank item sampah.</p>
+            <div class="level-specs">
+              <span><i class="fa-solid fa-stopwatch text-red"></i> 30 Detik</span>
+              <span><i class="fa-solid fa-star text-gold"></i> Target 800 PTS</span>
+            </div>
+            <button class="btn btn-secondary btn-block btn-select-level" data-level="3">
+              <i class="fa-solid fa-play"></i> Main Level 3
+            </button>
+          </div>
+        </div>
+
+        <div class="level-footer">
+          <button id="btn-back-menu-from-level" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke Menu Utama
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SCREEN PANDUAN BERMAIN & EDUKASI B3 (#screen-edu / #screen-guide) -->
     <section id="screen-edu" class="screen hidden">
       <div class="glass-card edu-card">
         <div class="edu-header">
@@ -117,16 +183,16 @@
             Lanjut <i class="fa-solid fa-arrow-right"></i>
           </button>
           <button id="btn-edu-skip-game" class="btn btn-success hidden">
-            <i class="fa-solid fa-gamepad"></i> Siap Bermain Estafet 3D!
+            <i class="fa-solid fa-gamepad"></i> Siap Bermain (Pilih Level)!
           </button>
         </div>
       </div>
     </section>
 
-    <!-- 3. SCREEN GAMEPLAY 3D (HUD OVERLAY) -->
+    <!-- 4. SCREEN GAMEPLAY 3D (HUD OVERLAY) -->
     <section id="screen-game" class="screen hidden">
 
-      <!-- Top HUD Area (Stats + 4-Column Bin Guide Bar pinned at Top) -->
+      <!-- Top HUD Area (Stats + 2-Column Bin Guide Bar pinned at Top) -->
       <div class="hud-top-wrapper">
         <div class="hud-top-bar">
           <div class="hud-item score-box">
@@ -152,10 +218,10 @@
             </div>
           </div>
 
-          <!-- Sesi Kelas Chip Indicator -->
-          <div class="hud-item hud-sesi-chip" title="Kode Sesi Kelas Aktif">
-            <span class="hud-label">SESI</span>
-            <span id="hud-sesi-code" class="hud-value hud-sesi-value">CIAWI-2A</span>
+          <!-- Level Permainan Chip Indicator -->
+          <div class="hud-item hud-sesi-chip" title="Level Permainan Aktif">
+            <span class="hud-label">LEVEL</span>
+            <span id="hud-level-chip" class="hud-value hud-sesi-value">Level 1: Mudah</span>
           </div>
 
           <div class="hud-actions">
@@ -168,19 +234,13 @@
           </div>
         </div>
 
-        <!-- Dedicated 4-Column Bin Identification Guide Bar -->
-        <div class="bin-guide-bar">
+        <!-- Dedicated 2-Column Bin Identification Guide Bar (Organik & Anorganik) -->
+        <div class="bin-guide-bar two-bins">
           <div class="bin-guide-pill bin-organik">
-            <i class="fa-solid fa-leaf"></i> 1. ORGANIK
+            <i class="fa-solid fa-leaf"></i> 1. TONG ORGANIK (HIJAU)
           </div>
           <div class="bin-guide-pill bin-anorganik">
-            <i class="fa-solid fa-bottle-water"></i> 2. ANORGANIK
-          </div>
-          <div class="bin-guide-pill bin-b3">
-            <i class="fa-solid fa-bolt"></i> 3. B3 BERBAHAYA
-          </div>
-          <div class="bin-guide-pill bin-daurulang">
-            <i class="fa-solid fa-box"></i> 4. DAUR ULANG
+            <i class="fa-solid fa-bottle-water"></i> 2. TONG ANORGANIK (KUNING)
           </div>
         </div>
       </div>
@@ -199,16 +259,21 @@
       </div>
     </section>
 
-    <!-- 4. SCREEN GAME OVER / RESULT -->
+    <!-- 5. SCREEN GAME OVER / RESULT (TANPA DATA PRIBADI SISWA) -->
     <section id="screen-gameover" class="screen hidden">
       <div class="glass-card gameover-card animate-bounce-in">
         <div class="result-badge-icon"><i class="fa-solid fa-trophy"></i></div>
         <h2 id="result-title">Hebat! Kamu Pahlawan Sampah Ciawilor!</h2>
-        <p class="result-subtext">Kamu berhasil membantu menjaga kebersihan sekolah & mendukung program SEMUTLIS!</p>
+        <p class="result-subtext" id="result-subtitle">Kamu berhasil membantu menjaga kebersihan sekolah & mendukung program SEMUTLIS!</p>
 
-        <!-- Sesi Kelas Aktif Reminder -->
-        <div class="gameover-sesi-hint">
-          <i class="fa-solid fa-chalkboard-user text-green"></i> Sesi Kelas: <strong id="gameover-sesi-name">Kelas 2A - SEMUTLIS (CIAWI-2A)</strong>
+        <!-- Star Rating Display -->
+        <div class="result-stars-box">
+          <div id="res-stars" class="stars-rating-icons">
+            <i class="fa-solid fa-star star-active"></i>
+            <i class="fa-solid fa-star star-active"></i>
+            <i class="fa-solid fa-star star-active"></i>
+          </div>
+          <span id="res-star-feedback" class="star-feedback-label">Luar Biasa! Kamu Juara Pemilahan Sampah!</span>
         </div>
 
         <div class="stats-grid">
@@ -218,9 +283,19 @@
             <span class="stat-lbl">Skor Akhir</span>
           </div>
           <div class="stat-card">
-            <i class="fa-solid fa-check-double text-green"></i>
+            <i class="fa-solid fa-bullseye text-blue"></i>
             <span class="stat-val" id="res-accuracy">0%</span>
             <span class="stat-lbl">Akurasi Pilah</span>
+          </div>
+          <div class="stat-card">
+            <i class="fa-solid fa-circle-check text-green"></i>
+            <span class="stat-val" id="res-correct">0</span>
+            <span class="stat-lbl">Pilah Benar</span>
+          </div>
+          <div class="stat-card">
+            <i class="fa-solid fa-circle-xmark text-red"></i>
+            <span class="stat-val" id="res-wrong">0</span>
+            <span class="stat-lbl">Pilah Salah</span>
           </div>
           <div class="stat-card">
             <i class="fa-solid fa-fire text-orange"></i>
@@ -229,52 +304,22 @@
           </div>
         </div>
 
-        <!-- Name Input Section for Certificate & Leaderboard -->
-        <div class="name-entry-box">
-          <label for="input-student-name"><i class="fa-solid fa-user-pen"></i> Masukkan Nama Lengkap Siswa:</label>
-          <input type="text" id="input-student-name" placeholder="Contoh: Aditya Pratama" maxlength="28">
-        </div>
-
-        <!-- Webcam Face Photo Capture Section for Certificate -->
-        <div class="photo-capture-box">
-          <label><i class="fa-solid fa-camera"></i> Foto Muka Siswa untuk Sertifikat (Opsional):</label>
-          
-          <div class="camera-preview-container">
-            <video id="webcam-video" autoplay playsinline class="hidden"></video>
-            <canvas id="photo-canvas" class="hidden"></canvas>
-            <img id="photo-preview" class="hidden" alt="Foto Muka">
-            <div id="camera-placeholder" class="camera-placeholder">
-              <i class="fa-solid fa-user-astronaut"></i>
-              <p>Ambil Foto Siswa atau Unggah Gambar untuk Sertifikat</p>
-            </div>
-          </div>
-
-          <div class="camera-controls">
-            <button id="btn-start-camera" class="btn btn-outline btn-sm">
-              <i class="fa-solid fa-video"></i> Buka Kamera
-            </button>
-            <button id="btn-capture-photo" class="btn btn-primary btn-sm hidden">
-              <i class="fa-solid fa-camera"></i> Jepret Foto
-            </button>
-            <button id="btn-retake-photo" class="btn btn-outline btn-sm hidden">
-              <i class="fa-solid fa-rotate-right"></i> Foto Ulang
-            </button>
-            <label for="input-photo-file" class="btn btn-outline btn-sm" style="cursor: pointer; margin: 0;">
-              <i class="fa-solid fa-upload"></i> Unggah Foto
-            </label>
-            <input type="file" id="input-photo-file" accept="image/*" style="display: none !important;">
-          </div>
+        <div class="semutlis-advice-box">
+          <i class="fa-solid fa-seedling text-green"></i>
+          <p>
+            <strong>Aksi Nyata SEMUTLIS:</strong> Sisihkan 10 menit setiap hari untuk memilah sampah di kelas dan lingkungan sekolah!
+          </p>
         </div>
 
         <div class="result-actions">
-          <button id="btn-claim-certificate" class="btn btn-success">
-            <i class="fa-solid fa-certificate"></i> Simpan Skor & Cetak Sertifikat
-          </button>
           <button id="btn-restart-game" class="btn btn-primary">
-            <i class="fa-solid fa-rotate-right"></i> Siswa Berikutnya (Main Lagi)
+            <i class="fa-solid fa-rotate-right"></i> Main Lagi (Siswa Berikutnya)
+          </button>
+          <button id="btn-change-level" class="btn btn-secondary">
+            <i class="fa-solid fa-layer-group"></i> Ganti Level
           </button>
           <button id="btn-view-leaderboard" class="btn btn-outline">
-            <i class="fa-solid fa-trophy"></i> Papan Skor Sesi
+            <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Sesi
           </button>
           <button id="btn-home-from-gameover" class="btn btn-outline">
             <i class="fa-solid fa-house"></i> Menu Utama
@@ -597,30 +642,41 @@
       </div>
     </div>
 
-    <!-- 4. MODAL LEADERBOARD -->
+    <!-- 4. MODAL RIWAYAT SESI PERMAINAN (#modal-leaderboard) -->
     <div id="modal-leaderboard" class="modal-overlay hidden">
-      <div class="glass-card leaderboard-modal-card">
+      <div class="glass-card leaderboard-modal-card modal-wide">
         <div class="modal-header">
           <div>
-            <h3><i class="fa-solid fa-trophy text-gold"></i> Papan Skor Sesi Kelas</h3>
-            <p id="leaderboard-sesi-badge" class="leaderboard-sesi-badge">Sesi Aktif: Kelas 2A - SEMUTLIS</p>
+            <h3><i class="fa-solid fa-clock-rotate-left text-green"></i> Riwayat Sesi Permainan Siswa</h3>
+            <p id="leaderboard-sesi-badge" class="leaderboard-sesi-badge">Data bermain kelas tersimpan secara lokal dan aman tanpa data pribadi</p>
           </div>
           <button class="btn-close-modal" id="btn-close-leaderboard"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body">
-          <table class="leaderboard-table">
-            <thead>
-              <tr>
-                <th>Peringkat</th>
-                <th>Nama Siswa</th>
-                <th>Skor</th>
-                <th>Waktu & Tanggal</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboard-tbody">
-              <!-- Dynamically populated via leaderboard.js -->
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="leaderboard-table teacher-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px; text-align: center;">No</th>
+                  <th>Level Permainan</th>
+                  <th style="width: 120px;">Skor Akhir</th>
+                  <th style="width: 100px;">Akurasi</th>
+                  <th style="width: 130px; text-align: center;">Benar / Salah</th>
+                  <th style="width: 170px;">Waktu Bermain</th>
+                  <th style="width: 80px; text-align: center;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-tbody">
+                <!-- Dynamically populated via leaderboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+          <button id="btn-clear-all-sessions" class="btn btn-danger btn-outline btn-sm">
+            <i class="fa-solid fa-trash-can"></i> Bersihkan Semua Riwayat
+          </button>
+          <span class="text-muted" style="font-size: 0.8rem;">Mitra: SDN 1 & SDN 2 Ciawilor</span>
         </div>
       </div>
     </div>
@@ -673,11 +729,23 @@
             <div class="form-group">
               <label for="item-input-kategori">Kategori Tempat Sampah:</label>
               <select id="item-input-kategori" class="select-styled" required>
-                <option value="1">1. Organik (Hijau)</option>
-                <option value="2">2. Anorganik (Kuning)</option>
-                <option value="3">3. B3 Berbahaya (Merah)</option>
-                <option value="4">4. Daur Ulang (Biru)</option>
+                <option value="1">1. Organik (Tong Hijau)</option>
+                <option value="2">2. Anorganik (Tong Kuning)</option>
               </select>
+            </div>
+            <div class="form-group">
+              <label>Muncul pada Level Permainan (Tabel level_item):</label>
+              <div class="level-checkbox-group" style="display: flex; gap: 14px; margin-top: 6px; flex-wrap: wrap;">
+                <label style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer;">
+                  <input type="checkbox" id="item-level-1" value="1" checked> Level 1 (Mudah)
+                </label>
+                <label style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer;">
+                  <input type="checkbox" id="item-level-2" value="2" checked> Level 2 (Sedang)
+                </label>
+                <label style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer;">
+                  <input type="checkbox" id="item-level-3" value="3" checked> Level 3 (Tantangan)
+                </label>
+              </div>
             </div>
             <div class="form-group">
               <label for="item-input-model">Model Bentuk 3D:</label>

@@ -1,85 +1,109 @@
 /* ==========================================================================
-   dbStore.js - Relational LocalStorage Engine for Game Edukasi Pemilahan Sampah
-   Meniru struktur 6 Tabel MySQL (db_pilah_sampah.sql)
-   Mendukung Sesi Kelas Guru ("Main Bareng"), Rapor Siswa, & Bank Sampah
+   dbStore.js - Client-Side Relational Store (6 Tabel Standar 3NF)
+   Mencerminkan Struktur database/sipilah_sampah.sql
    Kelompok 05 - SANY (Teknik Informatika UNIKU)
+   Mitra: SDN 1 Ciawilor & SDN 2 Ciawilor
    ========================================================================== */
 
 (function() {
-  const STORAGE_PREFIX = 'sany_pilah_';
+  const STORAGE_PREFIX = 'sipilah_';
 
-  // Seed Data Awal
-  const SEED_GURU = [
-    { id_guru: 1, nama_guru: 'Agung Febriyana, S.Pd.', asal_sekolah: 'SDN 1 Ciawilor', username: 'agung_sdn1', password: 'guru123' },
-    { id_guru: 2, nama_guru: 'Tris Mulyo Purnomo, S.Pd.', asal_sekolah: 'SDN 2 Ciawilor', username: 'tris_sdn2', password: 'guru123' }
+  const DEFAULT_CATEGORIES = [
+    {
+      id_kategori: 1,
+      nama_kategori: 'Organik',
+      warna_tong: 'Hijau (#10b981)',
+      keterangan: 'Sampah yang berasal dari sisa makhluk hidup, mudah membusuk alami menjadi kompos (kulit pisang, sisa apel, daun kering, roti).'
+    },
+    {
+      id_kategori: 2,
+      nama_kategori: 'Anorganik',
+      warna_tong: 'Kuning (#f59e0b)',
+      keterangan: 'Sampah buatan pabrik yang tidak bisa membusuk alami dan harus didaur ulang (botol plastik, kaleng soda, kardus, kertas).'
+    }
   ];
 
-  const SEED_SESI = [
-    { id_sesi: 1, id_guru: 1, kode_sesi: 'CIAWI-2A', nama_kelas: 'Kelas 2A - SEMUTLIS', tanggal_sesi: '2026-11-20', status_sesi: 'aktif' },
-    { id_sesi: 2, id_guru: 2, kode_sesi: 'CIAWI2-1B', nama_kelas: 'Kelas 1B - Pembiasaan Disiplin', tanggal_sesi: '2026-11-19', status_sesi: 'selesai' }
+  const DEFAULT_LEVELS = [
+    {
+      id_level: 1,
+      nama_level: 'Level 1: Pemula (Mudah)',
+      durasi_detik: 60,
+      target_skor: 300,
+      keterangan: 'Cocok untuk siswa kelas 1 SD. Durasi santai 60 detik dengan jenis sampah harian sekolah yang mendasar.'
+    },
+    {
+      id_level: 2,
+      nama_level: 'Level 2: Terampil (Sedang)',
+      durasi_detik: 45,
+      target_skor: 500,
+      keterangan: 'Cocok untuk siswa kelas 2 SD. Durasi 45 detik dengan kombinasi sampah organik & anorganik bervariasi.'
+    },
+    {
+      id_level: 3,
+      nama_level: 'Level 3: Juara Lingkungan (Tantangan)',
+      durasi_detik: 30,
+      target_skor: 800,
+      keterangan: 'Cocok untuk siswa kelas 3 SD. Durasi cepat 30 detik untuk melatih ketangkasan dan fokus memilah.'
+    }
   ];
 
-  const SEED_KATEGORI = [
-    { id_kategori: 1, nama_kategori: 'Organik', warna_tong: 'Hijau (#10b981)', deskripsi_singkat: 'Sisa makanan, daun, kulit buah yang membusuk dan terurai alami jadi kompos.' },
-    { id_kategori: 2, nama_kategori: 'Anorganik', warna_tong: 'Kuning (#f59e0b)', deskripsi_singkat: 'Plastik, kaleng, bungkus makanan yang tidak bisa membusuk alami.' },
-    { id_kategori: 3, nama_kategori: 'B3 Berbahaya', warna_tong: 'Merah (#ef4444)', deskripsi_singkat: 'Baterai bekas, lampu bohlam, termometer raksa, dan botol kimia berbahaya.' },
-    { id_kategori: 4, nama_kategori: 'Daur Ulang', warna_tong: 'Biru (#06b6d4)', deskripsi_singkat: 'Kardus, kertas buku tulis, koran bekas, dan karton kemasan yang dapat diolah lagi.' }
-  ];
-
-  const SEED_ITEMS = [
+  const DEFAULT_ITEMS = [
     // Organik (id_kategori: 1)
-    { id_item: 1, id_kategori: 1, nama_item: 'Kulit Pisang', kode_model_3d: 'gltf_banana', poin_dasar: 100, pesan_edukasi_salah: 'Kulit pisang cepat membusuk alami dan kaya nutrisi untuk menyuburkan tanah (Organik - Hijau).' },
-    { id_item: 2, id_kategori: 1, nama_item: 'Sisa Gigitan Apel', kode_model_3d: 'gltf_apple', poin_dasar: 100, pesan_edukasi_salah: 'Sisa buah & makanan cepat membusuk menjadi pupuk kompos alami! Masukkan ke tong Hijau (Organik).' },
-    { id_item: 3, id_kategori: 1, nama_item: 'Daun Kering', kode_model_3d: 'gltf_leaf', poin_dasar: 100, pesan_edukasi_salah: 'Daun gugur termasuk sampah organik halaman sekolah yang sangat mudah terurai (Organik - Hijau).' },
-    { id_item: 4, id_kategori: 1, nama_item: 'Roti Kadaluarsa', kode_model_3d: 'gltf_bread', poin_dasar: 100, pesan_edukasi_salah: 'Sisa roti dan bekal makanan termasuk sampah organik yang mudah membusuk (Organik - Hijau).' },
+    { id_item: 1, id_kategori: 1, nama_item: 'Kulit Pisang', kode_aset: 'gltf_banana', pesan_edukasi: 'Kulit pisang cepat membusuk alami dan kaya nutrisi untuk menyuburkan tanah (Tong Hijau).' },
+    { id_item: 2, id_kategori: 1, nama_item: 'Sisa Gigitan Apel', kode_aset: 'gltf_apple', pesan_edukasi: 'Sisa buah dan makanan cepat membusuk menjadi pupuk kompos alami! Masukkan ke Tong Organik.' },
+    { id_item: 3, id_kategori: 1, nama_item: 'Daun Kering', kode_aset: 'gltf_leaf', pesan_edukasi: 'Daun gugur pepohonan sekolah dapat dijadikan kompos tanaman (Tong Hijau).' },
+    { id_item: 4, id_kategori: 1, nama_item: 'Roti Kadaluarsa', kode_aset: 'gltf_bread', pesan_edukasi: 'Sisa roti dan remah makanan mudah terurai alami di dalam tanah (Tong Organik).' },
 
     // Anorganik (id_kategori: 2)
-    { id_item: 5, id_kategori: 2, nama_item: 'Botol Air Minum Plastik', kode_model_3d: 'gltf_bottle', poin_dasar: 100, pesan_edukasi_salah: 'Botol plastik butuh 450 tahun untuk hancur! Wajib dipilah ke tempat Anorganik (Kuning).' },
-    { id_item: 6, id_kategori: 2, nama_item: 'Kaleng Minuman Soda', kode_model_3d: 'gltf_can', poin_dasar: 100, pesan_edukasi_salah: 'Kaleng alumunium bisa dilebur & didaur ulang berkali-kali. Masukkan ke tong Kuning (Anorganik).' },
-    { id_item: 7, id_kategori: 2, nama_item: 'Bebek Mainan Plastik', kode_model_3d: 'gltf_duck', poin_dasar: 100, pesan_edukasi_salah: 'Mainan berbahan plastik sintetis tidak dapat membusuk alami. Masukkan ke tong Kuning (Anorganik).' },
-    { id_item: 8, id_kategori: 2, nama_item: 'Gelas Minuman & Sedotan', kode_model_3d: 'gltf_straw', poin_dasar: 100, pesan_edukasi_salah: 'Sedotan & gelas plastik berbahaya bagi saluran air sekolah dan biota sungai/laut (Anorganik - Kuning).' },
-
-    // B3 Berbahaya (id_kategori: 3)
-    { id_item: 9, id_kategori: 3, nama_item: 'Baterai Bekas', kode_model_3d: 'gltf_battery', poin_dasar: 100, pesan_edukasi_salah: 'Baterai bekas mengandung racun logam berat yang mencemari air tanah! Masukkan ke tong Merah (B3).' },
-    { id_item: 10, id_kategori: 3, nama_item: 'Lampu Bohlam Bekas', kode_model_3d: 'gltf_bulb', poin_dasar: 100, pesan_edukasi_salah: 'Pecahan kaca bohlam & serbuk gas merkuri di dalamnya sangat berbahaya bagi tangan siswa (B3 - Merah).' },
-    { id_item: 11, id_kategori: 3, nama_item: 'Botol Obat Kimia', kode_model_3d: 'gltf_medicine', poin_dasar: 100, pesan_edukasi_salah: 'Sisa obat & botol kimia mengandung zat aktif berbahaya bila tertelan sembarangan (B3 - Merah).' },
-    { id_item: 12, id_kategori: 3, nama_item: 'Termometer Raksa', kode_model_3d: 'gltf_thermometer', poin_dasar: 100, pesan_edukasi_salah: 'Cairan raksa pada termometer sangat beracun bagi pernapasan dan kulit manusia! (B3 - Merah).' },
-
-    // Daur Ulang (id_kategori: 4)
-    { id_item: 13, id_kategori: 4, nama_item: 'Kardus Box', kode_model_3d: 'gltf_box', poin_dasar: 100, pesan_edukasi_salah: 'Mendaur ulang kardus menyelamatkan pohon hutan dari penebangan liar! Masukkan ke tong Biru (Daur Ulang).' },
-    { id_item: 14, id_kategori: 4, nama_item: 'Kertas Buku Bekas', kode_model_3d: 'gltf_paper', poin_dasar: 100, pesan_edukasi_salah: 'Kertas buku tulis bekas dipilah ke tong Biru agar dapat diolah kembali menjadi lembaran baru.' },
-    { id_item: 15, id_kategori: 4, nama_item: 'Koran Bekas', kode_model_3d: 'gltf_newspaper', poin_dasar: 100, pesan_edukasi_salah: 'Koran bekas dapat diolah menjadi bubur kertas atau kerajinan kreatif (Daur Ulang - Biru).' },
-    { id_item: 16, id_kategori: 4, nama_item: 'Karton Susu Kotak', kode_model_3d: 'gltf_carton', poin_dasar: 100, pesan_edukasi_salah: 'Karton kemasan susu sekolah dipilah ke tempat sampah Daur Ulang (Biru).' }
+    { id_item: 5, id_kategori: 2, nama_item: 'Botol Plastik Minuman', kode_aset: 'gltf_bottle', pesan_edukasi: 'Botol plastik butuh 450 tahun untuk hancur! Wajib dipilah ke Tong Anorganik (Kuning).' },
+    { id_item: 6, id_kategori: 2, nama_item: 'Kaleng Minuman Soda', kode_aset: 'gltf_can', pesan_edukasi: 'Kaleng aluminium pabrik tidak bisa membusuk, namun bisa dilebur kembali (Tong Kuning).' },
+    { id_item: 7, id_kategori: 2, nama_item: 'Bebek Mainan Plastik', kode_aset: 'gltf_duck', pesan_edukasi: 'Mainan berbahan plastik sintetis keras termasuk sampah anorganik (Tong Kuning).' },
+    { id_item: 8, id_kategori: 2, nama_item: 'Gelas Plastik & Sedotan', kode_aset: 'gltf_straw', pesan_edukasi: 'Sedotan dan gelas plastik sekali pakai berbahaya jika hanyut ke sungai (Tong Kuning).' },
+    { id_item: 9, id_kategori: 2, nama_item: 'Kardus Box Makanan', kode_aset: 'gltf_box', pesan_edukasi: 'Kardus kemasan kertas tebal harus dipilah kering agar dapat didaur ulang (Tong Kuning).' },
+    { id_item: 10, id_kategori: 2, nama_item: 'Kertas Buku Bekas', kode_aset: 'gltf_paper', pesan_edukasi: 'Kertas buku tulis termasuk sampah anorganik kering yang siap didaur ulang menjadi kertas baru.' },
+    { id_item: 11, id_kategori: 2, nama_item: 'Koran Bekas', kode_aset: 'gltf_newspaper', pesan_edukasi: 'Kertas koran bekas tidak boleh dibakar karena berasap pekat, masukkan ke Tong Anorganik.' },
+    { id_item: 12, id_kategori: 2, nama_item: 'Karton Kotak Susu', kode_aset: 'gltf_carton', pesan_edukasi: 'Karton kemasan susu memiliki lapisan kedap air, buang ke Tong Anorganik agar didaur ulang.' }
   ];
 
-  const SEED_HASIL = [
-    { id_hasil: 1, id_sesi: 1, nama_siswa: 'Aditya Pratama', skor_akhir: 1420, akurasi_persen: 92, max_combo: 7, status_sertifikat: 'diklaim', waktu_bermain: '2026-11-20 08:15:00' },
-    { id_hasil: 2, id_sesi: 1, nama_siswa: 'Siti Nur Aisyah', skor_akhir: 1280, akurasi_persen: 85, max_combo: 5, status_sertifikat: 'diklaim', waktu_bermain: '2026-11-20 08:22:00' },
-    { id_hasil: 3, id_sesi: 1, nama_siswa: 'Rian Hidayat', skor_akhir: 940, akurasi_persen: 71, max_combo: 3, status_sertifikat: 'belum_klaim', waktu_bermain: '2026-11-20 08:30:00' },
-    { id_hasil: 4, id_sesi: 1, nama_siswa: 'Zahra Amelia', skor_akhir: 620, akurasi_persen: 50, max_combo: 2, status_sertifikat: 'belum_klaim', waktu_bermain: '2026-11-20 08:38:00' },
-    { id_hasil: 5, id_sesi: 1, nama_siswa: 'Dimas Anggara', skor_akhir: 1560, akurasi_persen: 95, max_combo: 8, status_sertifikat: 'diklaim', waktu_bermain: '2026-11-20 08:45:00' }
+  const DEFAULT_LEVEL_ITEMS = [
+    // Level 1: 6 item
+    { id_level_item: 1, id_level: 1, id_item: 1 },
+    { id_level_item: 2, id_level: 1, id_item: 2 },
+    { id_level_item: 3, id_level: 1, id_item: 3 },
+    { id_level_item: 4, id_level: 1, id_item: 5 },
+    { id_level_item: 5, id_level: 1, id_item: 6 },
+    { id_level_item: 6, id_level: 1, id_item: 9 },
+
+    // Level 2: 9 item
+    { id_level_item: 7, id_level: 2, id_item: 1 },
+    { id_level_item: 8, id_level: 2, id_item: 2 },
+    { id_level_item: 9, id_level: 2, id_item: 3 },
+    { id_level_item: 10, id_level: 2, id_item: 4 },
+    { id_level_item: 11, id_level: 2, id_item: 5 },
+    { id_level_item: 12, id_level: 2, id_item: 6 },
+    { id_level_item: 13, id_level: 2, id_item: 7 },
+    { id_level_item: 14, id_level: 2, id_item: 8 },
+    { id_level_item: 15, id_level: 2, id_item: 9 },
+
+    // Level 3: 12 item (lengkap)
+    { id_level_item: 16, id_level: 3, id_item: 1 },
+    { id_level_item: 17, id_level: 3, id_item: 2 },
+    { id_level_item: 18, id_level: 3, id_item: 3 },
+    { id_level_item: 19, id_level: 3, id_item: 4 },
+    { id_level_item: 20, id_level: 3, id_item: 5 },
+    { id_level_item: 21, id_level: 3, id_item: 6 },
+    { id_level_item: 22, id_level: 3, id_item: 7 },
+    { id_level_item: 23, id_level: 3, id_item: 8 },
+    { id_level_item: 24, id_level: 3, id_item: 9 },
+    { id_level_item: 25, id_level: 3, id_item: 10 },
+    { id_level_item: 26, id_level: 3, id_item: 11 },
+    { id_level_item: 27, id_level: 3, id_item: 12 }
   ];
 
-  const SEED_LOG = [
-    // Aditya Pratama (Hasil #1)
-    { id_log: 1, id_hasil: 1, id_item: 1, id_kategori_dipilih: 1, is_benar: 1 },
-    { id_log: 2, id_hasil: 1, id_item: 5, id_kategori_dipilih: 2, is_benar: 1 },
-    { id_log: 3, id_hasil: 1, id_item: 9, id_kategori_dipilih: 3, is_benar: 1 },
-    { id_log: 4, id_hasil: 1, id_item: 13, id_kategori_dipilih: 4, is_benar: 1 },
-    { id_log: 5, id_hasil: 1, id_item: 2, id_kategori_dipilih: 1, is_benar: 1 },
-    { id_log: 6, id_hasil: 1, id_item: 6, id_kategori_dipilih: 2, is_benar: 1 },
-    { id_log: 7, id_hasil: 1, id_item: 10, id_kategori_dipilih: 2, is_benar: 0 },
-    // Siti Nur Aisyah (Hasil #2)
-    { id_log: 8, id_hasil: 2, id_item: 3, id_kategori_dipilih: 1, is_benar: 1 },
-    { id_log: 9, id_hasil: 2, id_item: 7, id_kategori_dipilih: 2, is_benar: 1 },
-    { id_log: 10, id_hasil: 2, id_item: 11, id_kategori_dipilih: 3, is_benar: 1 },
-    { id_log: 11, id_hasil: 2, id_item: 14, id_kategori_dipilih: 4, is_benar: 1 },
-    { id_log: 12, id_hasil: 2, id_item: 5, id_kategori_dipilih: 4, is_benar: 0 },
-    // Zahra Amelia (Hasil #4)
-    { id_log: 13, id_hasil: 4, id_item: 9, id_kategori_dipilih: 2, is_benar: 0 },
-    { id_log: 14, id_hasil: 4, id_item: 10, id_kategori_dipilih: 2, is_benar: 0 },
-    { id_log: 15, id_hasil: 4, id_item: 1, id_kategori_dipilih: 1, is_benar: 1 },
-    { id_log: 16, id_hasil: 4, id_item: 13, id_kategori_dipilih: 4, is_benar: 1 }
+  const DEFAULT_SESI = [
+    { id_sesi: 1, id_level: 1, tanggal_sesi: '2026-11-20 08:30:00', skor_akhir: 600, jumlah_benar: 6, jumlah_salah: 0 },
+    { id_sesi: 2, id_level: 2, tanggal_sesi: '2026-11-20 08:45:00', skor_akhir: 800, jumlah_benar: 8, jumlah_salah: 1 },
+    { id_sesi: 3, id_level: 3, tanggal_sesi: '2026-11-20 09:00:00', skor_akhir: 1000, jumlah_benar: 10, jumlah_salah: 2 }
   ];
 
   class DatabaseStore {
@@ -87,13 +111,11 @@
       this.init();
     }
 
-    // Helper localStorage
     _get(table) {
       try {
         const val = localStorage.getItem(STORAGE_PREFIX + table);
         return val ? JSON.parse(val) : null;
       } catch (e) {
-        console.error('dbStore read error for table:', table, e);
         return null;
       }
     }
@@ -101,186 +123,29 @@
     _set(table, data) {
       try {
         localStorage.setItem(STORAGE_PREFIX + table, JSON.stringify(data));
-      } catch (e) {
-        console.error('dbStore write error for table:', table, e);
-      }
-    }
-
-    init(forceReset = false) {
-      if (forceReset || !this._get('tb_guru')) {
-        this._set('tb_guru', SEED_GURU);
-        this._set('tb_sesi_kelas', SEED_SESI);
-        this._set('tb_kategori_sampah', SEED_KATEGORI);
-        this._set('tb_item_sampah', SEED_ITEMS);
-        this._set('tb_hasil_bermain', SEED_HASIL);
-        this._set('tb_log_pemilahan', SEED_LOG);
-        this._set('current_active_sesi_id', 1);
-        console.log('[dbStore] Database initialized with default seed data.');
-      }
-    }
-
-    // ==========================================
-    // 1. AUTENTIKASI GURU
-    // ==========================================
-    teacherLogin(username, password) {
-      const teachers = this._get('tb_guru') || [];
-      const teacher = teachers.find(g => g.username.toLowerCase() === (username || '').trim().toLowerCase() && g.password === (password || '').trim());
-      if (teacher) {
-        sessionStorage.setItem('sany_logged_teacher', JSON.stringify({
-          id_guru: teacher.id_guru,
-          nama_guru: teacher.nama_guru,
-          asal_sekolah: teacher.asal_sekolah,
-          username: teacher.username
-        }));
-        return { success: true, teacher };
-      }
-      return { success: false, message: 'Username atau password guru tidak cocok.' };
-    }
-
-    getCurrentTeacher() {
-      try {
-        const t = sessionStorage.getItem('sany_logged_teacher');
-        return t ? JSON.parse(t) : null;
-      } catch (e) {
-        return null;
-      }
-    }
-
-    teacherLogout() {
-      sessionStorage.removeItem('sany_logged_teacher');
-    }
-
-    getAllGuru() {
-      return this._get('tb_guru') || [];
-    }
-
-    // ==========================================
-    // 2. SESI KELAS ("MAIN BARENG" DI KELAS)
-    // ==========================================
-    getAllSesi() {
-      const list = this._get('tb_sesi_kelas') || [];
-      const gurus = this.getAllGuru();
-      const results = this._get('tb_hasil_bermain') || [];
-
-      return list.map(s => {
-        const guru = gurus.find(g => g.id_guru === s.id_guru) || { nama_guru: 'Guru Wali' };
-        const studentCount = results.filter(r => r.id_sesi === s.id_sesi).length;
-        return {
-          ...s,
-          nama_guru: guru.nama_guru,
-          asal_sekolah: guru.asal_sekolah,
-          jumlah_siswa: studentCount
-        };
-      });
-    }
-
-    getActiveSesi() {
-      const list = this._get('tb_sesi_kelas') || [];
-      const activeId = this._get('current_active_sesi_id');
-      let sesi = list.find(s => s.id_sesi === Number(activeId) && s.status_sesi === 'aktif');
-      if (!sesi) {
-        sesi = list.find(s => s.status_sesi === 'aktif');
-        if (sesi) {
-          this._set('current_active_sesi_id', sesi.id_sesi);
-        }
-      }
-      return sesi || (list.length > 0 ? list[0] : null);
-    }
-
-    setActiveSesi(idSesi) {
-      const list = this._get('tb_sesi_kelas') || [];
-      const target = list.find(s => s.id_sesi === Number(idSesi));
-      if (target) {
-        target.status_sesi = 'aktif';
-        this._set('tb_sesi_kelas', list);
-        this._set('current_active_sesi_id', Number(idSesi));
-        return true;
-      }
-      return false;
-    }
-
-    createSesi(namaKelas, kodeSesi, idGuru = 1) {
-      const list = this._get('tb_sesi_kelas') || [];
-      const cleanKode = (kodeSesi || 'SESI-' + Math.floor(100 + Math.random() * 900)).trim().toUpperCase();
-
-      // Check unique code
-      if (list.some(s => s.kode_sesi === cleanKode)) {
-        return { success: false, message: `Kode Sesi "${cleanKode}" sudah digunakan! Harap ganti kode sesi.` };
-      }
-
-      const newId = list.reduce((max, s) => Math.max(max, s.id_sesi), 0) + 1;
-      const today = new Date().toISOString().split('T')[0];
-
-      const newSesi = {
-        id_sesi: newId,
-        id_guru: Number(idGuru),
-        kode_sesi: cleanKode,
-        nama_kelas: (namaKelas || 'Kelas Baru').trim(),
-        tanggal_sesi: today,
-        status_sesi: 'aktif'
-      };
-
-      list.unshift(newSesi);
-      this._set('tb_sesi_kelas', list);
-      this._set('current_active_sesi_id', newId);
-
-      // Asynchronous Cloud Sync (Supabase / Hosted Database)
-      try {
-        if (window.cloudDB && typeof window.cloudDB.syncSesiBaru === 'function') {
-          window.cloudDB.syncSesiBaru(newSesi);
-        }
       } catch (e) {}
-
-      return { success: true, sesi: newSesi };
     }
 
-    toggleSesiStatus(idSesi) {
-      const list = this._get('tb_sesi_kelas') || [];
-      const sesi = list.find(s => s.id_sesi === Number(idSesi));
-      if (sesi) {
-        sesi.status_sesi = sesi.status_sesi === 'aktif' ? 'selesai' : 'aktif';
-        this._set('tb_sesi_kelas', list);
-        return sesi;
-      }
-      return null;
+    init() {
+      // 1. kategori_sampah
+      if (!this._get('kategori_sampah')) this._set('kategori_sampah', DEFAULT_CATEGORIES);
+      // 2. level_permainan
+      if (!this._get('level_permainan')) this._set('level_permainan', DEFAULT_LEVELS);
+      // 3. item_sampah
+      if (!this._get('item_sampah')) this._set('item_sampah', DEFAULT_ITEMS);
+      // 4. level_item
+      if (!this._get('level_item')) this._set('level_item', DEFAULT_LEVEL_ITEMS);
+      // 5. sesi_permainan
+      if (!this._get('sesi_permainan')) this._set('sesi_permainan', DEFAULT_SESI);
+      // 6. detail_jawaban
+      if (!this._get('detail_jawaban')) this._set('detail_jawaban', []);
     }
 
-    deleteSesi(idSesi) {
-      let list = this._get('tb_sesi_kelas') || [];
-      if (list.length <= 1) {
-        return { success: false, message: 'Tidak dapat menghapus sesi terakhir. Minimal harus ada 1 sesi kelas!' };
-      }
-      list = list.filter(s => s.id_sesi !== Number(idSesi));
-      this._set('tb_sesi_kelas', list);
-
-      // Clean cascaded results & logs
-      let hasil = this._get('tb_hasil_bermain') || [];
-      const deletedHasilIds = hasil.filter(h => h.id_sesi === Number(idSesi)).map(h => h.id_hasil);
-      hasil = hasil.filter(h => h.id_sesi !== Number(idSesi));
-      this._set('tb_hasil_bermain', hasil);
-
-      let logs = this._get('tb_log_pemilahan') || [];
-      logs = logs.filter(l => !deletedHasilIds.includes(l.id_hasil));
-      this._set('tb_log_pemilahan', logs);
-
-      const activeSesi = this.getActiveSesi();
-      if (!activeSesi && list.length > 0) {
-        this.setActiveSesi(list[0].id_sesi);
-      }
-
-      // Sync delete to Cloud
-      if (window.cloudDB && typeof window.cloudDB.deleteSesi === 'function') {
-        window.cloudDB.deleteSesi(idSesi);
-      }
-
-      return { success: true };
-    }
-
-    // ==========================================
-    // 3. KATEGORI SAMPAH
-    // ==========================================
+    // =========================================================================
+    // 1. KATEGORI SAMPAH
+    // =========================================================================
     getAllKategori() {
-      return this._get('tb_kategori_sampah') || [];
+      return this._get('kategori_sampah') || DEFAULT_CATEGORIES;
     }
 
     getKategoriById(idKat) {
@@ -288,363 +153,233 @@
       return list.find(k => k.id_kategori === Number(idKat));
     }
 
-    // ==========================================
-    // 4. BANK ITEM SAMPAH 3D (CRUD)
-    // ==========================================
+    // =========================================================================
+    // 2. LEVEL PERMAINAN
+    // =========================================================================
+    getAllLevels() {
+      return this._get('level_permainan') || DEFAULT_LEVELS;
+    }
+
+    getLevelById(idLevel) {
+      const list = this.getAllLevels();
+      return list.find(l => l.id_level === Number(idLevel)) || list[0];
+    }
+
+    // =========================================================================
+    // 3. ITEM SAMPAH & RELASI LEVEL (level_item)
+    // =========================================================================
     getAllItems() {
-      const items = this._get('tb_item_sampah') || [];
+      const items = this._get('item_sampah') || DEFAULT_ITEMS;
       const categories = this.getAllKategori();
-      return items.map(item => {
-        const cat = categories.find(c => c.id_kategori === item.id_kategori) || { nama_kategori: 'Umum' };
-        // Map string key for 3D logic
-        let catKey = 'organik';
-        if (item.id_kategori === 2) catKey = 'anorganik';
-        else if (item.id_kategori === 3) catKey = 'b3';
-        else if (item.id_kategori === 4) catKey = 'daurulang';
+      const levelItems = this._get('level_item') || DEFAULT_LEVEL_ITEMS;
+
+      return items.map(it => {
+        const cat = categories.find(c => c.id_kategori === it.id_kategori) || { nama_kategori: 'Organik', warna_tong: 'Hijau' };
+        const assignedLevels = levelItems.filter(li => li.id_item === it.id_item).map(li => li.id_level);
 
         return {
-          ...item,
-          category: catKey,
+          ...it,
+          category: it.id_kategori === 1 ? 'organik' : 'anorganik',
           categoryName: cat.nama_kategori,
-          name: item.nama_item,
-          meshType: item.kode_model_3d,
-          tip: item.pesan_edukasi_salah
+          levels: assignedLevels
         };
       });
     }
 
-    addItem(data) {
-      const items = this._get('tb_item_sampah') || [];
-      const newId = items.reduce((max, it) => Math.max(max, it.id_item), 0) + 1;
+    getItemsByLevel(idLevel) {
+      const levelId = Number(idLevel) || 1;
+      const allItems = this.getAllItems();
+      const levelItems = this._get('level_item') || DEFAULT_LEVEL_ITEMS;
+
+      const itemIds = levelItems.filter(li => li.id_level === levelId).map(li => li.id_item);
+      const filtered = allItems.filter(it => itemIds.includes(it.id_item));
+      return filtered.length > 0 ? filtered : allItems;
+    }
+
+    getItemById(idItem) {
+      const all = this.getAllItems();
+      return all.find(it => it.id_item === Number(idItem));
+    }
+
+    addItem(itemData) {
+      const items = this._get('item_sampah') || [];
+      const newId = items.length > 0 ? Math.max(...items.map(i => i.id_item)) + 1 : 1;
 
       const newItem = {
         id_item: newId,
-        id_kategori: Number(data.id_kategori) || 1,
-        nama_item: (data.nama_item || 'Item Sampah').trim(),
-        kode_model_3d: data.kode_model_3d || 'gltf_bottle',
-        poin_dasar: Number(data.poin_dasar) || 100,
-        pesan_edukasi_salah: (data.pesan_edukasi_salah || 'Perhatikan tempat sampah yang sesuai!').trim()
+        id_kategori: Number(itemData.id_kategori) || 1,
+        nama_item: itemData.nama_item.trim(),
+        kode_aset: itemData.kode_aset || 'gltf_bottle',
+        pesan_edukasi: itemData.pesan_edukasi || 'Pilah sampah ke tempat yang sesuai!'
       };
 
       items.push(newItem);
-      this._set('tb_item_sampah', items);
-      return newItem;
+      this._set('item_sampah', items);
+
+      // Simpan relasi level_item jika ditentukan
+      const selectedLevels = Array.isArray(itemData.levels) ? itemData.levels : [1, 2, 3];
+      const levelItems = this._get('level_item') || [];
+      let maxLiId = levelItems.length > 0 ? Math.max(...levelItems.map(l => l.id_level_item)) : 0;
+
+      selectedLevels.forEach(lvlId => {
+        maxLiId++;
+        levelItems.push({
+          id_level_item: maxLiId,
+          id_level: Number(lvlId),
+          id_item: newId
+        });
+      });
+      this._set('level_item', levelItems);
+
+      return { success: true, item: newItem };
     }
 
-    updateItem(idItem, data) {
-      const items = this._get('tb_item_sampah') || [];
-      const item = items.find(it => it.id_item === Number(idItem));
-      if (item) {
-        if (data.nama_item !== undefined) item.nama_item = data.nama_item.trim();
-        if (data.id_kategori !== undefined) item.id_kategori = Number(data.id_kategori);
-        if (data.kode_model_3d !== undefined) item.kode_model_3d = data.kode_model_3d;
-        if (data.poin_dasar !== undefined) item.poin_dasar = Number(data.poin_dasar);
-        if (data.pesan_edukasi_salah !== undefined) item.pesan_edukasi_salah = data.pesan_edukasi_salah.trim();
-        this._set('tb_item_sampah', items);
-        return item;
+    updateItem(idItem, itemData) {
+      idItem = Number(idItem);
+      const items = this._get('item_sampah') || [];
+      const it = items.find(i => i.id_item === idItem);
+      if (!it) return { success: false, message: 'Item sampah tidak ditemukan.' };
+
+      it.nama_item = itemData.nama_item.trim();
+      it.id_kategori = Number(itemData.id_kategori) || it.id_kategori;
+      it.kode_aset = itemData.kode_aset || it.kode_aset;
+      it.pesan_edukasi = itemData.pesan_edukasi || it.pesan_edukasi;
+
+      this._set('item_sampah', items);
+
+      // Perbarui relasi level_item
+      if (Array.isArray(itemData.levels)) {
+        let levelItems = this._get('level_item') || [];
+        levelItems = levelItems.filter(li => li.id_item !== idItem);
+        let maxLiId = levelItems.length > 0 ? Math.max(...levelItems.map(l => l.id_level_item)) : 0;
+
+        itemData.levels.forEach(lvlId => {
+          maxLiId++;
+          levelItems.push({
+            id_level_item: maxLiId,
+            id_level: Number(lvlId),
+            id_item: idItem
+          });
+        });
+        this._set('level_item', levelItems);
       }
-      return null;
+
+      return { success: true, item: it };
     }
 
     deleteItem(idItem) {
-      let items = this._get('tb_item_sampah') || [];
+      idItem = Number(idItem);
+      let items = this._get('item_sampah') || [];
       if (items.length <= 4) {
-        return { success: false, message: 'Bank Sampah minimal harus memiliki setidaknya 4 item agar game dapat dimainkan!' };
+        return { success: false, message: 'Minimal harus ada 4 item sampah di dalam game!' };
       }
-      items = items.filter(it => it.id_item !== Number(idItem));
-      this._set('tb_item_sampah', items);
-      return { success: true };
+
+      items = items.filter(i => i.id_item !== idItem);
+      this._set('item_sampah', items);
+
+      // Hapus relasi cascade level_item
+      let levelItems = this._get('level_item') || [];
+      levelItems = levelItems.filter(li => li.id_item !== idItem);
+      this._set('level_item', levelItems);
+
+      return { success: true, message: 'Item sampah berhasil dihapus.' };
     }
 
     resetItemsToDefault() {
-      this._set('tb_item_sampah', SEED_ITEMS);
-      return SEED_ITEMS;
+      this._set('item_sampah', DEFAULT_ITEMS);
+      this._set('level_item', DEFAULT_LEVEL_ITEMS);
+      return { success: true };
     }
 
-    // ==========================================
-    // 5. HASIL BERMAIN & LOG PEMILAHAN
-    // ==========================================
-    saveHasilBermain({ studentName, score, accuracy, maxCombo, statusCertificate = 'belum_klaim', roundLogs = [] }) {
-      const activeSesi = this.getActiveSesi();
-      const idSesi = activeSesi ? activeSesi.id_sesi : 1;
-
-      const hasilList = this._get('tb_hasil_bermain') || [];
-      const newHasilId = hasilList.reduce((max, h) => Math.max(max, h.id_hasil), 0) + 1;
+    // =========================================================================
+    // 4. SESI PERMAINAN & DETAIL JAWABAN (Tanpa Data Pribadi Siswa)
+    // =========================================================================
+    saveSesiPermainan({ id_level, skor_akhir, jumlah_benar, jumlah_salah, roundLogs = [] }) {
+      const sesiList = this._get('sesi_permainan') || [];
+      const newIdSesi = sesiList.length > 0 ? Math.max(...sesiList.map(s => s.id_sesi)) + 1 : 1;
 
       const now = new Date();
       const pad = (n) => String(n).padStart(2, '0');
       const timeStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 
-      const newHasil = {
-        id_hasil: newHasilId,
-        id_sesi: idSesi,
-        nama_siswa: (studentName || 'Siswa Ciawilor').trim(),
-        skor_akhir: Number(score) || 0,
-        akurasi_persen: Number(accuracy) || 0,
-        max_combo: Number(maxCombo) || 0,
-        status_sertifikat: statusCertificate,
-        waktu_bermain: timeStr
+      const newSesi = {
+        id_sesi: newIdSesi,
+        id_level: Number(id_level) || 1,
+        tanggal_sesi: timeStr,
+        skor_akhir: Number(skor_akhir) || 0,
+        jumlah_benar: Number(jumlah_benar) || 0,
+        jumlah_salah: Number(jumlah_salah) || 0
       };
 
-      hasilList.push(newHasil);
-      this._set('tb_hasil_bermain', hasilList);
+      sesiList.unshift(newSesi);
+      this._set('sesi_permainan', sesiList);
 
-      // Simpan rincian log pemilahan per-item
+      // Simpan ke detail_jawaban
       if (Array.isArray(roundLogs) && roundLogs.length > 0) {
-        const logList = this._get('tb_log_pemilahan') || [];
-        let curLogId = logList.reduce((max, l) => Math.max(max, l.id_log), 0);
+        const details = this._get('detail_jawaban') || [];
+        let maxDetailId = details.length > 0 ? Math.max(...details.map(d => d.id_detail)) : 0;
 
-        const items = this.getAllItems();
-        roundLogs.forEach(entry => {
-          curLogId++;
-          let matchedItem = items.find(it => it.id_item === entry.id_item || it.name === entry.nama_item);
-          let itemId = matchedItem ? matchedItem.id_item : 1;
-
+        roundLogs.forEach(log => {
+          maxDetailId++;
           let catDipilihId = 1;
-          if (entry.id_kategori_dipilih === 'anorganik' || entry.id_kategori_dipilih === 2) catDipilihId = 2;
-          else if (entry.id_kategori_dipilih === 'b3' || entry.id_kategori_dipilih === 3) catDipilihId = 3;
-          else if (entry.id_kategori_dipilih === 'daurulang' || entry.id_kategori_dipilih === 4) catDipilihId = 4;
+          if (log.id_kategori_dipilih === 'anorganik' || log.id_kategori_dipilih === 2) catDipilihId = 2;
 
-          logList.push({
-            id_log: curLogId,
-            id_hasil: newHasilId,
-            id_item: itemId,
+          details.push({
+            id_detail: maxDetailId,
+            id_sesi: newIdSesi,
+            id_item: log.id_item || 1,
             id_kategori_dipilih: catDipilihId,
-            is_benar: entry.is_benar ? 1 : 0
+            is_benar: log.is_benar ? 1 : 0
           });
         });
 
-        this._set('tb_log_pemilahan', logList);
+        this._set('detail_jawaban', details);
       }
 
-      // Sync ke LeaderboardManager lama agar modal leaderboard tetap bekerja harmonis
-      if (window.LeaderboardManager && typeof window.LeaderboardManager.saveScore === 'function') {
-        try {
-          window.LeaderboardManager.saveScore(newHasil.nama_siswa, newHasil.skor_akhir, newHasil.akurasi_persen);
-        } catch (e) {}
+      // Sync ke Cloud Database Supabase jika terhubung
+      if (window.cloudDB && typeof window.cloudDB.syncSesiPermainan === 'function') {
+        window.cloudDB.syncSesiPermainan(newSesi, roundLogs);
       }
 
-      // Asynchronous Cloud Sync (Supabase / Hosted Database)
-      try {
-        if (window.cloudDB && typeof window.cloudDB.syncHasilBermain === 'function') {
-          window.cloudDB.syncHasilBermain(newHasil, roundLogs);
-        }
-      } catch (e) {}
-
-      return newHasil;
+      return newSesi;
     }
 
-    updateCertificateStatus(idHasil) {
-      const list = this._get('tb_hasil_bermain') || [];
-      const hasil = list.find(h => h.id_hasil === Number(idHasil));
-      if (hasil) {
-        hasil.status_sertifikat = 'diklaim';
-        this._set('tb_hasil_bermain', list);
-      }
+    getAllSesi() {
+      const sesiList = this._get('sesi_permainan') || [];
+      const levels = this.getAllLevels();
+
+      return sesiList.map(s => {
+        const lvl = levels.find(l => l.id_level === s.id_level) || { nama_level: 'Level 1' };
+        const total = (s.jumlah_benar + s.jumlah_salah);
+        const akurasi = total > 0 ? Math.round((s.jumlah_benar / total) * 100) : 0;
+
+        return {
+          ...s,
+          nama_level: lvl.nama_level,
+          akurasi_persen: akurasi
+        };
+      });
     }
 
-    getHasilBySesi(idSesi) {
-      const list = this._get('tb_hasil_bermain') || [];
-      const filtered = list.filter(h => h.id_sesi === Number(idSesi));
-      filtered.sort((a, b) => b.skor_akhir - a.skor_akhir);
-      return filtered;
-    }
-
-    deleteHasilBermain(idHasil) {
-      idHasil = Number(idHasil);
-      let hasilList = this._get('tb_hasil_bermain') || [];
-      const itemToDelete = hasilList.find(h => h.id_hasil === idHasil);
-      if (!itemToDelete) return { success: false, message: 'Data hasil bermain tidak ditemukan.' };
-
-      // 1. Remove from tb_hasil_bermain
-      hasilList = hasilList.filter(h => h.id_hasil !== idHasil);
-      this._set('tb_hasil_bermain', hasilList);
-
-      // 2. Cascade delete from tb_log_pemilahan
-      let logs = this._get('tb_log_pemilahan') || [];
-      logs = logs.filter(l => l.id_hasil !== idHasil);
-      this._set('tb_log_pemilahan', logs);
-
-      // 3. Sync delete to Cloud Supabase
-      if (window.cloudDB && typeof window.cloudDB.deleteHasilBermain === 'function') {
-        window.cloudDB.deleteHasilBermain(idHasil);
-      }
-
-      return { success: true, message: `Data bermain "${itemToDelete.nama_siswa}" berhasil dihapus!` };
-    }
-
-    resetHasilBySesi(idSesi) {
+    deleteSesi(idSesi) {
       idSesi = Number(idSesi);
-      let hasilList = this._get('tb_hasil_bermain') || [];
-      const targets = hasilList.filter(h => h.id_sesi === idSesi);
-      const targetIds = targets.map(h => h.id_hasil);
+      let list = this._get('sesi_permainan') || [];
+      list = list.filter(s => s.id_sesi !== idSesi);
+      this._set('sesi_permainan', list);
 
-      if (targetIds.length === 0) {
-        return { success: false, message: 'Belum ada data nilai siswa pada sesi ini untuk dibersihkan.' };
-      }
+      let details = this._get('detail_jawaban') || [];
+      details = details.filter(d => d.id_sesi !== idSesi);
+      this._set('detail_jawaban', details);
 
-      // 1. Remove from tb_hasil_bermain
-      hasilList = hasilList.filter(h => h.id_sesi !== idSesi);
-      this._set('tb_hasil_bermain', hasilList);
-
-      // 2. Cascade delete logs
-      let logs = this._get('tb_log_pemilahan') || [];
-      logs = logs.filter(l => !targetIds.includes(l.id_hasil));
-      this._set('tb_log_pemilahan', logs);
-
-      // 3. Sync delete to Cloud Supabase
-      if (window.cloudDB && typeof window.cloudDB.resetHasilBySesi === 'function') {
-        window.cloudDB.resetHasilBySesi(idSesi);
-      }
-
-      return { success: true, message: `Berhasil membersihkan ${targetIds.length} data siswa pada sesi ini!` };
+      return { success: true, message: 'Sesi permainan berhasil dihapus!' };
     }
 
-    getLogsByHasilId(idHasil) {
-      const logs = this._get('tb_log_pemilahan') || [];
-      const items = this.getAllItems();
-      const categories = this.getAllKategori();
-
-      return logs
-        .filter(l => l.id_hasil === Number(idHasil))
-        .map(l => {
-          const item = items.find(it => it.id_item === l.id_item) || { nama_item: 'Sampah', pesan_edukasi_salah: '-' };
-          const katDipilih = categories.find(c => c.id_kategori === l.id_kategori_dipilih) || { nama_kategori: '-' };
-          const katBenar = categories.find(c => c.id_kategori === (item.id_kategori || 1)) || { nama_kategori: '-' };
-
-          return {
-            ...l,
-            nama_item: item.nama_item,
-            kategori_dipilih: katDipilih.nama_kategori,
-            kategori_benar: katBenar.nama_kategori,
-            pesan_edukasi: item.pesan_edukasi_salah
-          };
-        });
-    }
-
-    // ==========================================
-    // 6. RAPOR & ANALISIS PEMAHAMAN SISWA
-    // ==========================================
-    getSesiReportSummary(idSesi) {
-      const results = this.getHasilBySesi(idSesi);
-      const totalSiswa = results.length;
-
-      if (totalSiswa === 0) {
-        return {
-          totalSiswa: 0,
-          avgScore: 0,
-          avgAccuracy: 0,
-          mostMistakenItem: { nama_item: 'Belum Ada Data', count: 0, tip: '-' },
-          studentList: []
-        };
-      }
-
-      const totalScore = results.reduce((acc, r) => acc + r.skor_akhir, 0);
-      const totalAccuracy = results.reduce((acc, r) => acc + r.akurasi_persen, 0);
-      const avgScore = Math.round(totalScore / totalSiswa);
-      const avgAccuracy = Math.round(totalAccuracy / totalSiswa);
-
-      // Hitung sampah paling sering salah dipilah dalam sesi ini
-      const logs = this._get('tb_log_pemilahan') || [];
-      const sesiHasilIds = results.map(r => r.id_hasil);
-      const sesiLogs = logs.filter(l => sesiHasilIds.includes(l.id_hasil));
-      const wrongLogs = sesiLogs.filter(l => l.is_benar === 0);
-
-      const items = this.getAllItems();
-      const mistakeCounter = {};
-      wrongLogs.forEach(l => {
-        mistakeCounter[l.id_item] = (mistakeCounter[l.id_item] || 0) + 1;
-      });
-
-      let mostMistakenItem = { nama_item: 'Semua Pilah Benar! 🎉', count: 0, tip: 'Siswa kelas ini memahami seluruh kategori sampah dengan baik!' };
-      let maxMistakes = 0;
-      Object.keys(mistakeCounter).forEach(itemId => {
-        if (mistakeCounter[itemId] > maxMistakes) {
-          maxMistakes = mistakeCounter[itemId];
-          const it = items.find(i => i.id_item === Number(itemId));
-          if (it) {
-            mostMistakenItem = {
-              nama_item: it.nama_item,
-              count: maxMistakes,
-              tip: it.pesan_edukasi_salah,
-              categoryName: it.categoryName
-            };
-          }
-        }
-      });
-
-      // Predikat pemahaman
-      const studentList = results.map((r, idx) => {
-        let predikat = 'Perlu Bimbingan';
-        let predikatClass = 'badge-danger';
-        if (r.akurasi_persen >= 80) {
-          predikat = 'Sangat Paham';
-          predikatClass = 'badge-success';
-        } else if (r.akurasi_persen >= 60) {
-          predikat = 'Cukup Paham';
-          predikatClass = 'badge-warning';
-        }
-
-        return {
-          ...r,
-          rank: idx + 1,
-          predikat,
-          predikatClass
-        };
-      });
-
-      return {
-        totalSiswa,
-        avgScore,
-        avgAccuracy,
-        mostMistakenItem,
-        studentList
-      };
-    }
-
-    // ==========================================
-    // 7. EKSPOR RAPOR KE CSV
-    // ==========================================
-    exportSesiReportCSV(idSesi) {
-      const allSesi = this.getAllSesi();
-      const sesi = allSesi.find(s => s.id_sesi === Number(idSesi)) || { nama_kelas: 'Kelas', kode_sesi: 'CIAWI' };
-      const report = this.getSesiReportSummary(idSesi);
-
-      if (report.totalSiswa === 0) {
-        if (window.uiFeedback) {
-          window.uiFeedback.toast('Sesi ini belum memiliki data nilai siswa untuk diekspor!', 'warning');
-        } else {
-          alert('Sesi ini belum memiliki data nilai siswa untuk diekspor!');
-        }
-        return;
-      }
-
-      let csv = `RAPOR PEMAHAMAN PEMILAHAN SAMPAH SISWA SD\n`;
-      csv += `Mitra: SDN 1 & SDN 2 Ciawilor (Program SEMUTLIS)\n`;
-      csv += `Pengembang: Kelompok 05 - SANY (Teknik Informatika UNIKU)\n`;
-      csv += `Kelas: "${sesi.nama_kelas}" | Kode Sesi: "${sesi.kode_sesi}" | Tanggal: ${sesi.tanggal_sesi}\n`;
-      csv += `Total Siswa: ${report.totalSiswa} | Rata-rata Skor: ${report.avgScore} | Rata-rata Akurasi: ${report.avgAccuracy}%\n`;
-      csv += `Sampah Paling Sering Salah: "${report.mostMistakenItem.nama_item}" (${report.mostMistakenItem.count} kali salah)\n\n`;
-
-      csv += `Peringkat,Nama Siswa,Skor Akhir,Akurasi (%),Max Combo,Predikat Pemahaman,Status Sertifikat,Waktu Bermain\n`;
-
-      report.studentList.forEach(s => {
-        csv += `${s.rank},"${s.nama_siswa.replace(/"/g, '""')}",${s.skor_akhir},${s.akurasi_persen}%,x${s.max_combo},"${s.predikat}","${s.status_sertifikat}","${s.waktu_bermain}"\n`;
-      });
-
-      // Browser File Download
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      const safeKode = sesi.kode_sesi.replace(/[^a-zA-Z0-9_-]/g, '_');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `Rapor_Pilah_Sampah_${safeKode}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    resetAllSesi() {
+      this._set('sesi_permainan', []);
+      this._set('detail_jawaban', []);
+      return { success: true, message: 'Seluruh riwayat sesi permainan berhasil dibersihkan!' };
     }
   }
 
-  // Expose to Global Window
   window.dbStore = new DatabaseStore();
 })();

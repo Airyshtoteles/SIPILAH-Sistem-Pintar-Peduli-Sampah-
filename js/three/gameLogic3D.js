@@ -48,11 +48,10 @@
     }
 
     initBins() {
+      // 2 Tong Utama Arena 3D: Organik (Kiri) & Anorganik (Kanan)
       const binConfig = [
-        { cat: 'organik', color: 0x10b981, text: 'ORGANIK', icon: '🌿', x: -3.8 },
-        { cat: 'anorganik', color: 0xf59e0b, text: 'ANORGANIK', icon: '🥤', x: -1.3 },
-        { cat: 'b3', color: 0xef4444, text: 'B3', icon: '⚡', x: 1.3 },
-        { cat: 'daurulang', color: 0x06b6d4, text: 'DAUR ULANG', icon: '📦', x: 3.8 }
+        { cat: 'organik', color: 0x10b981, text: 'ORGANIK', icon: '🌿', x: -2.2 },
+        { cat: 'anorganik', color: 0xf59e0b, text: 'ANORGANIK', icon: '🥤', x: 2.2 }
       ];
 
       binConfig.forEach(cfg => {
@@ -119,7 +118,7 @@
         handlePointer(e);
       }, { passive: true });
 
-      // Direct tap on Top HUD Guide Pills for mobile devices
+      // Direct tap on Top HUD Guide Pills for mobile devices & proyektor
       const setupPillClick = (pillClass, catName) => {
         const pill = document.querySelector(pillClass);
         if (pill) {
@@ -141,8 +140,6 @@
 
       setupPillClick('.bin-guide-pill.bin-organik', 'organik');
       setupPillClick('.bin-guide-pill.bin-anorganik', 'anorganik');
-      setupPillClick('.bin-guide-pill.bin-b3', 'b3');
-      setupPillClick('.bin-guide-pill.bin-daurulang', 'daurulang');
 
       // Click on target banner auto-selects item
       const targetBanner = document.getElementById('target-item-banner');
@@ -157,10 +154,14 @@
       }
     }
 
-    resetItemDeck() {
-      const db = (window.dbStore && typeof window.dbStore.getAllItems === 'function')
-        ? window.dbStore.getAllItems()
-        : (window.trashDatabase || []);
+    resetItemDeck(levelId = 1) {
+      let db = [];
+      if (window.dbStore && typeof window.dbStore.getItemsByLevel === 'function') {
+        db = window.dbStore.getItemsByLevel(levelId);
+      }
+      if (!db || db.length === 0) {
+        db = (window.trashDatabase || []);
+      }
       this.itemDeck = [...db];
       // Fisher-Yates Shuffle Algorithm
       for (let i = this.itemDeck.length - 1; i > 0; i--) {
@@ -169,19 +170,31 @@
       }
     }
 
-    startGame() {
+    startLevel(levelId = 1) {
+      this.currentLevelId = Number(levelId) || 1;
+      const levelInfo = (window.dbStore && typeof window.dbStore.getLevelById === 'function')
+        ? window.dbStore.getLevelById(this.currentLevelId)
+        : { durasi_detik: 60, target_skor: 300, nama_level: 'Level 1: Pemula (Mudah)' };
+
+      this.currentLevelInfo = levelInfo;
       this.score = 0;
       this.combo = 0;
       this.maxCombo = 0;
       this.lives = 3;
       this.correctCount = 0;
       this.totalAttempted = 0;
-      this.timer = 60;
+      this.timer = levelInfo.durasi_detik || 60;
       this.isAnimatingThrow = false;
       this.pendingCategoryCheck = null;
       this.roundLogs = [];
 
-      this.resetItemDeck();
+      this.resetItemDeck(this.currentLevelId);
+
+      // Perbarui label level di HUD jika tersedia
+      const hudLevelChip = document.getElementById('hud-level-chip');
+      if (hudLevelChip) {
+        hudLevelChip.textContent = levelInfo.nama_level || `Level ${this.currentLevelId}`;
+      }
 
       if (this.onScoreChange) {
         this.onScoreChange(this.score, this.combo, this.lives);
@@ -189,6 +202,10 @@
 
       this.spawnNextItem();
       this.startTimer();
+    }
+
+    startGame() {
+      this.startLevel(this.currentLevelId || 1);
     }
 
     startTimer() {
@@ -448,13 +465,48 @@
       this.clearAllTrashItems();
       this.isAnimatingThrow = false;
       this.pendingCategoryCheck = null;
+
       const accuracy = this.totalAttempted > 0 ? Math.round((this.correctCount / this.totalAttempted) * 100) : 0;
+      const targetSkor = (this.currentLevelInfo && this.currentLevelInfo.target_skor) || 300;
+      const levelName = (this.currentLevelInfo && this.currentLevelInfo.nama_level) || `Level ${this.currentLevelId || 1}`;
+      const wrongCount = this.totalAttempted - this.correctCount;
+
+      // Hitung Bintang Capaian (1 s.d. 3 Bintang)
+      let stars = 1;
+      let starFeedback = 'Bagus! Tetap Semangat Berlatih!';
+      if (this.score >= targetSkor && accuracy >= 80) {
+        stars = 3;
+        starFeedback = 'Luar Biasa! Kamu Juara Pemilahan Sampah!';
+      } else if (this.score >= Math.round(targetSkor * 0.6) || accuracy >= 60) {
+        stars = 2;
+        starFeedback = 'Hebat! Terus Tingkatkan Ketelitianmu!';
+      }
+
+      // Simpan rekap sesi permainan ke Database (Tanpa Data Pribadi Siswa)
+      let savedSesi = null;
+      if (window.dbStore && typeof window.dbStore.saveSesiPermainan === 'function') {
+        savedSesi = window.dbStore.saveSesiPermainan(
+          this.currentLevelId || 1,
+          this.score,
+          this.correctCount,
+          wrongCount,
+          this.roundLogs
+        );
+      }
 
       if (this.onGameOver) {
         this.onGameOver({
           score: this.score,
           accuracy: accuracy,
+          correctCount: this.correctCount,
+          wrongCount: wrongCount,
           maxCombo: this.maxCombo,
+          stars: stars,
+          starFeedback: starFeedback,
+          targetSkor: targetSkor,
+          levelId: this.currentLevelId || 1,
+          levelName: levelName,
+          savedSesi: savedSesi,
           roundLogs: [...this.roundLogs]
         });
       }

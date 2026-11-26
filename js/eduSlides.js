@@ -12,10 +12,10 @@
       tagType: "danger",
       title: "Kenapa Kita Harus Memilah Sampah?",
       iconClass: "fa-solid fa-triangle-exclamation",
-      description: "Setiap hari di sekolah, banyak sampah bekal, plastik jajanan, dan daun gugur. Jika dibiarkan tercampur dan berserakan, sekolah jadi kotor dan tidak sehat!",
+      description: "Setiap hari di sekolah, banyak sisa bekal makan, plastik jajanan, dan daun gugur. Jika dibiarkan tercampur dan berserakan, lingkungan sekolah jadi kotor dan tidak sehat!",
       items: [
         { iconClass: "fa-solid fa-cloud-showers-heavy", title: "Saluran Air Tersumbat", desc: "Sampah plastik menyumbat selokan sekolah dan memicu genangan air / banjir." },
-        { iconClass: "fa-solid fa-mask-face", title: "Sarang Nyamuk & Kuman", desc: "Sampah basah yang membusuk menimbulkan bau tidak sedap dan menyebarkan penyakit." }
+        { iconClass: "fa-solid fa-mask-face", title: "Sarang Nyamuk & Kuman", desc: "Sampah basah yang membusuk menimbulkan bau tidak sedap dan menyebarkan kuman penyakit." }
       ]
     },
     {
@@ -28,46 +28,45 @@
       youtubeId: "_K3hU1iXoFA",
       youtubeUrl: "https://www.youtube.com/results?search_query=dampak+sampah+plastik+di+indonesia+edukasi+anak",
       items: [
-        { iconClass: "fa-solid fa-clock", title: "10 Menit Setiap Hari", desc: "Luangkan 10 menit sebelum masuk kelas untuk membersihkan laci meja dan halaman." },
-        { iconClass: "fa-solid fa-users", title: "Disiplin Bersama", desc: "Memilah sampah bukan tugas penjaga sekolah saja, tapi tanggung jawab kita semua!" }
+        { iconClass: "fa-solid fa-clock", title: "10 Menit Setiap Hari", desc: "Luangkan 10 menit sebelum masuk kelas untuk membersihkan laci meja dan halaman sekolah." },
+        { iconClass: "fa-solid fa-users", title: "Disiplin Bersama", desc: "Memilah sampah bukan tugas penjaga sekolah saja, tapi kebiasaan baik kita semua!" }
       ]
     },
     {
       id: 3,
-      tag: "Kenali Jenis Sampah",
-      tagType: "danger",
-      title: "Plastik Jajanan vs Sampah Berbahaya (B3)",
-      iconClass: "fa-solid fa-bottle-water",
-      description: "Tahu tidak? Bungkus jajanan dan sedotan plastik butuh ratusan tahun untuk terurai di tanah. Sedangkan baterai dan lampu bekas mengandung racun berbahaya!",
+      tag: "2 Tong Arena 3D",
+      tagType: "info",
+      title: "Kenali 2 Tempat Sampah Utama di Game 3D",
+      iconClass: "fa-solid fa-trash-can",
+      description: "Di arena permainan 3D, kamu akan memilah sampah ke dalam 2 tempat sampah:",
       items: [
-        { iconClass: "fa-solid fa-wine-bottle", title: "Sampah Anorganik", desc: "Botol minuman, kaleng soda, dan mainan plastik wajib masuk tong Kuning." },
-        { iconClass: "fa-solid fa-bolt", title: "B3 Berbahaya", desc: "Baterai bekas, lampu bohlam rusak, dan obat harus dipisah ke tong Merah agar aman." }
+        { iconClass: "fa-solid fa-leaf text-green", title: "1. TONG HIJAU (ORGANIK)", desc: "Sampah sisa makhluk hidup: kulit pisang, gigitan apel, daun kering, dan roti (membusuk jadi pupuk kompos)." },
+        { iconClass: "fa-solid fa-bottle-water text-gold", title: "2. TONG KUNING (ANORGANIK)", desc: "Sampah buatan pabrik: botol plastik, kaleng soda, bebek mainan, sedotan, kardus, dan kertas (tidak membusuk, harus didaur ulang)." }
       ]
     },
     {
       id: 4,
-      tag: "4 Tong Sampah 3D",
-      tagType: "info",
-      title: "Ingat 4 Warna Tong Sampah 3D!",
-      iconClass: "fa-solid fa-trash-can",
-      description: "Di game ini, kamu akan memilah sampah ke 4 tempat sampah 3D sesuai warnanya:",
+      tag: "Pesan Khusus Guru",
+      tagType: "danger",
+      title: "⚠️ Pesan Keselamatan Sampah B3 (Untuk Panduan Guru)",
+      iconClass: "fa-solid fa-radiation",
+      description: "PERINGATAN PENTING KESELAMATAN SISWA: Sampah B3 (Bahan Berbahaya & Beracun) TIDAK DIMAINKAN di arena 3D demi faktor psikologis dan keselamatan anak-anak SD kelas 1–3.",
+      b3AlertBox: true,
       items: [
-        { iconClass: "fa-solid fa-leaf text-green", title: "ORGANIK (Hijau)", desc: "Kulit pisang, sisa apel, daun kering, sisa roti (Bisa jadi pupuk!)." },
-        { iconClass: "fa-solid fa-bottle-water text-gold", title: "ANORGANIK (Kuning)", desc: "Botol air, kaleng minuman, bebek mainan, gelas sedotan." },
-        { iconClass: "fa-solid fa-bolt text-red", title: "B3 BERBAHAYA (Merah)", desc: "Baterai bekas, lampu bohlam, botol obat, termometer raksa." },
-        { iconClass: "fa-solid fa-box text-blue", title: "DAUR ULANG (Biru)", desc: "Kardus box, kertas buku tulis, koran bekas, karton susu." }
+        { iconClass: "fa-solid fa-ban text-red", title: "Jangan Pernah Disentuh!", desc: "Contoh B3: Baterai bekas, lampu bohlam pecah, botol obat/cairan kimia keras, dan termometer raksa." },
+        { iconClass: "fa-solid fa-bullhorn text-orange", title: "Segera Lapor ke Guru / Orang Tua", desc: "Guru wajib mengingatkan siswa jika melihat sampah B3 di sekolah atau rumah, segera panggil orang dewasa!" }
       ]
     },
     {
       id: 5,
       tag: "Misi Kamu di Kelas!",
       tagType: "success",
-      title: "Siap Bermain Estafet di Kelas?",
+      title: "Siap Bermain Estafet di Kelas? 🎮",
       iconClass: "fa-solid fa-trophy",
-      description: "Karena siswa tidak membawa HP, kalian akan bermain bergantian di laptop guru dan proyektor kelas selama 60 detik per siswa!",
+      description: "Permainan dipandu oleh Guru di laptop dan proyektor kelas. Siswa maju bergantian bermain memilih level yang cocok!",
       items: [
-        { iconClass: "fa-solid fa-hand-pointer", title: "Langkah 1: Klik Sampah", desc: "Klik/tap sampah 3D di meja tengah untuk mengambilnya." },
-        { iconClass: "fa-solid fa-bullseye", title: "Langkah 2: Klik Tong Sampah", desc: "Klik tong warna yang tepat. Kumpulkan combo dan cetak sertifikatmu!" }
+        { iconClass: "fa-solid fa-hand-pointer", title: "Langkah 1: Klik Sampah di Meja", desc: "Klik atau sentuh sampah 3D yang muncul di tengah meja untuk mengangkatnya." },
+        { iconClass: "fa-solid fa-bullseye", title: "Langkah 2: Pilih Tong Hijau atau Kuning", desc: "Masukkan ke Tong Hijau (Organik) atau Kuning (Anorganik). Kumpulkan combo dan raih 3 bintang ⭐!" }
       ]
     }
   ];
@@ -128,12 +127,28 @@
         </div>`;
       }
 
+      let alertBoxHTML = '';
+      if (slide.b3AlertBox) {
+        alertBoxHTML = `
+          <div class="b3-teacher-alert-box" style="background: rgba(239, 68, 68, 0.12); border: 2px dashed #ef4444; border-radius: 12px; padding: 14px 18px; margin: 12px 0; text-align: left;">
+            <div style="display: flex; align-items: center; gap: 10px; color: #b91c1c; font-weight: 700; margin-bottom: 6px;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.25rem;"></i>
+              <span>PANDUAN KESELAMATAN GURU: SAMPAH B3 BERBAHAYA</span>
+            </div>
+            <p style="margin: 0; font-size: 0.88rem; color: #7f1d1d; line-height: 1.5;">
+              Sampah B3 tidak dimasukkan ke dalam tantangan pilah 3D anak-anak karena berisiko memicu persepsi bahwa benda berbahaya tersebut aman untuk disentuh/dimainkan. Mohon tekankan kepada seluruh siswa bahwa benda berkategori B3 wajib dijauhi dan dilaporkan kepada orang dewasa.
+            </p>
+          </div>
+        `;
+      }
+
       this.container.innerHTML = `
         <div class="slide-content-wrapper">
           <span class="slide-badge-tag ${slide.tagType}">${slide.tag}</span>
           <h2 class="slide-title">${slide.title}</h2>
           <div class="slide-illustration-icon"><i class="${slide.iconClass}"></i></div>
           <p class="slide-description">${slide.description}</p>
+          ${alertBoxHTML}
           ${videoSectionHTML}
           ${itemsHTML}
         </div>

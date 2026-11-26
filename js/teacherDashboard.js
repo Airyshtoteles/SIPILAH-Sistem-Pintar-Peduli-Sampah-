@@ -672,6 +672,10 @@
       const inputPoin = document.getElementById('item-input-poin');
       const inputTip = document.getElementById('item-input-tip');
 
+      const chkLvl1 = document.getElementById('item-level-1');
+      const chkLvl2 = document.getElementById('item-level-2');
+      const chkLvl3 = document.getElementById('item-level-3');
+
       if (idItem) {
         if (title) title.textContent = 'Edit Item Sampah 3D';
         const items = window.dbStore.getAllItems();
@@ -679,9 +683,13 @@
         if (it) {
           if (inputNama) inputNama.value = it.nama_item;
           if (selectKat) selectKat.value = it.id_kategori;
-          if (selectModel) selectModel.value = it.kode_model_3d;
-          if (inputPoin) inputPoin.value = it.poin_dasar;
-          if (inputTip) inputTip.value = it.pesan_edukasi_salah;
+          if (selectModel) selectModel.value = it.kode_aset || it.kode_model_3d || 'gltf_bottle';
+          if (inputPoin) inputPoin.value = it.poin_dasar || 100;
+          if (inputTip) inputTip.value = it.pesan_edukasi || it.pesan_edukasi_salah || '';
+          const lvls = it.levels || [1, 2, 3];
+          if (chkLvl1) chkLvl1.checked = lvls.includes(1);
+          if (chkLvl2) chkLvl2.checked = lvls.includes(2);
+          if (chkLvl3) chkLvl3.checked = lvls.includes(3);
         }
       } else {
         if (title) title.textContent = 'Tambah Item Sampah Baru';
@@ -690,6 +698,9 @@
         if (selectModel) selectModel.value = 'gltf_bottle';
         if (inputPoin) inputPoin.value = '100';
         if (inputTip) inputTip.value = '';
+        if (chkLvl1) chkLvl1.checked = true;
+        if (chkLvl2) chkLvl2.checked = true;
+        if (chkLvl3) chkLvl3.checked = true;
       }
 
       if (modal) modal.classList.remove('hidden');
@@ -702,28 +713,36 @@
       const inputPoin = Number(document.getElementById('item-input-poin').value) || 100;
       const inputTip = document.getElementById('item-input-tip').value;
 
+      const chkLvl1 = document.getElementById('item-level-1');
+      const chkLvl2 = document.getElementById('item-level-2');
+      const chkLvl3 = document.getElementById('item-level-3');
+      const selectedLevels = [];
+      if (chkLvl1 && chkLvl1.checked) selectedLevels.push(1);
+      if (chkLvl2 && chkLvl2.checked) selectedLevels.push(2);
+      if (chkLvl3 && chkLvl3.checked) selectedLevels.push(3);
+      const finalLevels = selectedLevels.length > 0 ? selectedLevels : [1, 2, 3];
+
       if (!inputNama.trim()) {
         window.uiFeedback.toast('Nama item sampah tidak boleh kosong!', 'warning');
         return;
       }
 
+      const itemPayload = {
+        nama_item: inputNama,
+        id_kategori: selectKat,
+        kode_aset: selectModel,
+        kode_model_3d: selectModel,
+        poin_dasar: inputPoin,
+        pesan_edukasi: inputTip,
+        pesan_edukasi_salah: inputTip,
+        levels: finalLevels
+      };
+
       if (this.editingItemId) {
-        window.dbStore.updateItem(this.editingItemId, {
-          nama_item: inputNama,
-          id_kategori: selectKat,
-          kode_model_3d: selectModel,
-          poin_dasar: inputPoin,
-          pesan_edukasi_salah: inputTip
-        });
-        window.uiFeedback.toast('Item sampah berhasil diperbarui!', 'success');
+        window.dbStore.updateItem(this.editingItemId, itemPayload);
+        window.uiFeedback.toast('Item sampah & relasi level berhasil diperbarui!', 'success');
       } else {
-        window.dbStore.addItem({
-          nama_item: inputNama,
-          id_kategori: selectKat,
-          kode_model_3d: selectModel,
-          poin_dasar: inputPoin,
-          pesan_edukasi_salah: inputTip
-        });
+        window.dbStore.addItem(itemPayload);
         window.uiFeedback.toast('Item sampah baru berhasil ditambahkan!', 'success');
       }
 

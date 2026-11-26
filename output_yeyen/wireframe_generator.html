@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Wireframe Generator - SIPILAH (Kelompok 05 SANY)</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+      padding: 24px;
+      margin: 0;
+    }
+    h1 {
+      text-align: center;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    p.sub {
+      text-align: center;
+      color: #64748b;
+      margin-top: 0;
+      margin-bottom: 24px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      border: 1px solid #94a3b8;
+      border-radius: 6px;
+      background: #f8fafc;
+    }
+    .btn-download {
+      background: #059669;
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .btn-download:hover {
+      background: #047857;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>SIPILAH - Sketsa Perancangan Antarmuka (Low-Fidelity Wireframes)</h1>
+  <p class="sub">Tugas RPL (TINFCW243408) Bab 4 &bull; Yeyen Ai Nurhidayati &bull; Kelompok 05 - SANY &bull; Mitra: SDN 1 & SDN 2 Ciawilor</p>
+
+  <div class="grid">
+    <!-- Layar 1 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">1. Layar Beranda Permainan</span>
+        <a id="dl-1" class="btn-download" download="Layar_1_Beranda.png">Unduh PNG</a>
+      </div>
+      <canvas id="cv-1" width="960" height="540"></canvas>
+    </div>
+
+    <!-- Layar 2 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">2. Layar Pilih Level Permainan</span>
+        <a id="dl-2" class="btn-download" download="Layar_2_Pilih_Level.png">Unduh PNG</a>
+      </div>
+      <canvas id="cv-2" width="960" height="540"></canvas>
+    </div>
+
+    <!-- Layar 3 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">3. Layar Arena Bermain 3D</span>
+        <a id="dl-3" class="btn-download" download="Layar_3_Bermain_3D.png">Unduh PNG</a>
+      </div>
+      <canvas id="cv-3" width="960" height="540"></canvas>
+    </div>
+
+    <!-- Layar 4 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">4. Layar Hasil Permainan</span>
+        <a id="dl-4" class="btn-download" download="Layar_4_Hasil_Permainan.png">Unduh PNG</a>
+      </div>
+      <canvas id="cv-4" width="960" height="540"></canvas>
+    </div>
+
+    <!-- Layar 5 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">5. Layar Panduan Bermain & Peringatan B3</span>
+        <a id="dl-5" class="btn-download" download="Layar_5_Panduan_B3.png">Unduh PNG</a>
+      </div>
+      <canvas id="cv-5" width="960" height="540"></canvas>
+    </div>
+
+    <!-- Layar 6 -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">6. Layar Kelola Item Sampah Mode Guru</span>
+        <a id="dl-6" class="btn-download" download="Layar_6_Kelola_Item_Sampah.png">Unduh PNG</a>
+      </div>
+      <canvas id="cv-6" width="960" height="540"></canvas>
+    </div>
+  </div>
+
+  <script>
+    function drawWireframeCommon(ctx, w, h, title) {
+      // Background
+      ctx.fillStyle = "#f8fafc";
+      ctx.fillRect(0, 0, w, h);
+
+      // Outer window frame
+      ctx.strokeStyle = "#475569";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(4, 4, w - 8, h - 8);
+
+      // Browser Header bar
+      ctx.fillStyle = "#e2e8f0";
+      ctx.fillRect(4, 4, w - 8, 36);
+      ctx.strokeStyle = "#94a3b8";
+      ctx.strokeRect(4, 4, w - 8, 36);
+
+      // Window dots
+      ctx.fillStyle = "#94a3b8";
+      ctx.beginPath(); ctx.arc(20, 22, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(38, 22, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(56, 22, 6, 0, Math.PI * 2); ctx.fill();
+
+      // Title in bar
+      ctx.fillStyle = "#334155";
+      ctx.font = "bold 13px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("SIPILAH: " + title, w / 2, 26);
+    }
+
+    function drawButton(ctx, x, y, w, h, text, isPrimary = false) {
+      ctx.fillStyle = isPrimary ? "#334155" : "#ffffff";
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = "#334155";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, w, h);
+
+      ctx.fillStyle = isPrimary ? "#ffffff" : "#334155";
+      ctx.font = "bold 14px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, x + w / 2, y + h / 2);
+    }
+
+    function drawBox(ctx, x, y, w, h, label = "") {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = "#94a3b8";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x, y, w, h);
+
+      if (label) {
+        ctx.fillStyle = "#64748b";
+        ctx.font = "12px sans-serif";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.fillText(label, x + 8, y + 8);
+      }
+    }
+
+    // 1. Layar Beranda
+    function drawLayar1() {
+      const cv = document.getElementById("cv-1");
+      const ctx = cv.getContext("2d");
+      const w = cv.width, h = cv.height;
+      drawWireframeCommon(ctx, w, h, "Layar 1 - Beranda Permainan");
+
+      // Badge top
+      drawBox(ctx, 300, 60, 360, 32);
+      ctx.fillStyle = "#334155";
+      ctx.font = "bold 12px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("[BADGE] Kelompok 05 - SANY | SDN 1 & SDN 2 Ciawilor", w / 2, 80);
+
+      // Title Card
+      drawBox(ctx, 160, 110, 640, 390);
+
+      // Main Header
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 26px sans-serif";
+      ctx.fillText("GAME EDUKASI PEMILAHAN SAMPAH 3D", w / 2, 160);
+
+      ctx.fillStyle = "#475569";
+      ctx.font = "14px sans-serif";
+      ctx.fillText("Belajar Pilah Sampah untuk Siswa SDN 1 & SDN 2 Ciawilor", w / 2, 190);
+
+      // Mascot / Banner
+      drawBox(ctx, 220, 220, 520, 60, "[BANNER EDUKASI PROGRAM SEMUTLIS]");
+      ctx.fillStyle = "#334155";
+      ctx.font = "13px sans-serif";
+      ctx.fillText("Sepuluh Menit Peduli Lingkungan Sekitar & Disiplin Kelas 1-3 SD", w / 2, 255);
+
+      // Action Buttons
+      drawButton(ctx, 280, 310, 400, 44, "▶ MULAI MAIN (PILIH LEVEL)", true);
+      drawButton(ctx, 280, 370, 400, 40, "📖 PANDUAN BERMAIN & INFO B3");
+      drawButton(ctx, 280, 425, 400, 40, "🕒 RIWAYAT SESI PERMAINAN");
+
+      // Mode Guru button top right
+      drawButton(ctx, 800, 50, 140, 32, "👤 Mode Guru");
+
+      // Connect download link
+      document.getElementById("dl-1").href = cv.toDataURL();
+    }
+
+    // 2. Layar Pilih Level
+    function drawLayar2() {
+      const cv = document.getElementById("cv-2");
+      const ctx = cv.getContext("2d");
+      const w = cv.width, h = cv.height;
+      drawWireframeCommon(ctx, w, h, "Layar 2 - Pilih Level Permainan");
+
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 24px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("PILIH LEVEL PERMAINAN", w / 2, 80);
+      ctx.font = "14px sans-serif";
+      ctx.fillStyle = "#64748b";
+      ctx.fillText("Disesuaikan dengan jenjang kelas dan ketangkasan siswa (Kelas 1–3 SD)", w / 2, 105);
+
+      // 3 Level Cards
+      const cardW = 260, cardH = 340, startY = 130;
+
+      // Card 1
+      drawBox(ctx, 60, startY, cardW, cardH);
+      drawButton(ctx, 80, startY + 15, 120, 24, "KELAS 1 SD");
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 18px sans-serif";
+      ctx.fillText("Level 1: Pemula", 60 + cardW/2, startY + 75);
+      ctx.font = "12px sans-serif";
+      ctx.fillStyle = "#475569";
+      ctx.fillText("Durasi 60 Detik | Target 300 PTS", 60 + cardW/2, startY + 105);
+      ctx.fillText("6 Item Sampah Dasar", 60 + cardW/2, startY + 125);
+      drawBox(ctx, 80, startY + 150, cardW - 40, 100, "[IKON & SKETSA LEVEL 1]");
+      drawButton(ctx, 80, startY + 270, cardW - 40, 44, "Main Level 1", true);
+
+      // Card 2
+      drawBox(ctx, 350, startY, cardW, cardH);
+      drawButton(ctx, 370, startY + 15, 120, 24, "KELAS 2 SD");
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 18px sans-serif";
+      ctx.fillText("Level 2: Terampil", 350 + cardW/2, startY + 75);
+      ctx.font = "12px sans-serif";
+      ctx.fillStyle = "#475569";
+      ctx.fillText("Durasi 45 Detik | Target 500 PTS", 350 + cardW/2, startY + 105);
+      ctx.fillText("10 Item Sampah Variasi", 350 + cardW/2, startY + 125);
+      drawBox(ctx, 370, startY + 150, cardW - 40, 100, "[IKON & SKETSA LEVEL 2]");
+      drawButton(ctx, 370, startY + 270, cardW - 40, 44, "Main Level 2", true);
+
+      // Card 3
+      drawBox(ctx, 640, startY, cardW, cardH);
+      drawButton(ctx, 660, startY + 15, 120, 24, "KELAS 3 SD");
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 18px sans-serif";
+      ctx.fillText("Level 3: Juara", 640 + cardW/2, startY + 75);
+      ctx.font = "12px sans-serif";
+      ctx.fillStyle = "#475569";
+      ctx.fillText("Durasi 30 Detik | Target 800 PTS", 640 + cardW/2, startY + 105);
+      ctx.fillText("12 Seluruh Item Bank Sampah", 640 + cardW/2, startY + 125);
+      drawBox(ctx, 660, startY + 150, cardW - 40, 100, "[IKON & SKETSA LEVEL 3]");
+      drawButton(ctx, 660, startY + 270, cardW - 40, 44, "Main Level 3", true);
+
+      drawButton(ctx, 60, 490, 180, 36, "← Kembali ke Menu");
+
+      document.getElementById("dl-2").href = cv.toDataURL();
+    }
+
+    // 3. Layar Arena Bermain 3D
+    function drawLayar3() {
+      const cv = document.getElementById("cv-3");
+      const ctx = cv.getContext("2d");
+      const w = cv.width, h = cv.height;
+      drawWireframeCommon(ctx, w, h, "Layar 3 - Arena Bermain 3D (2 Tong)");
+
+      // HUD Top Bar
+      drawBox(ctx, 20, 50, 920, 50);
+      drawBox(ctx, 40, 58, 140, 34, "⭐ SKOR: 300");
+      drawBox(ctx, 200, 58, 140, 34, "🔥 COMBO x2");
+      drawBox(ctx, 360, 58, 140, 34, "⏱ WAKTU: 45s");
+      drawBox(ctx, 520, 58, 140, 34, "❤❤❤ NYAWA");
+      drawBox(ctx, 680, 58, 150, 34, "🏷 Level 2: Terampil");
+      drawButton(ctx, 850, 58, 70, 34, "Keluar");
+
+      // Guide Pills Bar (2 Tong)
+      drawButton(ctx, 220, 110, 240, 32, "🌿 1. TONG ORGANIK (HIJAU)");
+      drawButton(ctx, 500, 110, 240, 32, "🥤 2. TONG ANORGANIK (KUNING)");
+
+      // 3D Canvas Mockup (Table + 2 Bins + Item)
+      drawBox(ctx, 40, 155, 880, 320, "[VIEWPORT CANVAS 3D]");
+
+      // Tong Organik (Kiri)
+      drawBox(ctx, 120, 240, 160, 200, "TONG ORGANIK\n(HIJAU)");
+      // Tong Anorganik (Kanan)
+      drawBox(ctx, 680, 240, 160, 200, "TONG ANORGANIK\n(KUNING)");
+
+      // Pedestal Meja Tengah
+      drawBox(ctx, 380, 300, 200, 140, "MEJA PEDESTAL");
+      // Objek Sampah 3D di tengah
+      drawBox(ctx, 430, 230, 100, 80, "[OBJEK 3D]");
+
+      // Instruction Banner Bottom
+      drawBox(ctx, 200, 485, 560, 42);
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 13px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Klik Sampah di Meja ➔ Masukkan ke Tong Hijau atau Tong Kuning!", w/2, 510);
+
+      document.getElementById("dl-3").href = cv.toDataURL();
+    }
+
+    // 4. Layar Hasil Permainan
+    function drawLayar4() {
+      const cv = document.getElementById("cv-4");
+      const ctx = cv.getContext("2d");
+      const w = cv.width, h = cv.height;
+      drawWireframeCommon(ctx, w, h, "Layar 4 - Hasil Permainan (Tanpa Data Pribadi)");
+
+      drawBox(ctx, 160, 60, 640, 460);
+
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 24px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("🏆 HEBAT! KAMU PAHLAWAN SAMPAH!", w/2, 105);
+
+      ctx.fillStyle = "#64748b";
+      ctx.font = "14px sans-serif";
+      ctx.fillText("Kamu berhasil membantu menjaga kebersihan sekolah & program SEMUTLIS", w/2, 130);
+
+      // Star Rating
+      ctx.font = "bold 36px sans-serif";
+      ctx.fillStyle = "#334155";
+      ctx.fillText("⭐ ⭐ ⭐", w/2, 175);
+      ctx.font = "bold 15px sans-serif";
+      ctx.fillText("Predikat: Luar Biasa! Kamu Juara Pemilahan Sampah!", w/2, 205);
+
+      // 5 Stats Grid
+      const statW = 100, statH = 70;
+      drawBox(ctx, 200, 230, statW, statH, "Skor Akhir\n800 PTS");
+      drawBox(ctx, 315, 230, statW, statH, "Akurasi\n88%");
+      drawBox(ctx, 430, 230, statW, statH, "Benar\n8 Item");
+      drawBox(ctx, 545, 230, statW, statH, "Salah\n1 Item");
+      drawBox(ctx, 660, 230, statW, statH, "Max Combo\nx4");
+
+      // Advice Box
+      drawBox(ctx, 200, 320, 560, 60, "[AKSI NYATA PROGRAM SEMUTLIS]");
+      ctx.fillStyle = "#334155";
+      ctx.font = "13px sans-serif";
+      ctx.fillText("Ingat: Sisihkan 10 menit setiap hari untuk memilah sampah di kelasmu!", w/2, 355);
+
+      // Action Buttons
+      drawButton(ctx, 200, 400, 265, 44, "↻ Main Lagi (Siswa Berikutnya)", true);
+      drawButton(ctx, 495, 400, 265, 44, "⎘ Ganti Level");
+      drawButton(ctx, 200, 455, 265, 40, "🕒 Riwayat Sesi");
+      drawButton(ctx, 495, 455, 265, 40, "🏠 Menu Utama");
+
+      document.getElementById("dl-4").href = cv.toDataURL();
+    }
+
+    // 5. Layar Panduan & B3
+    function drawLayar5() {
+      const cv = document.getElementById("cv-5");
+      const ctx = cv.getContext("2d");
+      const w = cv.width, h = cv.height;
+      drawWireframeCommon(ctx, w, h, "Layar 5 - Panduan Bermain & Peringatan B3");
+
+      drawBox(ctx, 120, 60, 720, 460);
+
+      // Slide Progress
+      drawBox(ctx, 150, 75, 500, 12);
+      ctx.fillStyle = "#334155";
+      ctx.font = "12px sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText("Slide 4 dari 5", 810, 85);
+
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 20px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("⚠️ PESAN KESELAMATAN SAMPAH B3 (UNTUK PANDUAN GURU)", w/2, 125);
+
+      // Big Red Dotted Alert Box for Teacher
+      ctx.setLineDash([6, 4]);
+      drawBox(ctx, 150, 145, 660, 130);
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 14px sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText("[KOTAK KHUSUS PERINGATAN GURU]:", 165, 170);
+      ctx.font = "13px sans-serif";
+      ctx.fillStyle = "#334155";
+      ctx.fillText("• Sampah B3 (Bahan Berbahaya & Beracun) TIDAK DIMAINKAN di arena 3D.", 165, 195);
+      ctx.fillText("• Guru wajib menegaskan: Siswa DILARANG MENYENTUH benda berbahaya sembarangan.", 165, 215);
+      ctx.fillText("• Contoh B3: Baterai bekas, lampu bohlam pecah, botol obat/racun, termometer raksa.", 165, 235);
+      ctx.fillText("• Jika menemukan benda ini di sekolah atau rumah, segera laporkan ke Bapak/Ibu Guru!", 165, 255);
+
+      // 2 Cards below
+      drawBox(ctx, 150, 290, 320, 140, "TONG ORGANIK (HIJAU):\nSisa makanan, kulit buah, daun,\nroti membusuk menjadi pupuk alami.");
+      drawBox(ctx, 490, 290, 320, 140, "TONG ANORGANIK (KUNING):\nBotol plastik, kaleng soda, kardus,\nkertas diolah kembali di pabrik daur ulang.");
+
+      // Nav Footer
+      drawButton(ctx, 150, 455, 140, 40, "← Kembali");
+      drawButton(ctx, 610, 455, 200, 40, "Siap Main (Pilih Level) →", true);
+
+      document.getElementById("dl-5").href = cv.toDataURL();
+    }
+
+    // 6. Layar Kelola Item Sampah Mode Guru
+    function drawLayar6() {
+      const cv = document.getElementById("cv-6");
+      const ctx = cv.getContext("2d");
+      const w = cv.width, h = cv.height;
+      drawWireframeCommon(ctx, w, h, "Layar 6 - Kelola Item Sampah (Mode Guru)");
+
+      // Header Bar
+      drawBox(ctx, 40, 50, 880, 50);
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 15px sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText("👤 Dashboard Guru: Agung Febriyana, S.Pd. &bull; SDN 1 Ciawilor", 60, 80);
+      drawButton(ctx, 760, 58, 140, 34, "← Ke Arena Game");
+
+      // Tabs
+      drawButton(ctx, 40, 110, 260, 36, "1. Bank Item Sampah 3D", true);
+      drawButton(ctx, 310, 110, 260, 36, "2. Riwayat Sesi Permainan");
+
+      // Actions bar
+      drawButton(ctx, 40, 160, 200, 36, "+ Tambah Item Baru", true);
+      drawButton(ctx, 255, 160, 220, 36, "↺ Reset ke Default (12 Item)");
+
+      // Data Table
+      drawBox(ctx, 40, 210, 880, 310);
+      ctx.fillStyle = "#334155";
+      ctx.font = "bold 12px sans-serif";
+      ctx.fillText("No   |  Nama Item              | Kategori        | Model 3D       | Poin | Relasi Level (level_item) | Aksi", 55, 235);
+      ctx.strokeStyle = "#cbd5e1";
+      ctx.beginPath(); ctx.moveTo(40, 245); ctx.lineTo(920, 245); ctx.stroke();
+
+      ctx.font = "12px sans-serif";
+      ctx.fillText("1     |  Kulit Pisang           | Organik (Hijau) | gltf_banana    | 100  | [Level 1, 2, 3]           | [Edit] [Hapus]", 55, 270);
+      ctx.fillText("2     |  Sisa Gigitan Apel      | Organik (Hijau) | gltf_apple     | 100  | [Level 1, 2, 3]           | [Edit] [Hapus]", 55, 300);
+      ctx.fillText("3     |  Daun Kering            | Organik (Hijau) | gltf_leaf      | 100  | [Level 1, 2, 3]           | [Edit] [Hapus]", 55, 330);
+      ctx.fillText("5     |  Botol Plastik Minuman  | Anorganik       | gltf_bottle    | 100  | [Level 1, 2, 3]           | [Edit] [Hapus]", 55, 360);
+      ctx.fillText("6     |  Kaleng Minuman Soda    | Anorganik       | gltf_can       | 100  | [Level 1, 2, 3]           | [Edit] [Hapus]", 55, 390);
+      ctx.fillText("9     |  Kardus Box Makanan     | Anorganik       | gltf_box       | 100  | [Level 1, 2, 3]           | [Edit] [Hapus]", 55, 420);
+
+      document.getElementById("dl-6").href = cv.toDataURL();
+    }
+
+    window.onload = function() {
+      drawLayar1();
+      drawLayar2();
+      drawLayar3();
+      drawLayar4();
+      drawLayar5();
+      drawLayar6();
+    };
+  </script>
+</body>
+</html>
