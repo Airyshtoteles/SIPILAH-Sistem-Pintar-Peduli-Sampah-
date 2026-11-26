@@ -9,19 +9,58 @@
 ---
 
 ## DAFTAR ISI TUGAS ARIE
-1. **Bab 2.6 Diagram Use Case Sistem (Mermaid)**
-2. **Bab 2.7 Deskripsi Use Case Utama (*Memainkan Pemilahan Sampah*)**
-3. **Bab 3.1 Entity Relationship Diagram (ERD) Basis Data**
-4. **Bab 3.2 Normalisasi Basis Data Bertahap (UNF &rarr; 1NF &rarr; 2NF &rarr; 3NF)**
-5. **Bab 3.3 Kamus Data Sistem (Data Dictionary)**
-6. **Bab 3.4 Skrip DDL Basis Data MySQL Standar**
-7. **Catatan Analisis Arsitektur: Uji Ekspor Web Godot Engine vs Three.js/WebGL Ringan**
+1. **Bab 2.4 Analisis Kebutuhan Fungsional Sistem (10 KF)**
+2. **Bab 2.5 Analisis Kebutuhan Non-Fungsional Sistem (5 KNF)**
+3. **Bab 2.6 Diagram Use Case Sistem (Mermaid)**
+4. **Bab 2.7 Deskripsi Use Case Utama (*Memainkan Pemilahan Sampah*)**
+5. **Bab 3.1 Entity Relationship Diagram (ERD) Basis Data**
+6. **Bab 3.2 Normalisasi Basis Data Bertahap (UNF &rarr; 1NF &rarr; 2NF &rarr; 3NF)**
+7. **Bab 3.3 Kamus Data Sistem (Data Dictionary)**
+8. **Bab 3.4 Skrip DDL Basis Data MySQL Standar**
+9. **Catatan Analisis Arsitektur: Uji Ekspor Web Godot Engine vs Three.js/WebGL Ringan**
+
+---
+
+## BAB 2.4 ANALISIS KEBUTUHAN FUNGSIONAL SISTEM
+
+Kebutuhan fungsional mendefinisikan kapabilitas, layanan, dan operasi esensial yang wajib disediakan oleh perangkat lunak SIPILAH untuk mengakomodasi kebutuhan siswa sekolah dasar dan guru wali kelas di SDN 1 Ciawilor dan SDN 2 Ciawilor. Sistem ini memuat **10 Kebutuhan Fungsional (KF)** utama:
+
+### Tabel 2.4 Daftar Kebutuhan Fungsional (10 KF)
+
+| Kode | Kebutuhan Fungsional | Pengguna / Aktor | Deskripsi Layanan Sistem |
+| :---: | :--- | :---: | :--- |
+| **KF-01** | **Materi Edukasi 4 Jenis Sampah** | Siswa, Guru | Sistem mampu menampilkan modul slide pembelajaran interaktif mengenai karakteristik 4 kategori tempat sampah (Organik Hijau, Anorganik Kuning, B3 Berbahaya Merah, Daur Ulang Biru) serta nilai kepedulian lingkungan program SEMUTLIS. |
+| **KF-02** | **Simulasi Pemilahan Sampah 3D** | Siswa | Sistem mampu merender arena 3D Three.js dan memunculkan 16 variasi objek sampah 3D secara acak di atas meja pedestal perputaran estafet berdurasi 60 detik. |
+| **KF-03** | **Interaksi Angkat & Lempar Parabola** | Siswa | Sistem mampu mendeteksi interaksi klik/sentuh untuk mengangkat model sampah 3D (*hovering*) dan mengeksekusi animasi lemparan parabola dinamis menuju tong sampah tujuan. |
+| **KF-04** | **Kalkulasi Skor Dinamis & Combo** | Sistem | Sistem menghitung penambahan skor (+100 poin dikalikan kelipatan *combo*) saat siswa memilah dengan benar, serta mengurangi nyawa hati siswa saat terjadi kekeliruan pemilahan. |
+| **KF-05** | **Umpan Balik Edukasi Ilmiah Pop-Up** | Siswa | Sistem memunculkan jendela dialog interaktif ramah anak saat siswa keliru memilah sampah, memaparkan alasan ilmiah mengapa item tersebut salah beserta tips tong yang tepat. |
+| **KF-06** | **Form Nama & Jepret Foto Webcam** | Siswa, Guru | Sistem menyediakan fasilitas pengisian nama siswa dan pemotretan foto wajah siswa melalui webcam kelas di akhir permainan tanpa memerlukan registrasi akun rumit. |
+| **KF-07** | **Generator Sertifikat Juara SEMUTLIS** | Siswa, Guru | Sistem mampu mengenerasi dan mengunduh Sertifikat Digital Juara SEMUTLIS beresolusi tinggi langsung melalui HTML5 Canvas dengan stempel emas dan tanda tangan ganda kedua guru mitra. |
+| **KF-08** | **Papan Skor Sesi Kelas (Leaderboard)** | Siswa, Guru | Sistem menampilkan daftar peringkat 10 besar skor tertinggi secara *real-time* berdasarkan sesi kelas aktif yang sedang berlangsung. |
+| **KF-09** | **Otentikasi & Manajemen Sesi Guru** | Guru | Sistem menyediakan modul login terproteksi bagi guru mitra serta pembuatan dan aktivasi kode sesi belajar kelas (misal: `CIAWI-2A` atau `CIAWI-1B`). |
+| **KF-10** | **Rapor Pemahaman & Pembersihan Data** | Guru | Sistem menampilkan rekapitulasi rata-rata nilai kelas, akurasi pemilahan, ekspor berkas CSV, serta fasilitas tombol penghapusan rekaman nilai siswa dengan modal konfirmasi modern. |
+
+---
+
+## BAB 2.5 ANALISIS KEBUTUHAN NON-FUNGSIONAL SISTEM
+
+Kebutuhan non-fungsional menitikberatkan pada atribut kualitas, batasan teknis arsitektural, dan performa operasional yang menjamin sistem SIPILAH dapat digunakan secara andal pada infrastruktur komputasi sekolah dasar. Sistem ini mencakup **5 Kebutuhan Non-Fungsional (KNF)** utama:
+
+### Tabel 2.5 Daftar Kebutuhan Non-Fungsional (5 KNF)
+
+| Kode | Parameter Kualitas | Spesifikasi & Kriteria Kebutuhan |
+| :---: | :--- | :--- |
+| **KNF-01** | **Usability (Kemudahan Anak SD)** | Antarmuka pengguna mengadopsi prinsip desain ramah anak dengan tipografi besar dan jelas (*font Fredoka & Outfit*), palet warna cerah standar tong sampah nasional, ikon visual intuitif, serta alur bermain langsung tanpa hambatan login akun bagi siswa. |
+| **KNF-02** | **Performance (Performa & Frame Rate)** | Engine grafis Three.js WebGL dioptimalkan dengan aset 3D *low-poly* (~600 KB runtime) sehingga mampu berjalan mulus dan stabil pada 60 FPS di laptop inventaris sekolah berspesifikasi standar (Intel Celeron / RAM 4GB) tanpa GPU diskret. |
+| **KNF-03** | **Portability (Aksesibilitas Web PWA)** | Aplikasi dibangun berbasis web murni (*Progressive Web App*) yang dapat dijalankan secara instan lintas peramban (*cross-browser*: Chrome, Edge, Firefox) baik daring melalui hosting Vercel/GitHub Pages maupun luring (*offline*) di jaringan sekolah. |
+| **KNF-04** | **Reliability & Data Persistence** | Arsitektur data menerapkan penyimpanan relasional ganda: *in-memory relational store* (LocalStorage) yang menjamin seluruh data sesi kelas tersimpan aman saat internet padam, serta sinkronisasi awan opsional ke PostgreSQL Supabase. |
+| **KNF-05** | **Responsiveness (Layar & Proyektor)** | Tata letak antarmuka dirancang responsif secara adaptif untuk menyesuaikan berbagai rasio tampilan monitor laptop guru (rasio 16:9) maupun proyeksi proyektor LCD kelas (resolusi 1024×768 hingga 1920×1080 piksel) tanpa distorsi visual. |
 
 ---
 
 ## BAB 2.6 DIAGRAM USE CASE SISTEM
 
-Diagram Use Case memetakan interaksi antara aktor pengguna (**Siswa SD** dan **Guru Kelas**) dengan seluruh fungsi aplikasi SIPILAH. Sistem ini dirancang untuk kemudahan bermain estafet bergiliran di laptop proyektor kelas tanpa login siswa yang rumit, didukung pencatatan sesi kelas otomatis serta pencetakan sertifikat penghargaan digital.
+Diagram Use Case memetakan interaksi antara aktor pengguna (**Siswa SD** dan **Guru Kelas**) dengan ke-10 Kebutuhan Fungsional aplikasi SIPILAH. Sistem ini dirancang untuk kemudahan bermain estafet bergiliran di laptop proyektor kelas tanpa login siswa yang rumit, didukung pencatatan sesi kelas otomatis serta pencetakan sertifikat penghargaan digital.
 
 ```mermaid
 flowchart LR
@@ -33,55 +72,49 @@ flowchart LR
     subgraph SIPILAH["Boundary Sistem Game Edukasi SIPILAH 3D"]
         direction TB
         UC01(["KF-01: Membaca Panduan Edukasi 4 Sampah & SEMUTLIS"])
-        UC02(["KF-02: Memulai Permainan Estafet 60 Detik"])
-        UC03(["KF-03: Mengambil Objek Sampah 3D di Meja Acak"])
-        UC04(["KF-04: Memilah ke 4 Tong 3D (Organik, Anorganik, B3, Daur Ulang)"])
-        UC05(["KF-05: Menerima Dialog Edukasi Ilmiah Saat Salah Pilah"])
-        UC06(["KF-06: Mengisi Nama & Foto Webcam untuk Sertifikat Digital"])
-        UC07(["KF-07: Melihat Papan Skor Sesi Kelas (Leaderboard)"])
-        UC08(["KF-08: Otentikasi / Login Mode Guru"])
-        UC09(["KF-09: Mengelola & Mengaktifkan Sesi Kelas ('Main Bareng')"])
-        UC10(["KF-10: Melihat Rapor Analisis Pemahaman Siswa & Ekspor CSV"])
-        UC11(["KF-11: Menghapus Rekaman Nilai Siswa (Modal Konfirmasi)"])
-        UC12(["KF-12: Mengelola Bank 16 Item Sampah 3D (CRUD)"])
+        UC02(["KF-02: Simulasi Pemilahan Sampah 3D di Meja"])
+        UC03(["KF-03: Mengangkat & Melempar Sampah Parabola"])
+        UC04(["KF-04: Kalkulasi Skor Dinamis & Combo"])
+        UC05(["KF-05: Menerima Dialog Edukasi Ilmiah Saat Salah"])
+        UC06(["KF-06: Mengisi Nama & Jepret Foto Webcam"])
+        UC07(["KF-07: Mengunduh Sertifikat Digital Juara SEMUTLIS"])
+        UC08(["KF-08: Melihat Papan Skor Sesi Kelas (Leaderboard)"])
+        UC09(["KF-09: Otentikasi & Manajemen Sesi Guru"])
+        UC10(["KF-10: Memantau Rapor Kelas & Hapus Nilai Siswa"])
     end
 
     %% Relasi Asosiasi Aktor Siswa
     Siswa --- UC01
     Siswa --- UC02
     Siswa --- UC03
-    Siswa --- UC04
     Siswa --- UC06
     Siswa --- UC07
+    Siswa --- UC08
 
     %% Relasi Asosiasi Aktor Guru
     Guru --- UC01
-    Guru --- UC07
     Guru --- UC08
     Guru --- UC09
     Guru --- UC10
-    Guru --- UC11
-    Guru --- UC12
 
     %% Relasi Ketergantungan (Include & Extend)
-    UC04 -.->|include| UC05
-    UC04 -.->|include| UC06
-    UC10 -.->|extend| UC11
+    UC03 -.->|include| UC04
+    UC03 -.->|include| UC05
+    UC06 -.->|include| UC07
+    UC09 -.->|extend| UC10
 ```
 
-### Pemetaan Kebutuhan Fungsional (KF):
-- **KF-01 (Membaca Panduan Edukasi 4 Sampah & SEMUTLIS):** Siswa dan guru dapat mempelajari karakteristik 4 kategori tempat sampah sekolah (Organik Hijau, Anorganik Kuning, B3 Berbahaya Merah, Daur Ulang Biru) serta nilai kepedulian lingkungan program SEMUTLIS.
-- **KF-02 (Memulai Permainan Estafet 60 Detik):** Memulai putaran bermain mencari skor terbaik dalam durasi 60 detik.
-- **KF-03 (Mengambil Objek Sampah 3D di Meja Acak):** Mengklik atau menyentuh model 3D di atas pedestal meja untuk mengangkat objek sampah.
-- **KF-04 (Memilah ke 4 Tong 3D):** Memasukkan objek sampah ke salah satu dari 4 tong sampah 3D (Organik, Anorganik, B3, Daur Ulang) dengan fisika lemparan parabola.
-- **KF-05 (Menerima Dialog Edukasi Ilmiah Saat Salah Pilah):** Menampilkan jendela pop-up interaktif berisi alasan ilmiah mengapa sampah tersebut salah dipilah beserta saran pemilahan yang tepat.
-- **KF-06 (Mengisi Nama & Foto Webcam untuk Sertifikat Digital):** Siswa menuliskan nama dan mengambil foto selfie/avatar melalui webcam di layar hasil untuk mencetak Sertifikat Digital Juara SEMUTLIS.
-- **KF-07 (Melihat Papan Skor Sesi Kelas):** Siswa dan guru melihat daftar peringkat 10 besar skor tertinggi pada sesi kelas aktif.
-- **KF-08 (Otentikasi / Login Mode Guru):** Guru login menggunakan kredensial resmi sekolah mitra (SDN 1 Ciawilor atau SDN 2 Ciawilor).
-- **KF-09 (Mengelola & Mengaktifkan Sesi Kelas):** Guru membuat kode sesi kelas baru (misal: `CIAWI-2A`) dan menetapkannya sebagai sesi aktif pengumpulan nilai.
-- **KF-10 (Melihat Rapor Analisis Pemahaman Siswa & Ekspor CSV):** Guru memantau skor rata-rata, akurasi pemilahan, log jawaban per siswa, serta mengunduh berkas laporan dalam format CSV.
-- **KF-11 (Menghapus Rekaman Nilai Siswa):** Guru dapat menghapus data nilai siswa yang tidak relevan dengan dialog konfirmasi modern agar basis data tetap bersih dan tertib.
-- **KF-12 (Mengelola Bank 16 Item Sampah 3D):** Guru dapat menambah, menyunting nama/kategori/pesan edukasi, atau mereset data 16 item sampah 3D.
+### Pemetaan Kebutuhan Fungsional ke Use Case (10 KF):
+- **KF-01 (Materi Edukasi 4 Jenis Sampah):** Siswa dan guru mempelajari karakteristik 4 kategori tempat sampah sekolah (Organik, Anorganik, B3, Daur Ulang) serta filosofi program SEMUTLIS.
+- **KF-02 (Simulasi Pemilahan Sampah 3D):** Memulai putaran bermain estafet 60 detik dengan 16 variasi objek sampah 3D acak di atas meja pedestal.
+- **KF-03 (Interaksi Angkat & Lempar Parabola):** Siswa mengklik/menyentuh objek sampah 3D lalu mengklik tong tujuan untuk melemparnya secara parabola.
+- **KF-04 (Kalkulasi Skor Dinamis & Combo):** Sistem mengevaluasi ketepatan kategori sampah, menambahkan poin +100 dikalikan combo, atau mengurangi nyawa jika salah.
+- **KF-05 (Umpan Balik Edukasi Ilmiah Pop-Up):** Menampilkan dialog penjelasan ilmiah ramah anak saat terjadi kesalahan pemilahan.
+- **KF-06 (Form Nama & Jepret Foto Webcam):** Siswa mengisi nama dan mengambil foto/avatar melalui webcam di layar akhir bermain.
+- **KF-07 (Generator Sertifikat Juara SEMUTLIS):** Menghasilkan Sertifikat Digital resmi beresolusi tinggi bertanda tangan ganda guru mitra.
+- **KF-08 (Papan Skor Sesi Kelas):** Siswa dan guru memantau peringkat 10 besar perolehan skor tertinggi pada sesi kelas aktif.
+- **KF-09 (Otentikasi & Manajemen Sesi Guru):** Guru melakukan login kredensial mitra dan mengaktifkan kode sesi rombel belajar di kelas.
+- **KF-10 (Rapor Pemahaman & Pembersihan Data):** Guru memantau statistik pemahaman kelas, mengunduh rekapitulasi CSV, serta menghapus data nilai siswa yang tidak diperlukan.
 
 ---
 
