@@ -166,8 +166,52 @@
         });
       }
 
+      // Cloud Database Config Modal Events
+      const btnOpenCloud = document.getElementById('btn-open-cloud-config');
+      if (btnOpenCloud) {
+        btnOpenCloud.addEventListener('click', () => {
+          const modal = document.getElementById('modal-cloud-config');
+          const cfg = (window.cloudDB && window.cloudDB.config) ? window.cloudDB.config : { url: '', anonKey: '' };
+          const inUrl = document.getElementById('input-cloud-url');
+          const inKey = document.getElementById('input-cloud-key');
+          if (inUrl) inUrl.value = cfg.url || '';
+          if (inKey) inKey.value = cfg.anonKey || '';
+          if (modal) modal.classList.remove('hidden');
+        });
+      }
+
+      const btnCloseCloud = document.getElementById('btn-close-cloud-config');
+      if (btnCloseCloud) {
+        btnCloseCloud.addEventListener('click', () => {
+          const modal = document.getElementById('modal-cloud-config');
+          if (modal) modal.classList.add('hidden');
+        });
+      }
+
+      const formCloud = document.getElementById('form-cloud-config');
+      if (formCloud) {
+        formCloud.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const url = document.getElementById('input-cloud-url').value;
+          const key = document.getElementById('input-cloud-key').value;
+          if (window.cloudDB) {
+            const ok = await window.cloudDB.saveConfig(url, key);
+            if (ok) {
+              alert('Alhamdulillah! Koneksi ke Cloud Database Supabase BERHASIL terhubung!');
+            } else {
+              alert('Konfigurasi disimpan. Game tetap aman menyimpan secara lokal jika cloud belum aktif.');
+            }
+          }
+          const modal = document.getElementById('modal-cloud-config');
+          if (modal) modal.classList.add('hidden');
+        });
+      }
+
       // Initial Update Badges
       this.updateActiveSesiBadges();
+      if (window.cloudDB && typeof window.cloudDB.updateBadgeUI === 'function') {
+        window.cloudDB.updateBadgeUI();
+      }
     }
 
     openLoginModal() {

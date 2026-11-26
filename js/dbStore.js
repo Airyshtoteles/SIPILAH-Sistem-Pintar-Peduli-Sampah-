@@ -223,6 +223,14 @@
       list.unshift(newSesi);
       this._set('tb_sesi_kelas', list);
       this._set('current_active_sesi_id', newId);
+
+      // Asynchronous Cloud Sync (Supabase / Hosted Database)
+      try {
+        if (window.cloudDB && typeof window.cloudDB.syncSesiBaru === 'function') {
+          window.cloudDB.syncSesiBaru(newSesi);
+        }
+      } catch (e) {}
+
       return { success: true, sesi: newSesi };
     }
 
@@ -409,6 +417,13 @@
           window.LeaderboardManager.saveScore(newHasil.nama_siswa, newHasil.skor_akhir, newHasil.akurasi_persen);
         } catch (e) {}
       }
+
+      // Asynchronous Cloud Sync (Supabase / Hosted Database)
+      try {
+        if (window.cloudDB && typeof window.cloudDB.syncHasilBermain === 'function') {
+          window.cloudDB.syncHasilBermain(newHasil, roundLogs);
+        }
+      } catch (e) {}
 
       return newHasil;
     }

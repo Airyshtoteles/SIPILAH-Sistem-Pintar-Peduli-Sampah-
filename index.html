@@ -21,6 +21,9 @@
   <!-- Canvas Confetti CDN -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
+  <!-- Supabase Cloud Database Client SDK (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <!-- PWA Manifest & Theme -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#059669">
@@ -297,6 +300,13 @@
             </div>
           </div>
           <div class="teacher-header-right">
+            <div id="cloud-status-badge" class="cloud-status-badge" title="Status koneksi database cloud hosting (Supabase / Vercel)">
+              <i id="cloud-status-dot" class="fa-solid fa-circle text-gold"></i>
+              <span id="cloud-status-text">Cloud DB: Siap Dihubungkan</span>
+              <button id="btn-open-cloud-config" class="btn btn-xs btn-outline" style="padding:2px 8px; font-size:0.72rem; border-radius:50px; margin-left:6px; color:#fff; border-color:rgba(255,255,255,0.5);">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Setup Cloud
+              </button>
+            </div>
             <div class="badge-active-sesi-top">
               <i class="fa-solid fa-circle-dot text-green"></i> Sesi Aktif: <strong id="teacher-active-sesi-name">Kelas 2A - SEMUTLIS [CIAWI-2A]</strong>
             </div>
@@ -693,20 +703,54 @@
       </div>
     </div>
 
+    <!-- 7. MODAL SETUP CLOUD DATABASE (SUPABASE / HOSTED DB) -->
+    <div id="modal-cloud-config" class="modal-overlay hidden">
+      <div class="glass-card modal-form animate-pop">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-cloud text-blue"></i> Setup Cloud Database Hosting</h3>
+          <button class="btn-close-modal" id="btn-close-cloud-config"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="cloud-info-box" style="background:#eff6ff; border-left:4px solid #3b82f6; padding:10px 14px; border-radius:8px; font-size:0.80rem; color:#1e3a8a; margin-bottom:12px; text-align:left;">
+            <strong>Langkah Cepat Hosting Database Gratis (Supabase):</strong>
+            <ol style="margin-left:18px; margin-top:4px;">
+              <li>Buka <strong>supabase.com</strong> ➡ Buat project baru (Gratis tanpa kartu kredit).</li>
+              <li>Buka menu <strong>SQL Editor</strong> ➡ Salin & jalankan berkas <code>database/supabase_schema.sql</code>.</li>
+              <li>Buka <strong>Project Settings > API</strong> ➡ Salin <strong>Project URL</strong> dan <strong>Anon Public Key</strong> ke bawah ini:</li>
+            </ol>
+          </div>
+          <form id="form-cloud-config">
+            <div class="form-group">
+              <label for="input-cloud-url">Supabase Project URL:</label>
+              <input type="url" id="input-cloud-url" placeholder="https://xyzcompany.supabase.co" required>
+            </div>
+            <div class="form-group">
+              <label for="input-cloud-key">Supabase Anon Public API Key:</label>
+              <textarea id="input-cloud-key" rows="3" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success btn-block">
+              <i class="fa-solid fa-plug-circle-check"></i> Simpan & Hubungkan Database Cloud
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Non-Module Sequential Scripts with Cache-Busting Version Query -->
-  <script src="js/audio.js?v=4.0"></script>
-  <script src="js/dbStore.js?v=4.0"></script>
-  <script src="js/leaderboard.js?v=4.0"></script>
-  <script src="js/certificate.js?v=4.0"></script>
-  <script src="js/eduSlides.js?v=4.0"></script>
-  <script src="js/three/scene.js?v=4.0"></script>
-  <script src="js/three/gltfData.js?v=4.0"></script>
-  <script src="js/three/models.js?v=4.0"></script>
-  <script src="js/three/gameLogic3D.js?v=4.0"></script>
-  <script src="js/teacherDashboard.js?v=4.0"></script>
-  <script src="js/app.js?v=4.0"></script>
+  <script src="js/audio.js?v=5.0"></script>
+  <script src="js/cloudDB.js?v=5.0"></script>
+  <script src="js/dbStore.js?v=5.0"></script>
+  <script src="js/leaderboard.js?v=5.0"></script>
+  <script src="js/certificate.js?v=5.0"></script>
+  <script src="js/eduSlides.js?v=5.0"></script>
+  <script src="js/three/scene.js?v=5.0"></script>
+  <script src="js/three/gltfData.js?v=5.0"></script>
+  <script src="js/three/models.js?v=5.0"></script>
+  <script src="js/three/gameLogic3D.js?v=5.0"></script>
+  <script src="js/teacherDashboard.js?v=5.0"></script>
+  <script src="js/app.js?v=5.0"></script>
 
   <!-- PWA Service Worker Registration & Cache Busting -->
   <script>
