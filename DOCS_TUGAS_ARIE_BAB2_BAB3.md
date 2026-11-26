@@ -199,55 +199,126 @@ erDiagram
 
 ---
 
-## BAB 3.2 NORMALISASI BASIS DATA BERTAHAP
+## BAB 3.2 PROSES NORMALISASI BASIS DATA BERTAHAP (UNF → 1NF → 2NF → 3NF)
 
-Proses normalisasi dilakukan untuk menghilangkan redundansi data, menghindari anomali peremajaan data (*insert, update, delete anomaly*), dan memastikan integritas referensial.
+Untuk merancang arsitektur basis data yang terbebas dari anomali peremajaan (*update anomaly*), penyisipan (*insert anomaly*), dan penghapusan data (*delete anomaly*), dilakukan proses normalisasi bertahap berdasarkan dokumen mentah fisik berikut:
 
-### 1. Bentuk Tidak Ternormalisasi (UNF - *Unnormalized Form*)
-Pada tahap awal, seluruh data hasil bermain, informasi item sampah, kategori, dan tingkatan level berada dalam satu lembaran data mentah dengan grup berulang (*repeating groups*):
+### 3.2.1 Dokumen Sumber Mentah (Contoh Form Rekapitulasi Penilaian Fisik)
 
-$$\text{DATA\_MENTAH}(\underline{\text{KodeSesi}}, \text{TglSesi}, \text{Level}, \text{Durasi}, \text{TargetSkor}, (\text{NamaItem}, \text{KategoriItem}, \text{WarnaTong}, \text{TongDipilih}, \text{IsBenar}), \text{SkorAkhir}, \text{Akurasi})$$
+Dokumen berikut merupakan format formulir lembar kerja fisik yang digunakan guru di SDN 1 Ciawilor saat mencatat hasil kegiatan pemilahan sampah harian program SEMUTLIS:
 
-- **Kelemahan UNF:** Terjadi duplikasi teks nama kategori dan warna tong pada setiap baris item, data level berulang pada setiap sesi, dan atribut item berupa larik (*array*) yang menyulitkan kueri SQL standar.
-
----
-
-### 2. Bentuk Normal Pertama (1NF - *First Normal Form*)
-**Syarat 1NF:** Setiap kolom hanya boleh bernilai tunggal (atomik / *atomic value*), tidak ada grup berulang (*repeating groups*), dan telah ditentukan *Primary Key*.
-
-Struktur tabel dipecah menjadi baris atomik datar:
-
-$$\text{TABEL\_1NF}(\underline{\text{id\_sesi}}, \underline{\text{no\_lemparan}}, \text{tanggal\_sesi}, \text{nama\_level}, \text{durasi\_detik}, \text{target\_skor}, \text{nama\_item}, \text{kode\_aset}, \text{pesan\_edukasi}, \text{nama\_kategori}, \text{warna\_tong}, \text{kategori\_dipilih}, \text{is\_benar}, \text{skor\_akhir})$$
-
-- **Kelemahan 1NF:** Muncul Ketergantungan Fungsional Parsial (*Partial Functional Dependency*), karena atribut seperti `nama_level`, `durasi_detik`, dan `target_skor` hanya bergantung pada bagian kunci `id_sesi` atau level, bukan pada gabungan `(id_sesi, no_lemparan)`. Demikian pula atribut item sampah hanya bergantung pada identitas item.
-
----
-
-### 3. Bentuk Normal Kedua (2NF - *Second Normal Form*)
-**Syarat 2NF:** Memenuhi 1NF dan seluruh atribut non-kunci harus bergantung penuh secara fungsional (*fully functional dependent*) pada *Primary Key*, tanpa ketergantungan parsial.
-
-Tabel dipecah menjadi entitas terpisah:
-1. **`sesi_permainan`** $(\underline{\text{id\_sesi}}, \text{id\_level}^*, \text{tanggal\_sesi}, \text{skor\_akhir}, \text{jumlah\_benar}, \text{jumlah\_salah})$
-2. **`level_permainan`** $(\underline{\text{id\_level}}, \text{nama\_level}, \text{durasi\_detik}, \text{target\_skor}, \text{keterangan})$
-3. **`item_sampah`** $(\underline{\text{id\_item}}, \text{nama\_item}, \text{kode\_aset}, \text{pesan\_edukasi}, \text{nama\_kategori}, \text{warna\_tong}, \text{keterangan\_kategori})$
-4. **`detail_jawaban`** $(\underline{\text{id\_detail}}, \text{id\_sesi}^*, \text{id\_item}^*, \text{kategori\_dipilih}, \text{is\_benar})$
-
-- **Kelemahan 2NF:** Masih terdapat Ketergantungan Transitif (*Transitive Dependency*) pada tabel `item_sampah`, di mana atribut `warna_tong` dan `keterangan_kategori` tidak bergantung langsung pada `id_item`, melainkan bergantung pada `nama_kategori`. Jika nama kategori berubah, seluruh baris item sampah harus diubah.
+```text
+========================================================================================
+             FORM REKAPITULASI PENILAIAN PEMILAHAN SAMPAH SISWA SD
+Mitra: SDN 1 Ciawilor | Program: SEMUTLIS | Guru: Agung Febriyana, S.Pd. (NIP: 1988...)
+Kelas: Kelas 2A | Kode Sesi: CIAWI-2A | Tanggal: 2026-11-20
+----------------------------------------------------------------------------------------
+No. | Nama Siswa     | Skor | Akurasi | Rincian Lemparan (Item, Tong Dipilih, Benar/Salah)
+----------------------------------------------------------------------------------------
+1.  | Aditya Pratama | 1420 | 92%     | (Pisang, Hijau, Benar), (Botol, Kuning, Benar),
+    |                |      |         | (Kaleng, Kuning, Benar), (Apel, Kuning, SALAH)
+2.  | Siti Nur A.    | 1280 | 85%     | (Botol, Kuning, Benar), (Kardus, Kuning, Benar),
+    |                |      |         | (Daun, Hijau, Benar), (Roti, Kuning, SALAH)
+========================================================================================
+```
 
 ---
 
-### 4. Bentuk Normal Ketiga (3NF - *Third Normal Form*)
-**Syarat 3NF:** Memenuhi 2NF dan tidak ada ketergantungan transitif antar-atribut non-kunci ($X \rightarrow Y$ di mana $Y$ bukan *superkey* dan bukan bagian dari *primary key*). Selain itu, relasi banyak-ke-banyak antara level dan item diurai melalui tabel penghubung (*junction table*).
+### 3.2.2 Bentuk Tidak Normal (*Unnormalized Form* - UNF)
+Pada bentuk UNF, seluruh atribut dicatat dalam satu struktur lembaran datar yang masih mengandung kelompok data berulang (*repeating groups*) pada kolom rincian pemilahan sampah:
 
-Struktur akhir 6 tabel 3NF:
-1. **`kategori_sampah`** $(\underline{\text{id\_kategori}}, \text{nama\_kategori}, \text{warna\_tong}, \text{keterangan})$
-2. **`item_sampah`** $(\underline{\text{id\_item}}, \text{id\_kategori}^*, \text{nama\_item}, \text{kode\_aset}, \text{pesan\_edukasi})$
-3. **`level_permainan`** $(\underline{\text{id\_level}}, \text{nama\_level}, \text{durasi\_detik}, \text{target\_skor}, \text{keterangan})$
-4. **`level_item`** $(\underline{\text{id\_level\_item}}, \text{id\_level}^*, \text{id\_item}^*)$
-5. **`sesi_permainan`** $(\underline{\text{id\_sesi}}, \text{id\_level}^*, \text{tanggal\_sesi}, \text{skor\_akhir}, \text{jumlah\_benar}, \text{jumlah\_salah})$
-6. **`detail_jawaban`** $(\underline{\text{id\_detail}}, \text{id\_sesi}^*, \text{id\_item}^*, \text{id\_kategori\_dipilih}^*, \text{is\_benar})$
+```text
+UNF = {
+  KodeSesi, NamaKelas, TanggalSesi, NamaGuru, AsalSekolah,
+  NamaSiswa, SkorAkhir, Akurasi,
+  (NamaItem, KategoriBenar, WarnaTong, TongDipilih, IsBenar, PesanEdukasi)
+}
+```
 
-Struktur ini telah bebas dari redundansi, memiliki integritas referensial yang kuat, dan siap diimplementasikan langsung pada MySQL RDBMS.
+**Anomali pada Bentuk UNF:**
+1. **Redundansi Informasi Guru & Sesi:** Terjadi pengulangan teks nama guru, asal sekolah, dan identitas kelas pada setiap aksi pemilahan yang dilakukan oleh siswa.
+2. **Struktur Data Bersarang (*Nested Array*):** Komputer RDBMS standar tidak dapat mengindeks atau melakukan operasi agregasi matematika secara langsung pada larik bertingkat (*repeating groups*).
+
+---
+
+### 3.2.3 Bentuk Normal Pertama (1NF - *First Normal Form*)
+**Aturan 1NF:**
+1. Hilangkan seluruh *repeating groups* sehingga setiap perpotongan baris dan kolom hanya memuat nilai atomik tunggal (*atomic value*).
+2. Tentukan kunci primer komposit (*composite primary key*) yang mengidentifikasi setiap rekaman data secara unik: `(KodeSesi, NamaSiswa, NamaItem)`.
+
+Tabel diuraikan menjadi relasi datar:
+
+```text
+TABEL_1NF (
+  KodeSesi [PK], NamaSiswa [PK], NamaItem [PK],
+  NamaKelas, TanggalSesi, NamaGuru, AsalSekolah,
+  SkorAkhir, Akurasi, KategoriBenar, WarnaTong,
+  TongDipilih, IsBenar, PesanEdukasi
+)
+```
+
+**Analisis Ketergantungan Fungsional (*Functional Dependency* - FD):**
+* **FD1 :** `KodeSesi` &rarr; `NamaKelas`, `TanggalSesi`, `NamaGuru`, `AsalSekolah` *(Ketergantungan Parsial)*
+* **FD2 :** `(KodeSesi, NamaSiswa)` &rarr; `SkorAkhir`, `Akurasi` *(Ketergantungan Parsial)*
+* **FD3 :** `NamaItem` &rarr; `KategoriBenar`, `WarnaTong`, `PesanEdukasi` *(Ketergantungan Parsial)*
+* **FD4 :** `(KodeSesi, NamaSiswa, NamaItem)` &rarr; `TongDipilih`, `IsBenar` *(Ketergantungan Penuh)*
+
+**Kelemahan 1NF:** Masih terdapat Ketergantungan Parsial (*Partial Functional Dependency*), di mana atribut data sesi dan data item hanya bergantung pada sebagian kunci komposit, bukan keseluruhan kunci.
+
+---
+
+### 3.2.4 Bentuk Normal Kedua (2NF - *Second Normal Form*)
+**Aturan 2NF:**
+1. Telah memenuhi seluruh kriteria 1NF.
+2. Menghilangkan ketergantungan parsial; setiap atribut bukan kunci harus memiliki ketergantungan fungsional penuh (*Full Functional Dependency*) terhadap kunci utama.
+
+Dekomposisi dilakukan menjadi 4 entitas fungsional:
+* **`tb_sesi_kelas`** *(Mengisolasi FD1)*:  
+  `tb_sesi_kelas` (**`id_sesi`** `[PK]`, `kode_sesi`, `nama_kelas`, `tanggal_sesi`, `nama_guru`, `asal_sekolah`)
+* **`tb_hasil_bermain`** *(Mengisolasi FD2)*:  
+  `tb_hasil_bermain` (**`id_hasil`** `[PK]`, *`id_sesi`* `[FK]`, `nama_siswa`, `skor_akhir`, `akurasi_persen`, `max_combo`)
+* **`tb_item_sampah`** *(Mengisolasi FD3)*:  
+  `tb_item_sampah` (**`id_item`** `[PK]`, `nama_item`, `nama_kategori`, `warna_tong`, `pesan_edukasi_salah`)
+* **`tb_log_pemilahan`** *(Mengisolasi FD4)*:  
+  `tb_log_pemilahan` (**`id_log`** `[PK]`, *`id_hasil`* `[FK]`, *`id_item`* `[FK]`, `kategori_dipilih`, `is_benar`)
+
+**Kelemahan 2NF:** Masih terdapat Ketergantungan Transitif (*Transitive Dependency*), yaitu atribut non-kunci bergantung pada atribut non-kunci lainnya:
+* Pada tabel sesi: `id_sesi` &rarr; `nama_guru` &rarr; `asal_sekolah`
+* Pada tabel item: `id_item` &rarr; `nama_kategori` &rarr; `warna_tong`
+
+---
+
+### 3.2.5 Bentuk Normal Ketiga (3NF - *Third Normal Form*)
+**Aturan 3NF:**
+1. Telah memenuhi seluruh kriteria 2NF.
+2. Tidak boleh ada ketergantungan transitif antar-atribut non-kunci. Seluruh atribut bukan kunci hanya bergantung secara langsung pada *Primary Key*.
+
+Dekomposisi tahap akhir memisahkan data master guru dan master kategori tempat sampah:
+* **Entitas Guru :**  
+  `tb_guru` (**`id_guru`** `[PK]`, `nama_guru`, `asal_sekolah`, `username`, `password`)
+* **Entitas Sesi Kelas :**  
+  `tb_sesi_kelas` (**`id_sesi`** `[PK]`, *`id_guru`* `[FK]`, `kode_sesi`, `nama_kelas`, `tanggal_sesi`, `status_sesi`)
+* **Entitas Kategori Sampah :**  
+  `tb_kategori_sampah` (**`id_kategori`** `[PK]`, `nama_kategori`, `warna_tong`, `deskripsi_singkat`)
+* **Entitas Item Sampah :**  
+  `tb_item_sampah` (**`id_item`** `[PK]`, *`id_kategori`* `[FK]`, `nama_item`, `kode_model_3d`, `poin_dasar`, `pesan_edukasi_salah`)
+* **Entitas Transaksi Hasil Bermain :**  
+  `tb_hasil_bermain` (**`id_hasil`** `[PK]`, *`id_sesi`* `[FK]`, `nama_siswa`, `skor_akhir`, `akurasi_persen`, `max_combo`, `status_sertifikat`, `waktu_bermain`)
+* **Entitas Detail Log Pemilahan :**  
+  `tb_log_pemilahan` (**`id_log`** `[PK]`, *`id_hasil`* `[FK]`, *`id_item`* `[FK]`, *`id_kategori_dipilih`* `[FK]`, `is_benar`)
+
+---
+
+### 3.2.6 Penyelarasan Khusus Mode Estafet Bebas Data Pribadi Siswa
+Pada implementasi produksi di kelas (di mana siswa SD kelas 1–3 bermain estafet di 1 laptop/proyektor guru), data siswa dilindungi secara etis tanpa menginput nama pribadi siswa. Dekomposisi 3NF ini diwujudkan ke dalam 6 tabel operasional produksi yang efisien:
+1. `kategori_sampah` (Master Kategori: Organik & Anorganik)
+2. `item_sampah` (Master Katalog Objek Sampah 3D)
+3. `level_permainan` (Master Tingkatan Tantangan: Level 1, 2, 3)
+4. `level_item` (Tabel Asosiatif Relasi N-M Level terhadap Item)
+5. `sesi_permainan` (Rekapitulasi Skor & Waktu Bermain per Ronde Sesi Kelas)
+6. `detail_jawaban` (Log Audit Pilihan Lemparan Siswa)
+
+Struktur ini 100% bebas dari anomali peremajaan, siap diakses kueri secara cepat, dan menjamin integritas relasional data (*foreign key cascade*).
 
 ---
 

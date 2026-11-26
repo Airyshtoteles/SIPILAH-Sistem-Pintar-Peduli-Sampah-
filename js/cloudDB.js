@@ -215,6 +215,40 @@
       }
       return false;
     }
+    // 6. Sinkronisasi Sesi Permainan Standar (6 Tabel Bebas Data Pribadi Siswa)
+    async syncSesiPermainan(sesi, roundLogs = []) {
+      if (!this.isConnected || !this.client) return null;
+      try {
+        const { data: insertedSesi, error: errSesi } = await this.client
+          .from('sesi_permainan')
+          .insert([{
+            id_level: sesi.id_level || 1,
+            tanggal_sesi: new Date().toISOString(),
+            skor_akhir: sesi.skor_akhir || 0,
+            jumlah_benar: sesi.jumlah_benar || 0,
+            jumlah_salah: sesi.jumlah_salah || 0
+          }])
+          .select();
+
+        if (!errSesi && insertedSesi && insertedSesi.length > 0) {
+          const newIdSesi = insertedSesi[0].id_sesi;
+          if (Array.isArray(roundLogs) && roundLogs.length > 0) {
+            const detailPayload = roundLogs.map(l => ({
+              id_sesi: newIdSesi,
+              id_item: l.id_item || 1,
+              id_kategori_dipilih: (l.id_kategori_dipilih === 'anorganik' || l.id_kategori_dipilih === 2) ? 2 : 1,
+              is_benar: l.is_benar ? 1 : 0
+            }));
+            await this.client.from('detail_jawaban').insert(detailPayload);
+          }
+          console.log('🚀 [CloudDB] Sesi permainan & detail jawaban berhasil tersimpan ke Supabase!');
+          return insertedSesi[0];
+        }
+      } catch (e) {
+        console.warn('[CloudDB] Sync sesi_permainan exception:', e);
+      }
+      return null;
+    }
   }
 
   window.cloudDB = new CloudDatabaseConnector();

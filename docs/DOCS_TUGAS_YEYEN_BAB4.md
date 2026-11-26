@@ -132,10 +132,10 @@ Setiap layar pada antarmuka pengguna SIPILAH memiliki keterikatan langsung denga
 
 ## BAB 4.4 RINCIAN RANCANGAN ANTARMUKA PENGGUNA (*WIREFRAME*)
 
-Seluruh berkas gambar sketsa *low-fidelity wireframe* dan tangkapan layar antarmuka *high-fidelity* tersimpan pada folder `output_yeyen/`:
-1. **`output_yeyen/wireframes/Layar_1_Beranda.png`** : Sketsa tata letak Beranda, judul kemitraan SDN 1 & SDN 2 Ciawilor, dan tombol navigasi utama.
-2. **`output_yeyen/wireframes/Layar_2_Pilih_Level.png`** : Sketsa kartu 3 level permainan (Level 1 Mudah 60s, Level 2 Sedang 45s, Level 3 Juara 30s).
-3. **`output_yeyen/wireframes/Layar_3_Bermain_3D.png`** : Sketsa arena 3D dengan 2 tong (Organik di kiri, Anorganik di kanan), meja pedestal, dan 2 HUD guide pills.
-4. **`output_yeyen/wireframes/Layar_4_Hasil_Permainan.png`** : Sketsa layar hasil permainan dengan predikat bintang (⭐⭐⭐), skor, akurasi, dan pesan SEMUTLIS (bebas input identitas).
-5. **`output_yeyen/wireframes/Layar_5_Panduan_B3.png`** : Sketsa materi pengenalan sampah dan kotak khusus peringatan keselamatan sampah B3 bagi guru.
-6. **`output_yeyen/wireframes/Layar_6_Kelola_Item_Sampah.png`** : Sketsa dasbor guru untuk manajemen item sampah 3D, penetapan level permainan, dan pembersihan riwayat sesi.
+Seluruh berkas gambar sketsa *low-fidelity wireframe* dan tangkapan layar antarmuka *high-fidelity* tersimpan pada folder `docs/`:
+1. **`docs/wireframes/Layar_1_Beranda.png`** : Sketsa tata letak Beranda, judul kemitraan SDN 1 & SDN 2 Ciawilor, dan tombol navigasi utama.
+2. **`docs/wireframes/Layar_2_Pilih_Level.png`** : Sketsa kartu 3 level permainan (Level 1 Mudah 60s, Level 2 Sedang 45s, Level 3 Juara 30s).
+3. **`docs/wireframes/Layar_3_Bermain_3D.png`** : Sketsa arena 3D dengan 2 tong (Organik di kiri, Anorganik di kanan), meja pedestal, dan 2 HUD guide pills.
+4. **`docs/wireframes/Layar_4_Hasil_Permainan.png`** : Sketsa layar hasil permainan dengan predikat bintang (⭐⭐⭐), skor, akurasi, dan pesan SEMUTLIS (bebas input identitas).
+5. **`docs/wireframes/Layar_5_Panduan_B3.png`** : Sketsa materi pengenalan sampah dan kotak khusus peringatan keselamatan sampah B3 bagi guru.
+6. **`docs/wireframes/Layar_6_Kelola_Item_Sampah.png`** : Sketsa dasbor guru untuk manajemen item sampah 3D, penetapan level permainan, dan pembersihan riwayat sesi.
