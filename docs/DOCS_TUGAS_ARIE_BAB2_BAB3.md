@@ -21,111 +21,118 @@
 
 ## BAB 2.6 DIAGRAM USE CASE SISTEM
 
-Diagram Use Case memetakan interaksi antara aktor pengguna (**Siswa** dan **Guru**) dengan seluruh fungsi aplikasi SIPILAH. Sistem ini dirancang tanpa memerlukan login siswa dan tanpa mengumpulkan data pribadi anak (nama/foto), demi kepatuhan etika perlindungan privasi anak serta kenyamanan bermain estafet di kelas.
+Diagram Use Case memetakan interaksi antara aktor pengguna (**Siswa SD** dan **Guru Kelas**) dengan seluruh fungsi aplikasi SIPILAH. Sistem ini dirancang untuk kemudahan bermain estafet bergiliran di laptop proyektor kelas tanpa login siswa yang rumit, didukung pencatatan sesi kelas otomatis serta pencetakan sertifikat penghargaan digital.
 
 ```mermaid
-usecaseDiagram
-    actor "Siswa SD" as Siswa
-    actor "Guru Kelas" as Guru
+flowchart LR
+    %% Definisi Aktor Pengguna
+    Siswa["Siswa SD<br/>(Pemain Estafet)"]
+    Guru["Guru Kelas<br/>(Operator & Pengajar)"]
 
-    package "Sistem Game Edukasi Pemilahan Sampah (SIPILAH)" {
-        usecase "KF-01: Membuka Panduan Bermain & Edukasi Sampah" as UC01
-        usecase "KF-02: Membaca Pesan Keselamatan Sampah B3" as UC02
-        usecase "KF-03: Memilih Tingkat Level Permainan" as UC03
-        usecase "KF-04: Mengambil Objek Sampah 3D di Meja" as UC04
-        usecase "KF-05: Memilah ke Tong Organik / Anorganik" as UC05
-        usecase "KF-06: Menerima Umpan Balik Edukasi Saat Salah" as UC06
-        usecase "KF-07: Melihat Hasil Skor, Akurasi & Bintang Capaian" as UC07
-        usecase "KF-08: Otentikasi / Login Mode Guru" as UC08
-        usecase "KF-09: Mengelola Bank Item Sampah 3D (CRUD)" as UC09
-        usecase "KF-10: Menetapkan Relasi Item ke Level Permainan" as UC10
-        usecase "KF-11: Melihat Rekapitulasi Riwayat Sesi Bermain" as UC11
-        usecase "KF-12: Menghapus / Membersihkan Riwayat Sesi" as UC12
-    }
+    %% Batasan Paket Sistem Aplikasi
+    subgraph SIPILAH["Boundary Sistem Game Edukasi SIPILAH 3D"]
+        direction TB
+        UC01(["KF-01: Membaca Panduan Edukasi 4 Sampah & SEMUTLIS"])
+        UC02(["KF-02: Memulai Permainan Estafet 60 Detik"])
+        UC03(["KF-03: Mengambil Objek Sampah 3D di Meja Acak"])
+        UC04(["KF-04: Memilah ke 4 Tong 3D (Organik, Anorganik, B3, Daur Ulang)"])
+        UC05(["KF-05: Menerima Dialog Edukasi Ilmiah Saat Salah Pilah"])
+        UC06(["KF-06: Mengisi Nama & Foto Webcam untuk Sertifikat Digital"])
+        UC07(["KF-07: Melihat Papan Skor Sesi Kelas (Leaderboard)"])
+        UC08(["KF-08: Otentikasi / Login Mode Guru"])
+        UC09(["KF-09: Mengelola & Mengaktifkan Sesi Kelas ('Main Bareng')"])
+        UC10(["KF-10: Melihat Rapor Analisis Pemahaman Siswa & Ekspor CSV"])
+        UC11(["KF-11: Menghapus Rekaman Nilai Siswa (Modal Konfirmasi)"])
+        UC12(["KF-12: Mengelola Bank 16 Item Sampah 3D (CRUD)"])
+    end
 
-    Siswa --> UC01
-    Siswa --> UC03
-    Siswa --> UC04
-    Siswa --> UC05
-    Siswa --> UC07
+    %% Relasi Asosiasi Aktor Siswa
+    Siswa --- UC01
+    Siswa --- UC02
+    Siswa --- UC03
+    Siswa --- UC04
+    Siswa --- UC06
+    Siswa --- UC07
 
-    Guru --> UC01
-    Guru --> UC02
-    Guru --> UC03
-    Guru --> UC08
-    Guru --> UC09
-    Guru --> UC10
-    Guru --> UC11
-    Guru --> UC12
+    %% Relasi Asosiasi Aktor Guru
+    Guru --- UC01
+    Guru --- UC07
+    Guru --- UC08
+    Guru --- UC09
+    Guru --- UC10
+    Guru --- UC11
+    Guru --- UC12
 
-    UC05 ..> UC06 : <<include>> jika salah pilah
-    UC05 ..> UC07 : <<include>> setelah waktu/nyawa habis
-    UC09 ..> UC10 : <<extend>>
+    %% Relasi Ketergantungan (Include & Extend)
+    UC04 -.->|include| UC05
+    UC04 -.->|include| UC06
+    UC10 -.->|extend| UC11
 ```
 
 ### Pemetaan Kebutuhan Fungsional (KF):
-- **KF-01 (Membuka Panduan Bermain & Edukasi Sampah):** Siswa dan guru dapat melihat materi pengenalan sampah organik, anorganik, dan gerakan SEMUTLIS (Sepuluh Menit Peduli Lingkungan Sekitar).
-- **KF-02 (Membaca Pesan Keselamatan Sampah B3):** Bagian khusus guru yang menegaskan bahwa sampah B3 berbahaya tidak dimainkan dan siswa dilarang menyentuhnya di dunia nyata.
-- **KF-03 (Memilih Tingkat Level Permainan):** Memilih Level 1 (60 detik, target 300 pts), Level 2 (45 detik, target 500 pts), atau Level 3 (30 detik, target 800 pts).
-- **KF-04 (Mengambil Objek Sampah 3D):** Mengklik/mengetuk model 3D di atas pedestal meja untuk mengangkat sampah.
-- **KF-05 (Memilah ke Tong Organik / Anorganik):** Memasukkan objek ke tong hijau (Organik) atau tong kuning (Anorganik).
-- **KF-06 (Menerima Umpan Balik Edukasi):** Muncul pesan penjelasan singkat mengapa item tersebut salah dipilah.
-- **KF-07 (Melihat Hasil Permainan):** Menampilkan skor akhir, akurasi, bintang capaian (1–3 ⭐), dan pesan penyemangat (tanpa formulir nama/kamera).
-- **KF-08 (Otentikasi / Login Guru):** Guru dapat masuk menggunakan akun resmi sekolah mitra.
-- **KF-09 (Mengelola Bank Item Sampah):** Menambah, mengubah nama/kategori/model 3D/pesan edukasi, dan menghapus item sampah.
-- **KF-10 (Menetapkan Relasi Item ke Level Permainan):** Menentukan pada level mana saja item sampah tersebut dapat muncul.
-- **KF-11 (Melihat Rekapitulasi Riwayat Sesi Bermain):** Memantau rangkuman skor, akurasi, dan ketuntasan siswa per sesi permainan.
-- **KF-12 (Menghapus / Membersihkan Riwayat Sesi):** Menghapus rekaman sesi yang sudah lama agar memori penyimpanan tetap efisien.
+- **KF-01 (Membaca Panduan Edukasi 4 Sampah & SEMUTLIS):** Siswa dan guru dapat mempelajari karakteristik 4 kategori tempat sampah sekolah (Organik Hijau, Anorganik Kuning, B3 Berbahaya Merah, Daur Ulang Biru) serta nilai kepedulian lingkungan program SEMUTLIS.
+- **KF-02 (Memulai Permainan Estafet 60 Detik):** Memulai putaran bermain mencari skor terbaik dalam durasi 60 detik.
+- **KF-03 (Mengambil Objek Sampah 3D di Meja Acak):** Mengklik atau menyentuh model 3D di atas pedestal meja untuk mengangkat objek sampah.
+- **KF-04 (Memilah ke 4 Tong 3D):** Memasukkan objek sampah ke salah satu dari 4 tong sampah 3D (Organik, Anorganik, B3, Daur Ulang) dengan fisika lemparan parabola.
+- **KF-05 (Menerima Dialog Edukasi Ilmiah Saat Salah Pilah):** Menampilkan jendela pop-up interaktif berisi alasan ilmiah mengapa sampah tersebut salah dipilah beserta saran pemilahan yang tepat.
+- **KF-06 (Mengisi Nama & Foto Webcam untuk Sertifikat Digital):** Siswa menuliskan nama dan mengambil foto selfie/avatar melalui webcam di layar hasil untuk mencetak Sertifikat Digital Juara SEMUTLIS.
+- **KF-07 (Melihat Papan Skor Sesi Kelas):** Siswa dan guru melihat daftar peringkat 10 besar skor tertinggi pada sesi kelas aktif.
+- **KF-08 (Otentikasi / Login Mode Guru):** Guru login menggunakan kredensial resmi sekolah mitra (SDN 1 Ciawilor atau SDN 2 Ciawilor).
+- **KF-09 (Mengelola & Mengaktifkan Sesi Kelas):** Guru membuat kode sesi kelas baru (misal: `CIAWI-2A`) dan menetapkannya sebagai sesi aktif pengumpulan nilai.
+- **KF-10 (Melihat Rapor Analisis Pemahaman Siswa & Ekspor CSV):** Guru memantau skor rata-rata, akurasi pemilahan, log jawaban per siswa, serta mengunduh berkas laporan dalam format CSV.
+- **KF-11 (Menghapus Rekaman Nilai Siswa):** Guru dapat menghapus data nilai siswa yang tidak relevan dengan dialog konfirmasi modern agar basis data tetap bersih dan tertib.
+- **KF-12 (Mengelola Bank 16 Item Sampah 3D):** Guru dapat menambah, menyunting nama/kategori/pesan edukasi, atau mereset data 16 item sampah 3D.
 
 ---
 
 ## BAB 2.7 DESKRIPSI USE CASE UTAMA
 
-### Tabel Deskripsi Use Case: Memainkan Pemilahan Sampah
+### Tabel Deskripsi Use Case: Memainkan Pemilahan Sampah 3D
 
 | Elemen Deskripsi | Keterangan Rinci |
 | :--- | :--- |
-| **Nomor Use Case** | **UC-05** |
-| **Nama Use Case** | **Memainkan Pemilahan Sampah 3D** |
+| **Nomor Use Case** | **UC-04** |
+| **Nama Use Case** | **Memainkan Pemilahan Sampah 3D (Estafet Siswa)** |
 | **Kategori** | Fungsional Inti (*Core Gameplay*) |
 | **Aktor Utama** | **Siswa SD** (didampingi Guru Kelas di depan proyektor/laptop) |
-| **Aktor Pendukung** | Sistem Aplikasi SIPILAH (Three.js Engine & Database Layer) |
-| **Deskripsi Singkat** | Siswa berinteraksi langsung memilah objek sampah 3D yang muncul di atas meja ke dalam salah satu dari dua tempat sampah (Tong Hijau untuk Organik atau Tong Kuning untuk Anorganik) dalam batas durasi level yang dipilih. |
-| **Kondisi Awal (*Pre-condition*)** | 1. Aplikasi telah dimuat di peramban web (*browser*).<br>2. Siswa telah memilih tingkatan level permainan pada Layar 2 (*Level 1 / 2 / 3*).<br>3. Bank sampah 3D pada level tersebut telah dimuat ke dalam memori. |
-| **Kondisi Akhir (*Post-condition*)** | 1. Sesi permainan selesai (*waktu habis atau 3 nyawa habis*).<br>2. Nilai akhir (*skor, persentase akurasi, jumlah benar, jumlah salah*) otomatis tersimpan ke tabel `sesi_permainan`.<br>3. Rincian log setiap lemparan tersimpan ke tabel `detail_jawaban`.<br>4. Layar Hasil Permainan menampilkan evaluasi bintang tanpa meminta data identitas siswa. |
+| **Aktor Pendukung** | Sistem Aplikasi SIPILAH (Three.js Engine & In-Memory / Cloud Store) |
+| **Deskripsi Singkat** | Siswa berinteraksi langsung memilah 16 jenis objek sampah 3D yang muncul di atas meja pedestal ke dalam salah satu dari 4 tempat sampah (Organik, Anorganik, B3, Daur Ulang) dalam batas waktu estafet 60 detik untuk memperoleh skor tertinggi. |
+| **Kondisi Awal (*Pre-condition*)** | 1. Aplikasi telah dibuka di peramban web (*browser*).<br>2. Sesi kelas aktif telah ditentukan oleh guru (misal: `CIAWI-2A`).<br>3. Seluruh 16 aset model sampah 3D telah selesai dimuat (*preloaded*). |
+| **Kondisi Akhir (*Post-condition*)** | 1. Sesi estafet 60 detik selesai (*waktu habis atau 3 nyawa habis*).<br>2. Nilai akhir (*skor, persentase akurasi, combo tertinggi, waktu bermain*) otomatis tersimpan ke tabel `tb_hasil_bermain` terkait sesi kelas aktif.<br>3. Rincian setiap aksi lemparan tercatat ke `tb_log_pemilahan` untuk evaluasi guru.<br>4. Layar Hasil Permainan menampilkan evaluasi skor, form nama siswa, jepret foto webcam, serta tombol klaim Sertifikat Juara SEMUTLIS. |
 
 ### Alur Utama (*Normal Flow*):
-1. Sistem menampilkan arena bermain 3D dengan 2 tong sampah (Organik di sebelah kiri dan Anorganik di sebelah kanan), meja tengah, HUD skor (0), nyawa (3 hati), dan penghitung waktu mundur sesuai level terpilih.
-2. Sistem memunculkan satu objek sampah 3D secara acak dari dek level ke atas meja.
-3. Siswa mengklik/mengetuk model sampah 3D di atas meja untuk mengangkatnya.
-4. Sistem mengangkat objek sampah ke posisi melayang (*hover*) dengan rotasi halus dan memperbarui banner instruksi.
-5. Siswa mengklik/mengetuk tong sampah yang sesuai (Tong Hijau atau Tong Kuning).
-6. Sistem menjalankan animasi parabola melempar objek sampah masuk ke dalam mulut tong sampah.
-7. Sistem mengecek kesesuaian kategori:
-   - Jika **Benar**: Skor bertambah (+100 dikalikan pengali *combo*), combo bertambah, efek audio keberhasilan diputar, dan partikel konfeti muncul.
-8. Sistem mengosongkan meja dan memunculkan objek sampah berikutnya dari dek.
-9. Langkah 3–8 berulang sampai durasi waktu permainan habis.
-10. Sistem menghentikan permainan, menyimpan rekapitulasi sesi ke tabel `sesi_permainan`, dan menampilkan Layar Hasil Permainan.
+1. Siswa menekan tombol **"Mulai Main (Estafet Siswa)"** pada Beranda Utama.
+2. Sistem menginisialisasi arena bermain 3D dengan 4 tempat sampah berwarna (🟢 Hijau - Organik, 🟡 Kuning - Anorganik, 🔴 Merah - B3, 🔵 Biru - Daur Ulang), meja pedestal 3D, HUD skor (0), nyawa (3 hati), dan penghitung waktu mundur 60 detik.
+3. Sistem memunculkan satu objek sampah 3D secara acak dari 16 model sampah ke atas meja pedestal.
+4. Siswa mengklik atau menyentuh objek sampah 3D di atas meja untuk mengangkatnya.
+5. Sistem mengangkat objek sampah ke posisi melayang (*hover*) dengan rotasi dinamis dan memperbarui petunjuk pilah.
+6. Siswa mengklik tong sampah tujuan yang sesuai (atau menekan tombol petunjuk tong di layar).
+7. Sistem menjalankan animasi parabola melempar objek sampah meluncur masuk ke dalam mulut tong sampah.
+8. Sistem mengecek kesesuaian kategori:
+   - Jika **Benar**: Skor bertambah (+100 poin dikalikan *combo*), nyawa tetap aman, audio keberhasilan diputar, dan animasi bintang/konfeti muncul.
+9. Sistem mengosongkan meja dan memunculkan objek sampah 3D berikutnya secara berkesinambungan.
+10. Langkah 4–9 berlangsung terus-menerus hingga batas waktu 60 detik berakhir.
+11. Sistem menghentikan putaran bermain, menyimpan ringkasan hasil ke basis data, dan menampilkan Layar Hasil Permainan.
 
 ### Alur Alternatif (*Alternative / Exception Flow*):
 - **Alur Alternatif A: Siswa Salah Memilih Tong Sampah**
-  1. Pada langkah 7, jika kategori tong yang dipilih tidak sesuai dengan kategori item:
+  1. Pada langkah 8, jika kategori tong yang dipilih tidak sesuai dengan jenis sampah:
      - Nyawa siswa berkurang 1 hati.
-     - Pengali *combo* direset kembali menjadi 1.
-     - Suara peringatan salah diputar dan indikator "❌ SALAH!" melayang di atas tong.
-     - Sistem mencatat log salah ke `detail_jawaban` dengan `is_benar = 0`.
-     - Sistem memunculkan jendela dialog pop-up edukatif yang menjelaskan alasan ilmiah mengapa sampah tersebut salah dipilah beserta tips kategori yang benar.
-     - Siswa menekan tombol "Saya Paham! Lanjut", lalu permainan langsung berlanjut ke sampah berikutnya.
-- **Alur Alternatif B: Nyawa Siswa Habis (3 Kali Salah)**
-  1. Jika nyawa siswa mencapai 0 sebelum durasi waktu selesai:
-     - Sistem langsung menghentikan putaran permainan (*Game Over*).
-     - Data skor yang diperoleh sampai saat itu tetap tersimpan ke `sesi_permainan`.
-     - Layar Hasil Permainan memberikan pesan motivasi untuk mencoba kembali.
-- **Alur Alternatif C: Waktu Habis Sebelum Semua Sampah Selesai**
+     - Pengali *combo* direset kembali menjadi 1x.
+     - Suara peringatan salah diputar dan animasi getar muncul pada tong yang keliru.
+     - Sistem mencatat log salah ke tabel `tb_log_pemilahan` (`is_benar = 0`).
+     - Sistem memunculkan jendela dialog pop-up edukatif yang menerangkan alasan sains mengapa sampah tersebut salah dipilah beserta tips tong yang tepat.
+     - Siswa membaca penjelasan dan menekan tombol **"Saya Paham! Lanjut"**, kemudian permainan berlanjut ke sampah berikutnya.
+- **Alur Alternatif B: Nyawa Siswa Habis (3 Kali Salah Pilah)**
+  1. Jika nyawa siswa mencapai 0 sebelum durasi 60 detik selesai:
+     - Sistem langsung mengakhiri permainan (*Game Over*).
+     - Seluruh perolehan skor dan akurasi lemparan sampai momen tersebut tetap tersimpan ke basis data.
+     - Layar Hasil Permainan menampilkan pesan penyemangat ramah anak untuk memotivasi siswa mencoba kembali.
+- **Alur Alternatif C: Waktu 60 Detik Berakhir**
   1. Ketika *timer* mencapai 00 detik:
-     - Sistem mengunci seluruh interaksi klik.
+     - Sistem mengunci seluruh interaksi lempar.
      - Sistem menghitung persentase akurasi: **Akurasi (%)** = (Jumlah Benar / Total Lemparan) × 100%.
-     - Sistem menghitung perolehan bintang (1 sampai 3 ⭐) berdasarkan target skor level.
+     - Sistem menampilkan Layar Hasil Permainan yang memuat skor akhir, akurasi, max combo, kolom pengisian nama siswa, tombol jepret foto webcam, serta tombol klaim Sertifikat Digital Juara SEMUTLIS.
 
 ---
 
