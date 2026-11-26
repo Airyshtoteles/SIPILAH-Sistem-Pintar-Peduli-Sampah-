@@ -1,42 +1,43 @@
 /* ==========================================================================
-   cloudDB.js - Live Cloud Database Connector (Supabase / REST / Vercel)
-   Mendukung Sinkronisasi Online & Pengujian Lapangan Terpusat
+   cloudDB.js - Live Cloud Database Connector (Vercel Environment Variables & Supabase)
+   Otomatis terhubung melalui Vercel Environment Variables (/api/config)
    Kelompok 05 - SANY (Teknik Informatika UNIKU)
    ========================================================================== */
 
 (function() {
-  const STORAGE_KEY = 'sany_cloud_config';
-
   class CloudDatabaseConnector {
     constructor() {
       this.client = null;
-      this.config = this.loadConfig();
       this.isConnected = false;
-      this.init();
+      this.config = { url: '', anonKey: '' };
+
+      // Otomatis fetch konfigurasi dari Vercel Environment Variables (/api/config)
+      this.autoConnectFromEnv();
     }
 
-    loadConfig() {
+    async autoConnectFromEnv() {
       try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) return JSON.parse(stored);
-      } catch (e) {}
+        const res = await fetch('/api/config');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.connected && data.SUPABASE_URL && data.SUPABASE_ANON_KEY) {
+            this.config = {
+              url: data.SUPABASE_URL,
+              anonKey: data.SUPABASE_ANON_KEY
+            };
+            await this.init();
+            return;
+          }
+        }
+      } catch (e) {
+        // Jika berjalan offline (file://) atau tanpa Vercel API
+      }
 
-      // Fallback ke window global config jika diset via environment/script
-      return window.SIPILAH_CLOUD_CONFIG || {
-        url: '',
-        anonKey: ''
-      };
-    }
-
-    saveConfig(url, anonKey) {
-      this.config = {
-        url: (url || '').trim(),
-        anonKey: (anonKey || '').trim()
-      };
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.config));
-      } catch (e) {}
-      return this.init();
+      // Cek fallback dari window config jika diset manual
+      if (window.SIPILAH_CLOUD_CONFIG && window.SIPILAH_CLOUD_CONFIG.url) {
+        this.config = window.SIPILAH_CLOUD_CONFIG;
+        await this.init();
+      }
     }
 
     async init() {
@@ -53,11 +54,11 @@
           const { data, error } = await this.client.from('tb_kategori_sampah').select('id_kategori').limit(1);
           if (!error) {
             this.isConnected = true;
-            console.log('[CloudDB] Connected to hosted Supabase cloud database!');
+            console.log('🟢 [CloudDB] Berhasil terhubung ke Cloud Database Supabase via Vercel Environment Variables!');
             this.updateBadgeUI();
             return true;
           } else {
-            console.warn('[CloudDB] Connection ping error:', error.message);
+            console.warn('[CloudDB] Ping error:', error.message);
             this.isConnected = false;
             this.updateBadgeUI();
             return false;
@@ -75,13 +76,17 @@
     }
 
     updateBadgeUI() {
-      const badge = document.getElementById('cloud-status-text');
-      const dot = document.getElementById('cloud-status-dot');
-      if (badge) {
-        badge.textContent = this.isConnected ? 'Cloud DB: Terhubung' : 'Penyimpanan: Lokal (Offline Ready)';
-      }
-      if (dot) {
-        dot.className = this.isConnected ? 'fa-solid fa-circle text-green' : 'fa-solid fa-circle text-gold';
+      const pill = document.getElementById('cloud-env-pill');
+      if (pill) {
+        if (this.isConnected) {
+          pill.className = 'cloud-env-pill connected';
+          pill.innerHTML = `<i class="fa-solid fa-cloud"></i> Cloud DB Online (Supabase)`;
+          pill.title = 'Terhubung ke Cloud Database terpusat via Vercel Environment Variables';
+        } else {
+          pill.className = 'cloud-env-pill offline';
+          pill.innerHTML = `<i class="fa-solid fa-hard-drive"></i> Penyimpanan Lokal Aktif`;
+          pill.title = 'Data tersimpan di penyimpanan browser guru (Offline Ready)';
+        }
       }
     }
 
@@ -110,7 +115,6 @@
 
         const newIdHasil = insertedHasil[0].id_hasil;
 
-        // Insert Logs
         if (Array.isArray(roundLogs) && roundLogs.length > 0) {
           const logPayload = roundLogs.map(l => {
             let catId = 1;
@@ -129,7 +133,7 @@
           await this.client.from('tb_log_pemilahan').insert(logPayload);
         }
 
-        console.log('[CloudDB] Hasil bermain berhasil disinkronkan ke Cloud!');
+        console.log('🚀 [CloudDB] Nilai siswa & log pilah berhasil disinkronkan ke Cloud Supabase!');
         return insertedHasil[0];
       } catch (e) {
         console.warn('[CloudDB] Sync hasil exception:', e);
@@ -154,7 +158,7 @@
           .select();
 
         if (!error && data) {
-          console.log('[CloudDB] Sesi baru tersimpan ke Cloud!');
+          console.log('🚀 [CloudDB] Sesi baru berhasil tersimpan ke Cloud Supabase!');
           return data[0];
         }
       } catch (e) {

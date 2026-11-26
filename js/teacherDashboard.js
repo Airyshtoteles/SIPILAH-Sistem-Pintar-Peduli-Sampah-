@@ -166,47 +166,6 @@
         });
       }
 
-      // Cloud Database Config Modal Events
-      const btnOpenCloud = document.getElementById('btn-open-cloud-config');
-      if (btnOpenCloud) {
-        btnOpenCloud.addEventListener('click', () => {
-          const modal = document.getElementById('modal-cloud-config');
-          const cfg = (window.cloudDB && window.cloudDB.config) ? window.cloudDB.config : { url: '', anonKey: '' };
-          const inUrl = document.getElementById('input-cloud-url');
-          const inKey = document.getElementById('input-cloud-key');
-          if (inUrl) inUrl.value = cfg.url || '';
-          if (inKey) inKey.value = cfg.anonKey || '';
-          if (modal) modal.classList.remove('hidden');
-        });
-      }
-
-      const btnCloseCloud = document.getElementById('btn-close-cloud-config');
-      if (btnCloseCloud) {
-        btnCloseCloud.addEventListener('click', () => {
-          const modal = document.getElementById('modal-cloud-config');
-          if (modal) modal.classList.add('hidden');
-        });
-      }
-
-      const formCloud = document.getElementById('form-cloud-config');
-      if (formCloud) {
-        formCloud.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const url = document.getElementById('input-cloud-url').value;
-          const key = document.getElementById('input-cloud-key').value;
-          if (window.cloudDB) {
-            const ok = await window.cloudDB.saveConfig(url, key);
-            if (ok) {
-              alert('Alhamdulillah! Koneksi ke Cloud Database Supabase BERHASIL terhubung!');
-            } else {
-              alert('Konfigurasi disimpan. Game tetap aman menyimpan secara lokal jika cloud belum aktif.');
-            }
-          }
-          const modal = document.getElementById('modal-cloud-config');
-          if (modal) modal.classList.add('hidden');
-        });
-      }
-
       // Initial Update Badges
       this.updateActiveSesiBadges();
       if (window.cloudDB && typeof window.cloudDB.updateBadgeUI === 'function') {
@@ -342,19 +301,29 @@
 
         return `
           <tr class="${isCurrentActive ? 'row-active-sesi' : ''}">
-            <td><strong>${s.kode_sesi}</strong></td>
-            <td><strong>${s.nama_kelas}</strong></td>
-            <td>${s.tanggal_sesi}</td>
-            <td><small>${s.nama_guru} (${s.asal_sekolah})</small></td>
-            <td><span class="badge-count">${s.jumlah_siswa} Siswa</span></td>
-            <td>${statusBadge}</td>
-            <td class="action-buttons-cell">
+            <td><span class="code-badge">${s.kode_sesi}</span></td>
+            <td>
+              <div style="font-weight: 700; color: #0f172a; font-size: 0.92rem;">${s.nama_kelas}</div>
+              <small style="color: #64748b;">ID Sesi: #${s.id_sesi}</small>
+            </td>
+            <td>
+              <span style="white-space: nowrap; font-size: 0.84rem; color: #475569;">
+                <i class="fa-regular fa-calendar" style="color: #94a3b8; margin-right: 4px;"></i>${s.tanggal_sesi}
+              </span>
+            </td>
+            <td>
+              <div style="font-weight: 600; color: #1e293b; font-size: 0.88rem;">${s.nama_guru}</div>
+              <div style="font-size: 0.76rem; color: #64748b;">${s.asal_sekolah}</div>
+            </td>
+            <td style="text-align: center;"><span class="badge-count">${s.jumlah_siswa} Siswa</span></td>
+            <td style="text-align: center;">${statusBadge}</td>
+            <td class="action-buttons-cell" style="justify-content: center;">
               ${!isCurrentActive ? `
                 <button class="btn btn-sm btn-success btn-set-active-sesi" data-id="${s.id_sesi}" title="Gunakan Sesi Ini di Game">
-                  <i class="fa-solid fa-check"></i> Aktifkan
+                  <i class="fa-solid fa-play"></i> Aktifkan
                 </button>
               ` : `
-                <span class="btn btn-sm btn-outline disabled" style="opacity:0.6; cursor:default;">
+                <span class="badge-status-pill active" style="padding: 6px 12px; font-size: 0.76rem;">
                   <i class="fa-solid fa-star text-gold"></i> Sedang Dipakai
                 </span>
               `}
@@ -449,7 +418,7 @@
       if (!tbody) return;
 
       if (report.studentList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px; color:#64748b;">Belum ada siswa yang menyelesaikan permainan pada sesi kelas ini.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:24px; color:#64748b;">Belum ada siswa yang menyelesaikan permainan pada sesi kelas ini.</td></tr>`;
         return;
       }
 
@@ -458,19 +427,41 @@
           ? `<span class="badge-cert-status claimed"><i class="fa-solid fa-check"></i> Dicetak</span>`
           : `<span class="badge-cert-status unclaimed"><i class="fa-solid fa-clock"></i> Belum Cetak</span>`;
 
+        const rankDisplay = s.rank === 1
+          ? `<span class="rank-badge rank-1"><i class="fa-solid fa-crown text-gold"></i> #1</span>`
+          : (s.rank === 2
+              ? `<span class="rank-badge rank-2"><i class="fa-solid fa-medal" style="color:#94a3b8;"></i> #2</span>`
+              : (s.rank === 3
+                  ? `<span class="rank-badge rank-3"><i class="fa-solid fa-award text-gold"></i> #3</span>`
+                  : `<span class="rank-badge">#${s.rank}</span>`));
+
         return `
           <tr>
-            <td><strong>#${s.rank}</strong></td>
-            <td><strong>${s.nama_siswa}</strong></td>
-            <td><span class="text-green font-bold">${s.skor_akhir.toLocaleString('id-ID')} PTS</span></td>
-            <td><strong>${s.akurasi_persen}%</strong></td>
-            <td>x${s.max_combo}</td>
-            <td><span class="badge-predicate ${s.predikatClass}">${s.predikat}</span></td>
-            <td>${certBadge}</td>
-            <td><small>${s.waktu_bermain}</small></td>
+            <td style="text-align: center;">${rankDisplay}</td>
             <td>
+              <div style="font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                <div style="width: 28px; height: 28px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0;">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                ${s.nama_siswa}
+              </div>
+            </td>
+            <td><strong style="color: #059669; font-size: 0.95rem;">${s.skor_akhir.toLocaleString('id-ID')} PTS</strong></td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; min-width: 45px;">
+                  <div style="width: ${s.akurasi_persen}%; height: 100%; background: ${s.akurasi_persen >= 80 ? '#10b981' : s.akurasi_persen >= 60 ? '#f59e0b' : '#ef4444'};"></div>
+                </div>
+                <strong style="font-size: 0.84rem;">${s.akurasi_persen}%</strong>
+              </div>
+            </td>
+            <td style="text-align: center;"><span class="badge-count" style="background: #fef3c7; color: #b45309;">🔥 x${s.max_combo}</span></td>
+            <td style="text-align: center;"><span class="badge-predicate ${s.predikatClass}">${s.predikat}</span></td>
+            <td style="text-align: center;">${certBadge}</td>
+            <td><span style="white-space: nowrap; font-size: 0.82rem; color: #64748b;"><i class="fa-regular fa-clock" style="margin-right: 4px;"></i>${s.waktu_bermain}</span></td>
+            <td style="text-align: center;">
               <button class="btn btn-sm btn-outline btn-view-student-log" data-id="${s.id_hasil}" data-name="${s.nama_siswa}">
-                <i class="fa-solid fa-list-check"></i> Log Pilah
+                <i class="fa-solid fa-list-check"></i> Detail
               </button>
             </td>
           </tr>
@@ -530,24 +521,26 @@
       const items = window.dbStore.getAllItems();
 
       tbody.innerHTML = items.map((it, idx) => {
-        let catColorClass = 'text-green';
-        if (it.category === 'anorganik') catColorClass = 'text-gold';
-        else if (it.category === 'b3') catColorClass = 'text-red';
-        else if (it.category === 'daurulang') catColorClass = 'text-blue';
-
         return `
           <tr>
-            <td>${idx + 1}</td>
-            <td><strong>${it.nama_item}</strong></td>
-            <td><strong class="${catColorClass}">${it.categoryName}</strong></td>
-            <td><code>${it.kode_model_3d}</code></td>
-            <td>${it.poin_dasar}</td>
-            <td><small>${it.pesan_edukasi_salah}</small></td>
-            <td class="action-buttons-cell">
-              <button class="btn btn-sm btn-outline btn-edit-item" data-id="${it.id_item}">
-                <i class="fa-solid fa-pen-to-square"></i> Edit
+            <td style="text-align: center; color: #64748b; font-weight: 700;">${idx + 1}</td>
+            <td>
+              <div style="font-weight: 700; color: #0f172a; font-size: 0.90rem;">${it.nama_item}</div>
+              <small style="color: #94a3b8;">ID: #${it.id_item}</small>
+            </td>
+            <td><span class="badge-cat-pill cat-${it.category}">${it.categoryName}</span></td>
+            <td><span class="code-badge">${it.kode_model_3d}</span></td>
+            <td style="text-align: center;"><strong style="color: #059669;">+${it.poin_dasar}</strong></td>
+            <td>
+              <div class="edu-quote-box">
+                <i class="fa-solid fa-quote-left" style="color: #3b82f6; margin-right: 4px;"></i>${it.pesan_edukasi_salah}
+              </div>
+            </td>
+            <td class="action-buttons-cell" style="justify-content: center;">
+              <button class="btn btn-sm btn-outline btn-edit-item" data-id="${it.id_item}" title="Edit Item">
+                <i class="fa-solid fa-pen-to-square"></i>
               </button>
-              <button class="btn btn-sm btn-danger btn-delete-item" data-id="${it.id_item}">
+              <button class="btn btn-sm btn-danger btn-delete-item" data-id="${it.id_item}" title="Hapus Item">
                 <i class="fa-solid fa-trash-can"></i>
               </button>
             </td>
