@@ -1,12 +1,12 @@
 {
-  "name": "game-pemilahan-sampah-hima-ti",
+  "name": "game-edukasi-pemilahan-sampah-kelompok05-sany",
   "version": "1.0.0",
-  "description": "Game 3D Pemilahan Sampah untuk Pengabdian Masyarakat HIMA TI",
+  "description": "Game Edukasi Pemilahan Sampah Interaktif Berbasis Web untuk Siswa SDN 1 & SDN 2 Ciawilor oleh Kelompok 05 - SANY (Teknik Informatika UNIKU)",
   "main": "index.html",
   "scripts": {
     "dev": "npx -y serve ."
   },
-  "keywords": ["game", "threejs", "education", "hima-ti", "sampah"],
-  "author": "HIMA TI",
+  "keywords": ["game", "threejs", "education", "uniku", "sany", "sampah", "semutlis"],
+  "author": "Kelompok 05 - SANY (Teknik Informatika UNIKU)",
   "license": "MIT"
 }

@@ -1,18 +1,34 @@
 /* ==========================================================================
-   Leaderboard.js - LocalStorage Score Manager
-   Global Window Compatibility
+   Leaderboard.js - Papan Skor Sesi Kelas Siswa SD
+   Integrasi dbStore & LocalStorage
+   Kelompok 05 - SANY (Teknik Informatika UNIKU)
    ========================================================================== */
 
 (function() {
-  const STORAGE_KEY = 'hima_ti_ecosorter_scores';
+  const STORAGE_KEY = 'sany_pilah_scores';
 
   class LeaderboardManager {
     static getScores() {
+      if (window.dbStore && typeof window.dbStore.getActiveSesi === 'function') {
+        const activeSesi = window.dbStore.getActiveSesi();
+        if (activeSesi) {
+          const results = window.dbStore.getHasilBySesi(activeSesi.id_sesi);
+          if (results && results.length > 0) {
+            return results.map(r => ({
+              id: r.id_hasil,
+              name: r.nama_siswa,
+              score: r.skor_akhir,
+              accuracy: r.akurasi_persen,
+              dateFormatted: r.waktu_bermain
+            }));
+          }
+        }
+      }
+
       try {
         const data = localStorage.getItem(STORAGE_KEY);
         return data ? JSON.parse(data) : [];
       } catch (e) {
-        console.error('Failed to read leaderboard scores:', e);
         return [];
       }
     }
@@ -21,7 +37,7 @@
       const scores = this.getScores();
       const entry = {
         id: Date.now(),
-        name: (name || 'Pahlawan Sampah').trim(),
+        name: (name || 'Siswa Ciawilor').trim(),
         score: parseInt(score, 10) || 0,
         accuracy: parseInt(accuracy, 10) || 0,
         dateFormatted: new Date(date).toLocaleDateString('id-ID', {
@@ -34,18 +50,12 @@
       };
 
       scores.push(entry);
-
-      // Sort descending by score
       scores.sort((a, b) => b.score - a.score);
-
-      // Keep top 20 scores
       const topScores = scores.slice(0, 20);
 
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(topScores));
-      } catch (e) {
-        console.error('Failed to save score:', e);
-      }
+      } catch (e) {}
 
       return entry;
     }
@@ -55,11 +65,24 @@
 
       const scores = this.getScores();
 
+      let activeSesiInfo = '';
+      if (window.dbStore && typeof window.dbStore.getActiveSesi === 'function') {
+        const activeSesi = window.dbStore.getActiveSesi();
+        if (activeSesi) {
+          activeSesiInfo = `Sesi Aktif: ${activeSesi.nama_kelas} [${activeSesi.kode_sesi}]`;
+        }
+      }
+
+      const infoContainer = document.getElementById('leaderboard-sesi-badge');
+      if (infoContainer) {
+        infoContainer.textContent = activeSesiInfo;
+      }
+
       if (scores.length === 0) {
         tbodyElement.innerHTML = `
           <tr>
             <td colspan="4" style="text-align: center; color: #64748b; padding: 24px;">
-              Belum ada skor tersimpan. Jadilah siswa pertama yang bermain! 🚀
+              Belum ada skor tersimpan pada sesi ini. Majulah menjadi siswa pertama yang bermain! 🚀
             </td>
           </tr>
         `;

@@ -388,6 +388,10 @@
       if (resAcc) resAcc.textContent = `${resultData.accuracy}%`;
       if (resCombo) resCombo.textContent = `x${resultData.maxCombo}`;
 
+      if (window.teacherDashboard && typeof window.teacherDashboard.updateActiveSesiBadges === 'function') {
+        window.teacherDashboard.updateActiveSesiBadges();
+      }
+
       this.showScreen('screen-gameover');
     }
 
@@ -396,9 +400,25 @@
       const studentName = nameInput ? nameInput.value.trim() : '';
 
       if (!studentName) {
-        alert('Mohon masukkan Nama Lengkap kamu terlebih dahulu untuk dicetak di sertifikat!');
+        alert('Mohon masukkan Nama Lengkap kamu terlebih dahulu untuk dicatat di Rapor Kelas & dicetak di sertifikat!');
         if (nameInput) nameInput.focus();
         return;
+      }
+
+      // Save to dbStore (Relational LocalStorage mirroring MySQL)
+      let activeSesiInfo = '';
+      if (window.dbStore) {
+        const activeSesi = window.dbStore.getActiveSesi();
+        if (activeSesi) activeSesiInfo = `${activeSesi.nama_kelas} [${activeSesi.kode_sesi}]`;
+
+        window.dbStore.saveHasilBermain({
+          studentName: studentName,
+          score: this.lastResultData ? this.lastResultData.score : 0,
+          accuracy: this.lastResultData ? this.lastResultData.accuracy : 0,
+          maxCombo: this.lastResultData ? this.lastResultData.maxCombo : 0,
+          statusCertificate: 'diklaim',
+          roundLogs: (this.lastResultData && this.lastResultData.roundLogs) ? this.lastResultData.roundLogs : []
+        });
       }
 
       if (this.lastResultData && window.LeaderboardManager) {
@@ -412,7 +432,8 @@
           studentName,
           this.lastResultData ? this.lastResultData.score : 0,
           this.lastResultData ? this.lastResultData.accuracy : 0,
-          this.capturedPhotoImg
+          this.capturedPhotoImg,
+          activeSesiInfo
         );
       }
 

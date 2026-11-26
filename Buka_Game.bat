@@ -1,8 +1,9 @@
 @echo off
-title EcoHero 3D - HIMA TI Pengabdian Masyarakat
+title Game Edukasi Pemilahan Sampah Interaktif - Kelompok 05 SANY UNIKU
 echo ========================================================
-echo   EcoHero 3D - Game Pemilahan Sampah Interaktif
-echo   HIMA TI Pengabdian Masyarakat
+echo   Game Edukasi Pemilahan Sampah Interaktif
+echo   Kelompok 05 - SANY ^| Teknik Informatika UNIKU
+echo   Mitra: SDN 1 Ciawilor ^& SDN 2 Ciawilor
 echo ========================================================
 echo.
 echo   Memulai server lokal dan membuka game di browser...

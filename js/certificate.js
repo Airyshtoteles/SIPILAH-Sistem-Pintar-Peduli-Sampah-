@@ -1,17 +1,18 @@
 /* ==========================================================================
-   Certificate.js - Dynamic Professional Certificate Generator with Enriched Typography & Face Photo
-   Global Window Compatibility
+   Certificate.js - Dynamic Professional Certificate Generator
+   Mitra: SDN 1 Ciawilor & SDN 2 Ciawilor | Program SEMUTLIS
+   Pengembang: Kelompok 05 - SANY (Teknik Informatika UNIKU)
    ========================================================================== */
 
 (function() {
   class CertificateGenerator {
-    static drawCertificate(canvas, studentName, score, accuracy, facePhotoImg) {
+    static drawCertificate(canvas, studentName, score, accuracy, facePhotoImg, sesiInfo) {
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       const width = canvas.width;
       const height = canvas.height;
 
-      // 1. Clean Pristine Canvas Background
+      // 1. Background
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, width, height);
 
@@ -40,47 +41,50 @@
       drawCorner(14, height - 14, 1, -1);
       drawCorner(width - 14, height - 14, -1, -1);
 
-      // 2. Official Header Block
+      // 2. Official Header Block (Mitra Sekolah & UNIKU)
       ctx.textAlign = 'center';
-      ctx.fillStyle = '#0284c7';
-      ctx.font = 'bold 15px "Outfit", "Arial", sans-serif';
-      ctx.fillText('HIMPUNAN MAHASISWA TEKNIK INFORMATIKA (HIMA TI)', width / 2, 62);
+      ctx.fillStyle = '#065f46';
+      ctx.font = 'bold 13px "Outfit", "Arial", sans-serif';
+      ctx.fillText('KEMITRAAN PENDIDIKAN LINGKUNGAN SEKOLAH DASAR', width / 2, 52);
 
-      ctx.fillStyle = '#475569';
-      ctx.font = 'bold 12px "Outfit", "Arial", sans-serif';
-      ctx.fillText('PROGRAM PENGABDIAN MASYARAKAT - EDUKASI LINGKUNGAN 3D', width / 2, 80);
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '800 16px "Outfit", "Arial", sans-serif';
+      ctx.fillText('SDN 1 CIAWILOR & SDN 2 CIAWILOR — KECAMATAN CIAWIGEBANG', width / 2, 72);
+
+      ctx.fillStyle = '#64748b';
+      ctx.font = '600 11px "Outfit", "Arial", sans-serif';
+      ctx.fillText('Didukung oleh: Kelompok 05 - SANY | Teknik Informatika Universitas Kuningan (UNIKU)', width / 2, 88);
 
       // Ornate Gold & Emerald Line Separator
       ctx.strokeStyle = '#cbd5e1';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(140, 95);
-      ctx.lineTo(width - 140, 95);
+      ctx.moveTo(120, 100);
+      ctx.lineTo(width - 120, 100);
       ctx.stroke();
 
       ctx.fillStyle = '#f59e0b';
       ctx.beginPath();
-      ctx.arc(width / 2, 95, 4, 0, Math.PI * 2);
+      ctx.arc(width / 2, 100, 4, 0, Math.PI * 2);
       ctx.fill();
 
       // 3. Official Certificate Title
       ctx.fillStyle = '#065f46';
-      ctx.font = '800 28px "Outfit", "Georgia", serif';
-      ctx.fillText('SERTIFIKAT PENGHARGAAN', width / 2, 138);
+      ctx.font = '800 24px "Outfit", "Georgia", serif';
+      ctx.fillText('SERTIFIKAT PENGHARGAAN SISWA', width / 2, 134);
 
+      const regNum = 'SANY-RPL/SEMUTLIS/' + new Date().getFullYear() + '/' + Math.floor(1000 + Math.random() * 9000);
       ctx.fillStyle = '#64748b';
-      ctx.font = 'italic 12px "Outfit", sans-serif';
-      ctx.fillText('No. Reg: HIMA-TI/PENGMAS/ECO3D/' + Math.floor(1000 + Math.random() * 9000), width / 2, 156);
+      ctx.font = 'italic 11px "Outfit", sans-serif';
+      ctx.fillText(`No. Reg: ${regNum}`, width / 2, 150);
 
-      // 4. Student Face Photo Badge (ENLARGED 50% LARGER)
+      // 4. Student Face Photo Badge (if uploaded / captured)
       const photoX = 145;
-      const photoY = 270;
-      const photoRadius = 74; // Enlarged from 52 to 74px for high-impact presence!
+      const photoY = 260;
+      const photoRadius = 72;
 
       if (facePhotoImg) {
         ctx.save();
-
-        // Outer Shadow for Photo Badge
         ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
         ctx.shadowBlur = 12;
         ctx.shadowOffsetY = 4;
@@ -94,56 +98,60 @@
         ctx.drawImage(facePhotoImg, photoX - photoRadius, photoY - photoRadius, photoRadius * 2, photoRadius * 2);
         ctx.restore();
 
-        // Gold Ring Outer Frame
+        // Rings around photo
         ctx.beginPath();
         ctx.arc(photoX, photoY, photoRadius, 0, Math.PI * 2);
         ctx.strokeStyle = '#f59e0b';
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 4;
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.arc(photoX, photoY, photoRadius + 4, 0, Math.PI * 2);
+        ctx.arc(photoX, photoY, photoRadius + 3, 0, Math.PI * 2);
         ctx.strokeStyle = '#10b981';
         ctx.lineWidth = 2;
         ctx.stroke();
       }
 
+      const textOffsetX = facePhotoImg ? 50 : 0;
+
       // 5. Recipient Phrase
       ctx.fillStyle = '#334155';
-      ctx.font = '15px "Outfit", "Arial", sans-serif';
-      ctx.fillText('Diberikan dengan bangga kepada:', width / 2 + (facePhotoImg ? 40 : 0), 205);
+      ctx.font = '14px "Outfit", "Arial", sans-serif';
+      ctx.fillText('Diberikan dengan penuh apresiasi kepada:', width / 2 + textOffsetX, 192);
 
-      // 6. Student Name (Large Professional Typography)
-      const nameToDisplay = (studentName || 'Siswa Pahlawan Sampah').trim();
+      // 6. Student Name
+      const nameToDisplay = (studentName || 'Siswa Teladan Lingkungan').trim();
       ctx.fillStyle = '#065f46';
-      ctx.font = 'bold 36px "Outfit", "Georgia", serif';
-      ctx.fillText(nameToDisplay, width / 2 + (facePhotoImg ? 40 : 0), 255);
+      ctx.font = 'bold 34px "Outfit", "Georgia", serif';
+      ctx.fillText(nameToDisplay, width / 2 + textOffsetX, 238);
 
       // Underline Accent Line
       const textWidth = ctx.measureText(nameToDisplay).width;
-      const underlineCenterX = width / 2 + (facePhotoImg ? 40 : 0);
+      const underlineCenterX = width / 2 + textOffsetX;
       ctx.strokeStyle = '#f59e0b';
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(underlineCenterX - (textWidth / 2) - 15, 272);
-      ctx.lineTo(underlineCenterX + (textWidth / 2) + 15, 272);
+      ctx.moveTo(underlineCenterX - (textWidth / 2) - 15, 252);
+      ctx.lineTo(underlineCenterX + (textWidth / 2) + 15, 252);
       ctx.stroke();
 
       // 7. Citation Text
       ctx.fillStyle = '#475569';
-      ctx.font = '15px "Outfit", "Arial", sans-serif';
-      ctx.fillText('Atas partisipasi & keberhasilan memilah sampah pada Program Edukasi 3D EcoHero.', width / 2 + (facePhotoImg ? 40 : 0), 312);
+      ctx.font = '13.5px "Outfit", "Arial", sans-serif';
+      const sesiText = sesiInfo ? ` dalam ${sesiInfo}` : '';
+      ctx.fillText(`Atas partisipasi dan keberhasilan memilah sampah${sesiText}`, width / 2 + textOffsetX, 285);
+      ctx.fillText('pada Program SEMUTLIS (Sepuluh Menit Peduli Lingkungan Sekitar).', width / 2 + textOffsetX, 305);
 
       ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 16px "Outfit", "Arial", sans-serif';
-      ctx.fillText(`Raihan Skor: ${score} PTS   |   Akurasi Memilah: ${accuracy}%`, width / 2 + (facePhotoImg ? 40 : 0), 340);
+      ctx.font = 'bold 15px "Outfit", "Arial", sans-serif';
+      ctx.fillText(`Skor Akhir: ${score} PTS    |    Akurasi Pemilahan: ${accuracy}%`, width / 2 + textOffsetX, 335);
 
       // 8. Official Gold Seal Stamp
       const sealX = width / 2;
-      const sealY = 440;
+      const sealY = 415;
 
       ctx.beginPath();
-      ctx.arc(sealX, sealY, 42, 0, Math.PI * 2);
+      ctx.arc(sealX, sealY, 38, 0, Math.PI * 2);
       ctx.fillStyle = '#f59e0b';
       ctx.fill();
       ctx.lineWidth = 3;
@@ -151,19 +159,19 @@
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.arc(sealX, sealY, 36, 0, Math.PI * 2);
+      ctx.arc(sealX, sealY, 32, 0, Math.PI * 2);
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 2;
       ctx.stroke();
 
       ctx.fillStyle = '#78350f';
-      ctx.font = 'bold 11px "Outfit", sans-serif';
-      ctx.fillText('PAHLAWAN', sealX, sealY - 6);
-      ctx.fillText('LINGKUNGAN', sealX, sealY + 8);
-      ctx.font = '15px sans-serif';
-      ctx.fillText('⭐', sealX, sealY + 26);
+      ctx.font = 'bold 10px "Outfit", sans-serif';
+      ctx.fillText('SEMUTLIS', sealX, sealY - 6);
+      ctx.fillText('PEDULI LINGKUNGAN', sealX, sealY + 7);
+      ctx.font = '13px sans-serif';
+      ctx.fillText('🌿', sealX, sealY + 23);
 
-      // 9. Signatures Block & Date
+      // 9. Signatures Block (Mitra SDN 1 & SDN 2 Ciawilor)
       const currentDate = new Date().toLocaleDateString('id-ID', {
         day: 'numeric',
         month: 'long',
@@ -171,21 +179,36 @@
       });
 
       ctx.fillStyle = '#64748b';
-      ctx.font = '12px "Outfit", sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(`Diterbitkan: ${currentDate}`, 65, height - 48);
+      ctx.font = '11px "Outfit", sans-serif';
 
+      // Left Signature: SDN 1 Ciawilor
+      ctx.textAlign = 'left';
+      ctx.fillText(`Ciawilor, ${currentDate}`, 60, height - 85);
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 12px "Outfit", sans-serif';
+      ctx.fillText('Agung Febriyana, S.Pd.', 60, height - 48);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10.5px "Outfit", sans-serif';
+      ctx.fillText('Narahubung SDN 1 Ciawilor', 60, height - 34);
+
+      // Right Signature: SDN 2 Ciawilor
       ctx.textAlign = 'right';
-      ctx.fillText('Panitia Pengabdian Masyarakat HIMA TI', width - 65, height - 48);
+      ctx.fillText('Mengetahui Mitra Sekolah,', width - 60, height - 85);
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 12px "Outfit", sans-serif';
+      ctx.fillText('Tris Mulyo Purnomo, S.Pd.', width - 60, height - 48);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10.5px "Outfit", sans-serif';
+      ctx.fillText('Narahubung SDN 2 Ciawilor', width - 60, height - 34);
     }
 
     static downloadCertificate(canvas, studentName) {
       if (!canvas) return;
-      const sanitizedName = (studentName || 'Pahlawan_Sampah').replace(/[^a-zA-Z0-9]/g, '_');
+      const sanitizedName = (studentName || 'Siswa_Ciawilor').replace(/[^a-zA-Z0-9]/g, '_');
       const imageURI = canvas.toDataURL('image/png');
-      
+
       const link = document.createElement('a');
-      link.download = `Sertifikat_EcoHero_${sanitizedName}.png`;
+      link.download = `Sertifikat_PilahSampah_${sanitizedName}.png`;
       link.href = imageURI;
       document.body.appendChild(link);
       link.click();

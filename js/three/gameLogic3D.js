@@ -34,6 +34,7 @@
       this.isAnimatingThrow = false;
       this.throwProgress = 0;
       this.pendingCategoryCheck = null;
+      this.roundLogs = [];
 
       const THREE = window.THREE;
       this.throwStartPos = new THREE.Vector3();
@@ -157,7 +158,9 @@
     }
 
     resetItemDeck() {
-      const db = window.trashDatabase || [];
+      const db = (window.dbStore && typeof window.dbStore.getAllItems === 'function')
+        ? window.dbStore.getAllItems()
+        : (window.trashDatabase || []);
       this.itemDeck = [...db];
       // Fisher-Yates Shuffle Algorithm
       for (let i = this.itemDeck.length - 1; i > 0; i--) {
@@ -176,6 +179,7 @@
       this.timer = 60;
       this.isAnimatingThrow = false;
       this.pendingCategoryCheck = null;
+      this.roundLogs = [];
 
       this.resetItemDeck();
 
@@ -365,6 +369,17 @@
       const check = this.pendingCategoryCheck || { isCorrect: true, binGroup: defaultBin };
       this.pendingCategoryCheck = null;
 
+      // Record throw log for Teacher Dashboard and Evaluation
+      const chosenCategory = (check.binGroup && check.binGroup.userData) ? check.binGroup.userData.category : 'organik';
+      if (currentWrongItem) {
+        this.roundLogs.push({
+          id_item: currentWrongItem.id_item || currentWrongItem.id,
+          nama_item: currentWrongItem.name || currentWrongItem.nama_item || 'Sampah',
+          id_kategori_dipilih: chosenCategory,
+          is_benar: check.isCorrect ? 1 : 0
+        });
+      }
+
       this.totalAttempted++;
 
       if (check.isCorrect) {
@@ -439,7 +454,8 @@
         this.onGameOver({
           score: this.score,
           accuracy: accuracy,
-          maxCombo: this.maxCombo
+          maxCombo: this.maxCombo,
+          roundLogs: [...this.roundLogs]
         });
       }
     }

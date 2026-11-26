@@ -1,71 +1,73 @@
 /* ==========================================================================
-   EduSlides.js - Interactive Pre-Game Education Deck & YouTube Video Impact
+   EduSlides.js - Interactive Pre-Game Education Deck
+   Konteks: SDN 1 & SDN 2 Ciawilor | Program SEMUTLIS & Pembiasaan Disiplin SD
+   Kelompok 05 - SANY (Teknik Informatika UNIKU)
    ========================================================================== */
 
 (function() {
   const eduSlidesData = [
     {
       id: 1,
-      tag: "Pentingnya Memilah",
+      tag: "Masalah Sampah Sekolah",
       tagType: "danger",
-      title: "Tahukah Kamu? Sampah Bisa Berbahaya!",
+      title: "Kenapa Kita Harus Memilah Sampah?",
       iconClass: "fa-solid fa-triangle-exclamation",
-      description: "Jika kita membuang sampah sembarangan tanpa dipilah, lingkungan kita bisa menjadi kotor dan menyebabkan bencana alam yang merugikan!",
+      description: "Setiap hari di sekolah, banyak sampah bekal, plastik jajanan, dan daun gugur. Jika dibiarkan tercampur dan berserakan, sekolah jadi kotor dan tidak sehat!",
       items: [
-        { iconClass: "fa-solid fa-cloud-showers-heavy", title: "Bencana Banjir", desc: "Sampah menyumbat selokan & sungai sehingga air meluap ke pemukiman." },
-        { iconClass: "fa-solid fa-mask-face", title: "Polusi & Penyakit", desc: "Bau busuk & racun menarik lalat, nyamuk, serta mengganggu kesehatan." }
+        { iconClass: "fa-solid fa-cloud-showers-heavy", title: "Saluran Air Tersumbat", desc: "Sampah plastik menyumbat selokan sekolah dan memicu genangan air / banjir." },
+        { iconClass: "fa-solid fa-mask-face", title: "Sarang Nyamuk & Kuman", desc: "Sampah basah yang membusuk menimbulkan bau tidak sedap dan menyebarkan penyakit." }
       ]
     },
     {
       id: 2,
-      tag: "Video Edukasi YouTube",
-      tagType: "danger",
-      title: "Pelajari Dampak Sampah di Indonesia 🎥",
-      iconClass: "fa-solid fa-film",
-      description: "Indonesia menghasilkan jutaan ton sampah plastik setiap tahun. Mari tonton video edukasi singkat mengenai dampak sampah bagi sungai dan laut kita!",
-      youtubeId: "_K3hU1iXoFA", // ID Video Edukasi Dampak Sampah Plastik
+      tag: "Program Sekolah Unggulan",
+      tagType: "success",
+      title: "Gerakan SEMUTLIS di Sekolah Kita 🌱",
+      iconClass: "fa-solid fa-hand-holding-heart",
+      description: "SDN 1 Ciawilor menjalankan program SEMUTLIS (Sepuluh Menit Peduli Lingkungan Sekitar) dan SDN 2 Ciawilor membiasakan disiplin buang sampah sejak kelas 1–3 SD!",
+      youtubeId: "_K3hU1iXoFA",
       youtubeUrl: "https://www.youtube.com/results?search_query=dampak+sampah+plastik+di+indonesia+edukasi+anak",
       items: [
-        { iconClass: "fa-solid fa-fish-fins", title: "Bahaya Bagi Laut", desc: "Penyu & ikan sering tidak sengaja memakan sampah plastik." },
-        { iconClass: "fa-solid fa-recycle", title: "Solusi Kita", desc: "Memilah sampah dari rumah & sekolah adalah kunci penyelamatan bumi!" }
+        { iconClass: "fa-solid fa-clock", title: "10 Menit Setiap Hari", desc: "Luangkan 10 menit sebelum masuk kelas untuk membersihkan laci meja dan halaman." },
+        { iconClass: "fa-solid fa-users", title: "Disiplin Bersama", desc: "Memilah sampah bukan tugas penjaga sekolah saja, tapi tanggung jawab kita semua!" }
       ]
     },
     {
       id: 3,
-      tag: "Bahaya Plastik & B3",
+      tag: "Kenali Jenis Sampah",
       tagType: "danger",
-      title: "Plastik Butuh Ratusan Tahun Terurai!",
+      title: "Plastik Jajanan vs Sampah Berbahaya (B3)",
       iconClass: "fa-solid fa-bottle-water",
-      description: "Botol plastik dan kantong plastik tidak bisa membusuk secara alami! Jika terbawa ke laut, sampah ini membahayakan hewan laut.",
+      description: "Tahu tidak? Bungkus jajanan dan sedotan plastik butuh ratusan tahun untuk terurai di tanah. Sedangkan baterai dan lampu bekas mengandung racun berbahaya!",
       items: [
-        { iconClass: "fa-solid fa-ban-smoking", title: "Sampah Plastik", desc: "Harus dimasukkan ke Anorganik agar bisa didaur ulang!" },
-        { iconClass: "fa-solid fa-bolt", title: "Baterai & Lampu (B3)", desc: "Mengandung bahan kimia beracun yang berbahaya bagi manusia." }
+        { iconClass: "fa-solid fa-wine-bottle", title: "Sampah Anorganik", desc: "Botol minuman, kaleng soda, dan mainan plastik wajib masuk tong Kuning." },
+        { iconClass: "fa-solid fa-bolt", title: "B3 Berbahaya", desc: "Baterai bekas, lampu bohlam rusak, dan obat harus dipisah ke tong Merah agar aman." }
       ]
     },
     {
       id: 4,
-      tag: "4 Warna Tempat Sampah",
+      tag: "4 Tong Sampah 3D",
       tagType: "info",
-      title: "Yuk Kenali 4 Tempat Sampah 3D!",
+      title: "Ingat 4 Warna Tong Sampah 3D!",
       iconClass: "fa-solid fa-trash-can",
-      description: "Setiap tempat sampah punya warna dan tugas masing-masing! Ingat warnanya ya:",
+      description: "Di game ini, kamu akan memilah sampah ke 4 tempat sampah 3D sesuai warnanya:",
       items: [
-        { iconClass: "fa-solid fa-leaf text-green", title: "ORGANIK (Hijau)", desc: "Sisa makanan, daun, kulit buah (Bisa jadi pupuk!)." },
-        { iconClass: "fa-solid fa-bottle-water text-gold", title: "ANORGANIK (Kuning)", desc: "Botol plastik, kaleng, bungkus makanan." },
-        { iconClass: "fa-solid fa-bolt text-red", title: "B3 BERBAHAYA (Merah)", desc: "Baterai bekas, obat kadaluarsa, pecahan kaca." },
-        { iconClass: "fa-solid fa-box text-blue", title: "DAUR ULANG / KERTAS (Biru)", desc: "Kardus, kertas buku, majalah bekas." }
+        { iconClass: "fa-solid fa-leaf text-green", title: "ORGANIK (Hijau)", desc: "Kulit pisang, sisa apel, daun kering, sisa roti (Bisa jadi pupuk!)." },
+        { iconClass: "fa-solid fa-bottle-water text-gold", title: "ANORGANIK (Kuning)", desc: "Botol air, kaleng minuman, bebek mainan, gelas sedotan." },
+        { iconClass: "fa-solid fa-bolt text-red", title: "B3 BERBAHAYA (Merah)", desc: "Baterai bekas, lampu bohlam, botol obat, termometer raksa." },
+        { iconClass: "fa-solid fa-box text-blue", title: "DAUR ULANG (Biru)", desc: "Kardus box, kertas buku tulis, koran bekas, karton susu." }
       ]
     },
     {
       id: 5,
-      tag: "Misi Kamu!",
+      tag: "Misi Kamu di Kelas!",
       tagType: "success",
-      title: "Siap Menjadi EcoHero HIMA TI?",
+      title: "Siap Bermain Estafet di Kelas?",
       iconClass: "fa-solid fa-trophy",
-      description: "Bantu bersihkan lingkungan sekolah! Caranya sangat gampang:",
+      description: "Karena siswa tidak membawa HP, kalian akan bermain bergantian di laptop guru dan proyektor kelas selama 60 detik per siswa!",
       items: [
-        { iconClass: "fa-solid fa-hand-pointer", title: "1. Klik/Tap Sampah", desc: "Pilih sampah 3D yang muncul di meja lapangan." },
-        { iconClass: "fa-solid fa-bullseye", title: "2. Klik Tempat Sampah", desc: "Masukkan ke tempat sampah 3D yang sesuai!" }
+        { iconClass: "fa-solid fa-hand-pointer", title: "Langkah 1: Klik Sampah", desc: "Klik/tap sampah 3D di meja tengah untuk mengambilnya." },
+        { iconClass: "fa-solid fa-bullseye", title: "Langkah 2: Klik Tong Sampah", desc: "Klik tong warna yang tepat. Kumpulkan combo dan cetak sertifikatmu!" }
       ]
     }
   ];
@@ -103,9 +105,9 @@
       let videoSectionHTML = '';
       if (slide.youtubeUrl) {
         videoSectionHTML = `
-          <div style="margin: 12px 0; text-align: center;">
-            <a href="${slide.youtubeUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-danger btn-sm" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; text-decoration: none; padding: 8px 18px; border-radius: 50px; background: #ef4444; color: #fff;">
-              <i class="fa-brands fa-youtube" style="font-size: 1.2rem;"></i> Tonton Video Dampak Sampah Indonesia di YouTube
+          <div style="margin: 10px 0; text-align: center;">
+            <a href="${slide.youtubeUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-danger btn-sm" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; text-decoration: none; padding: 7px 16px; border-radius: 50px; background: #ef4444; color: #fff; font-size: 0.85rem;">
+              <i class="fa-brands fa-youtube" style="font-size: 1.1rem;"></i> Tonton Video Dampak Sampah Indonesia di YouTube
             </a>
           </div>
         `;

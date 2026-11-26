@@ -1,12 +1,12 @@
 {
-  "name": "EcoHero 3D: Petualangan Pemilah Sampah",
-  "short_name": "EcoHero 3D",
-  "description": "Game Edukasi 3D Pemilahan Sampah Interaktif untuk Anak Sekolah Dasar oleh HIMA TI Pengabdian Masyarakat",
+  "name": "Game Edukasi Pemilahan Sampah Interaktif",
+  "short_name": "Pilah Sampah",
+  "description": "Game Edukasi Pemilahan Sampah Interaktif Berbasis Web untuk Siswa SDN 1 & SDN 2 Ciawilor oleh Kelompok 05 - SANY (Teknik Informatika UNIKU)",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "landscape",
   "background_color": "#a5f3fc",
-  "theme_color": "#10b981",
+  "theme_color": "#059669",
   "icons": [
     {
       "src": "assets/icons/icon-192.png",

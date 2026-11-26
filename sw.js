@@ -2,7 +2,7 @@
    sw.js - PWA Service Worker (Network-First Safe Fallback Strategy)
    ========================================================================== */
 
-const CACHE_NAME = 'ecohero3d-v7-safari-fix';
+const CACHE_NAME = 'pilahsampah-sany-v1';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
