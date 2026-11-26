@@ -2,7 +2,7 @@
    sw.js - PWA Service Worker (Network-First Safe Fallback Strategy)
    ========================================================================== */
 
-const CACHE_NAME = 'pilahsampah-sany-v6';
+const CACHE_NAME = 'pilahsampah-sany-v7';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

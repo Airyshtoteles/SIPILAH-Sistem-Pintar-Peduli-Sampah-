@@ -1,7 +1,6 @@
 /* ==========================================================================
-   App.js - Main Application Controller (6 Layar Standar 3NF)
-   Kelompok 05 - SANY (Teknik Informatika UNIKU)
-   Mitra: SDN 1 Ciawilor & SDN 2 Ciawilor
+   App.js - Main Application Controller
+   GLTF Assets Preloader, Webcam Face Photo Capture & Navigation Control
    ========================================================================== */
 
 (function() {
@@ -9,20 +8,21 @@
     constructor() {
       this.currentScreen = 'screen-menu';
       this.lastResultData = null;
-      this.currentLevelId = 1;
       this.modelsReady = false;
-      this.pendingLevelStart = null;
+      this.pendingGameStart = false;
+
+      this.mediaStream = null;
+      this.capturedPhotoImg = null;
 
       // Preload GLTF Models first
       if (window.ModelFactory3D) {
         window.ModelFactory3D.preloadModels(() => {
-          console.log('[SIPILAH] GLTF Model assets preloaded successfully!');
+          console.log('GLTF Model assets preloaded successfully!');
           this.modelsReady = true;
-          if (this.pendingLevelStart !== null) {
-            const lvl = this.pendingLevelStart;
-            this.pendingLevelStart = null;
+          if (this.pendingGameStart) {
+            this.pendingGameStart = false;
             this.showScreen('screen-game');
-            this.gameEngine.startLevel(lvl);
+            this.gameEngine.startGame();
           }
         });
       } else {
@@ -32,6 +32,7 @@
       this.initScene();
       this.initEduSlides();
       this.initUIEvents();
+      this.initCameraEvents();
       this.startAnimationLoop();
     }
 
@@ -55,15 +56,20 @@
         'btn-edu-next',
         'btn-edu-skip-game',
         () => {
-          // Setelah membaca panduan, arahkan siswa ke Layar 2 (Pilih Level)
-          this.showScreen('screen-level');
+          if (this.modelsReady) {
+            this.showScreen('screen-game');
+            this.gameEngine.startGame();
+          } else {
+            this.pendingGameStart = true;
+            const btn = document.getElementById('btn-edu-skip-game');
+            if (btn) btn.textContent = 'Memuat Model 3D...';
+          }
         }
       );
       this.eduController.render();
     }
 
     initUIEvents() {
-      // Audio activation on first user interaction
       const unlockAudio = () => {
         if (window.audioSystem) window.audioSystem.init();
         window.removeEventListener('click', unlockAudio);
@@ -72,11 +78,12 @@
       window.addEventListener('click', unlockAudio);
       window.addEventListener('touchstart', unlockAudio);
 
-      // 1. Menu Buttons (Layar 1)
+      // Menu Buttons
       const startBtn = document.getElementById('btn-start-game');
       if (startBtn) {
         startBtn.addEventListener('click', () => {
-          this.showScreen('screen-level');
+          this.showScreen('screen-edu');
+          this.eduController.reset();
         });
       }
 
@@ -95,25 +102,7 @@
         });
       }
 
-      // 2. Level Selection Buttons (Layar 2)
-      const levelSelectBtns = document.querySelectorAll('.btn-select-level, .level-card-item');
-      levelSelectBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const levelVal = btn.getAttribute('data-level');
-          if (levelVal) {
-            this.startSelectedLevel(Number(levelVal));
-          }
-        });
-      });
-
-      const backFromLevelBtn = document.getElementById('btn-back-menu-from-level');
-      if (backFromLevelBtn) {
-        backFromLevelBtn.addEventListener('click', () => {
-          this.showScreen('screen-menu');
-        });
-      }
-
-      // 3. HUD Controls (Layar 3)
+      // HUD Buttons
       const toggleSoundBtn = document.getElementById('btn-toggle-sound');
       if (toggleSoundBtn) {
         toggleSoundBtn.addEventListener('click', () => {
@@ -134,14 +123,16 @@
           if (window.uiFeedback) {
             ok = await window.uiFeedback.confirm({
               title: 'Kembali ke Menu Utama?',
-              message: 'Permainan yang sedang berjalan akan dihentikan. Apakah kamu yakin ingin kembali ke Menu Utama?',
+              message: 'Permainan yang sedang berjalan akan direset. Apakah kamu yakin ingin kembali ke Menu Utama?',
               confirmText: 'Ya, Kembali',
               cancelText: 'Lanjut Main',
               type: 'warning'
             });
+          } else {
+            ok = confirm('Apakah kamu yakin ingin kembali ke Menu Utama? Game akan direset.');
           }
           if (ok) {
-            if (this.gameEngine) this.gameEngine.clearAllTrashItems();
+            this.stopCamera();
             this.showScreen('screen-menu');
           }
         });
@@ -163,18 +154,13 @@
         closeFeedbackBtn.addEventListener('touchend', handleCloseFeedback, { passive: true });
       }
 
-      // 4. Game Over Buttons (Layar 4)
+      // Game Over Buttons
       const restartBtn = document.getElementById('btn-restart-game');
       if (restartBtn) {
         restartBtn.addEventListener('click', () => {
-          this.startSelectedLevel(this.currentLevelId || 1);
-        });
-      }
-
-      const changeLevelBtn = document.getElementById('btn-change-level');
-      if (changeLevelBtn) {
-        changeLevelBtn.addEventListener('click', () => {
-          this.showScreen('screen-level');
+          this.stopCamera();
+          this.showScreen('screen-game');
+          this.gameEngine.startGame();
         });
       }
 
@@ -185,14 +171,29 @@
         });
       }
 
+      const claimCertBtn = document.getElementById('btn-claim-certificate');
+      if (claimCertBtn) {
+        claimCertBtn.addEventListener('click', () => {
+          this.handleClaimCertificate();
+        });
+      }
+
       const homeFromGameoverBtn = document.getElementById('btn-home-from-gameover');
       if (homeFromGameoverBtn) {
         homeFromGameoverBtn.addEventListener('click', () => {
+          this.stopCamera();
           this.showScreen('screen-menu');
         });
       }
 
       // Modal Close Buttons
+      const closeCertBtn = document.getElementById('btn-close-cert');
+      if (closeCertBtn) {
+        closeCertBtn.addEventListener('click', () => {
+          document.getElementById('modal-certificate').classList.add('hidden');
+        });
+      }
+
       const closeLeaderboardBtn = document.getElementById('btn-close-leaderboard');
       if (closeLeaderboardBtn) {
         closeLeaderboardBtn.addEventListener('click', () => {
@@ -201,17 +202,141 @@
       }
     }
 
-    startSelectedLevel(levelId) {
-      this.currentLevelId = Number(levelId) || 1;
+    initCameraEvents() {
+      const startCamBtn = document.getElementById('btn-start-camera');
+      const captureBtn = document.getElementById('btn-capture-photo');
+      const retakeBtn = document.getElementById('btn-retake-photo');
+      const photoFileInput = document.getElementById('input-photo-file');
 
-      if (!this.modelsReady) {
-        this.pendingLevelStart = this.currentLevelId;
-        if (window.uiFeedback) window.uiFeedback.toast('Menyiapkan model 3D...', 'info');
+      if (startCamBtn) {
+        startCamBtn.addEventListener('click', () => this.startCamera());
+      }
+      if (captureBtn) {
+        captureBtn.addEventListener('click', () => this.capturePhoto());
+      }
+      if (retakeBtn) {
+        retakeBtn.addEventListener('click', () => this.startCamera());
+      }
+      if (photoFileInput) {
+        photoFileInput.addEventListener('change', (e) => this.handleFileUpload(e));
+      }
+    }
+
+    startCamera() {
+      const video = document.getElementById('webcam-video');
+      const previewImg = document.getElementById('photo-preview');
+      const placeholder = document.getElementById('camera-placeholder');
+      const startCamBtn = document.getElementById('btn-start-camera');
+      const captureBtn = document.getElementById('btn-capture-photo');
+      const retakeBtn = document.getElementById('btn-retake-photo');
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Browser kamu belum mendukung akses Kamera Webcam secara langsung. Silakan gunakan tombol Unggah Foto.');
         return;
       }
 
-      this.showScreen('screen-game');
-      this.gameEngine.startLevel(this.currentLevelId);
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+          this.mediaStream = stream;
+          if (video) {
+            video.srcObject = stream;
+            video.onloadedmetadata = () => {
+              video.play().catch(e => console.warn('Video play error:', e));
+            };
+            video.play().catch(e => console.warn('Video play error:', e));
+            video.classList.remove('hidden');
+          }
+          if (previewImg) previewImg.classList.add('hidden');
+          if (placeholder) placeholder.classList.add('hidden');
+          if (startCamBtn) startCamBtn.classList.add('hidden');
+          if (captureBtn) captureBtn.classList.remove('hidden');
+          if (retakeBtn) retakeBtn.classList.add('hidden');
+        })
+        .catch(err => {
+          console.warn('Camera access error:', err);
+          alert('Akses kamera ditolak atau tidak ditemukan. Kamu bisa mengunggah file foto dari HP/Laptop dengan tombol "Unggah Foto".');
+        });
+    }
+
+    capturePhoto() {
+      const video = document.getElementById('webcam-video');
+      const photoCanvas = document.getElementById('photo-canvas');
+      const previewImg = document.getElementById('photo-preview');
+      const captureBtn = document.getElementById('btn-capture-photo');
+      const retakeBtn = document.getElementById('btn-retake-photo');
+
+      if (!video || !photoCanvas) return;
+
+      const size = 300;
+      photoCanvas.width = size;
+      photoCanvas.height = size;
+      const ctx = photoCanvas.getContext('2d');
+
+      const vWidth = video.videoWidth || 640;
+      const vHeight = video.videoHeight || 480;
+
+      // Crop video stream into square aspect
+      const minDim = Math.min(vWidth, vHeight);
+      const startX = (vWidth - minDim) / 2;
+      const startY = (vHeight - minDim) / 2;
+
+      ctx.drawImage(video, startX, startY, minDim, minDim, 0, 0, size, size);
+
+      const dataUrl = photoCanvas.toDataURL('image/png');
+      const img = new Image();
+      img.src = dataUrl;
+      img.onload = () => {
+        this.capturedPhotoImg = img;
+        if (previewImg) {
+          previewImg.src = dataUrl;
+          previewImg.classList.remove('hidden');
+        }
+        video.classList.add('hidden');
+        this.stopCamera();
+
+        if (captureBtn) captureBtn.classList.add('hidden');
+        if (retakeBtn) retakeBtn.classList.remove('hidden');
+      };
+    }
+
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target.result;
+        const img = new Image();
+        img.src = dataUrl;
+        img.onload = () => {
+          this.capturedPhotoImg = img;
+
+          const previewImg = document.getElementById('photo-preview');
+          const video = document.getElementById('webcam-video');
+          const placeholder = document.getElementById('camera-placeholder');
+          const startCamBtn = document.getElementById('btn-start-camera');
+          const captureBtn = document.getElementById('btn-capture-photo');
+          const retakeBtn = document.getElementById('btn-retake-photo');
+
+          if (previewImg) {
+            previewImg.src = dataUrl;
+            previewImg.classList.remove('hidden');
+          }
+          if (video) video.classList.add('hidden');
+          if (placeholder) placeholder.classList.add('hidden');
+          if (startCamBtn) startCamBtn.classList.add('hidden');
+          if (captureBtn) captureBtn.classList.add('hidden');
+          if (retakeBtn) retakeBtn.classList.remove('hidden');
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    stopCamera() {
+      if (this.mediaStream) {
+        this.mediaStream.getTracks().forEach(track => track.stop());
+        this.mediaStream = null;
+      }
     }
 
     showScreen(screenId) {
@@ -269,45 +394,11 @@
 
       const resScore = document.getElementById('res-score');
       const resAcc = document.getElementById('res-accuracy');
-      const resCorrect = document.getElementById('res-correct');
-      const resWrong = document.getElementById('res-wrong');
       const resCombo = document.getElementById('res-maxcombo');
-      const resStars = document.getElementById('res-stars');
-      const resStarFeedback = document.getElementById('res-star-feedback');
-      const resultTitle = document.getElementById('result-title');
 
       if (resScore) resScore.textContent = resultData.score.toLocaleString('id-ID');
       if (resAcc) resAcc.textContent = `${resultData.accuracy}%`;
-      if (resCorrect) resCorrect.textContent = resultData.correctCount || 0;
-      if (resWrong) resWrong.textContent = resultData.wrongCount || 0;
       if (resCombo) resCombo.textContent = `x${resultData.maxCombo}`;
-
-      const stars = resultData.stars || 1;
-      if (resStars) {
-        let starsHTML = '';
-        for (let s = 1; s <= 3; s++) {
-          if (s <= stars) {
-            starsHTML += `<i class="fa-solid fa-star star-active" style="color: #fbbf24; font-size: 2.2rem; margin: 0 4px;"></i>`;
-          } else {
-            starsHTML += `<i class="fa-solid fa-star star-empty" style="color: #cbd5e1; font-size: 2.2rem; margin: 0 4px;"></i>`;
-          }
-        }
-        resStars.innerHTML = starsHTML;
-      }
-
-      if (resStarFeedback) {
-        resStarFeedback.textContent = resultData.starFeedback || 'Hebat! Terus Berlatih Memilah Sampah!';
-      }
-
-      if (resultTitle) {
-        if (stars === 3) {
-          resultTitle.textContent = 'Luar Biasa! Kamu Juara Lingkungan Ciawilor! 🏆';
-        } else if (stars === 2) {
-          resultTitle.textContent = 'Hebat! Kamu Pahlawan Pemilah Sampah! 🌱';
-        } else {
-          resultTitle.textContent = 'Waktu Habis! Ayo Coba Lagi dengan Semangat! 🌟';
-        }
-      }
 
       if (window.teacherDashboard && typeof window.teacherDashboard.updateActiveSesiBadges === 'function') {
         window.teacherDashboard.updateActiveSesiBadges();
@@ -316,33 +407,103 @@
       this.showScreen('screen-gameover');
     }
 
-    showLeaderboardModal() {
-      const modal = document.getElementById('modal-leaderboard');
-      const tbody = document.getElementById('leaderboard-tbody');
-      if (modal && tbody) {
-        if (window.LeaderboardManager) {
-          window.LeaderboardManager.renderTable(tbody);
-          window.LeaderboardManager.initClearAllButton(tbody);
+    handleClaimCertificate() {
+      const nameInput = document.getElementById('input-student-name');
+      const studentName = nameInput ? nameInput.value.trim() : '';
+
+      if (!studentName) {
+        if (window.uiFeedback) {
+          window.uiFeedback.toast('Mohon masukkan Nama Lengkap kamu terlebih dahulu!', 'warning');
+        } else {
+          alert('Mohon masukkan Nama Lengkap kamu terlebih dahulu untuk dicatat di Rapor Kelas & dicetak di sertifikat!');
         }
-        modal.classList.remove('hidden');
+        if (nameInput) nameInput.focus();
+        return;
       }
+
+      // Save to dbStore (Relational LocalStorage mirroring MySQL)
+      let activeSesiInfo = '';
+      if (window.dbStore) {
+        const activeSesi = window.dbStore.getActiveSesi();
+        if (activeSesi) activeSesiInfo = `${activeSesi.nama_kelas} [${activeSesi.kode_sesi}]`;
+
+        window.dbStore.saveHasilBermain({
+          studentName: studentName,
+          score: this.lastResultData ? this.lastResultData.score : 0,
+          accuracy: this.lastResultData ? this.lastResultData.accuracy : 0,
+          maxCombo: this.lastResultData ? this.lastResultData.maxCombo : 0,
+          statusCertificate: 'diklaim',
+          roundLogs: (this.lastResultData && this.lastResultData.roundLogs) ? this.lastResultData.roundLogs : []
+        });
+      }
+
+      if (this.lastResultData && window.LeaderboardManager) {
+        window.LeaderboardManager.saveScore(studentName, this.lastResultData.score, this.lastResultData.accuracy);
+      }
+
+      const canvas = document.getElementById('certificate-canvas');
+      if (window.CertificateGenerator) {
+        window.CertificateGenerator.drawCertificate(
+          canvas,
+          studentName,
+          this.lastResultData ? this.lastResultData.score : 0,
+          this.lastResultData ? this.lastResultData.accuracy : 0,
+          this.capturedPhotoImg,
+          activeSesiInfo
+        );
+      }
+
+      const downloadBtn = document.getElementById('btn-download-cert');
+      if (downloadBtn) {
+        downloadBtn.onclick = () => {
+          if (window.CertificateGenerator) {
+            window.CertificateGenerator.downloadCertificate(canvas, studentName);
+          }
+        };
+      }
+
+      document.getElementById('modal-leaderboard').classList.add('hidden');
+      document.getElementById('modal-certificate').classList.remove('hidden');
+    }
+
+    showLeaderboardModal() {
+      const tbody = document.getElementById('leaderboard-tbody');
+      if (window.LeaderboardManager) {
+        window.LeaderboardManager.renderTable(tbody);
+      }
+      document.getElementById('modal-certificate').classList.add('hidden');
+      document.getElementById('modal-leaderboard').classList.remove('hidden');
     }
 
     startAnimationLoop() {
-      const animate = () => {
+      let lastTime = performance.now();
+      const animate = (now) => {
         requestAnimationFrame(animate);
 
-        if (this.currentScreen === 'screen-game' && this.gameEngine) {
-          this.gameEngine.update();
-        } else if (this.parkScene) {
-          this.parkScene.render();
+        const delta = Math.min((now - lastTime) / 1000, 0.1) || 0.016;
+        lastTime = now;
+
+        try {
+          if (this.gameEngine && typeof this.gameEngine.updateAnimation === 'function') {
+            this.gameEngine.updateAnimation(delta);
+          }
+        } catch (e) {
+          console.warn('Game engine animation update error:', e);
+        }
+
+        try {
+          if (this.parkScene) {
+            this.parkScene.render();
+          }
+        } catch (e) {
+          console.warn('Park scene render error:', e);
         }
       };
-      animate();
+      animate(performance.now());
     }
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    window.app = window.appInstance = new AppController();
+  document.addEventListener('DOMContentLoaded', () => {
+    window.appInstance = new AppController();
   });
 })();

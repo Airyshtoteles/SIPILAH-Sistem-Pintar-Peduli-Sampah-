@@ -5,21 +5,26 @@
 
 (function() {
   const trashDatabase = [
-    // ORGANIK (Hijau) - id_kategori: 1
-    { id: 'banana', id_item: 1, name: 'Kulit Pisang', category: 'organik', categoryName: 'Organik (Hijau)', meshType: 'gltf_banana', tip: 'Kulit pisang cepat membusuk alami dan kaya nutrisi untuk menyuburkan tanah (Tong Hijau).' },
-    { id: 'apple', id_item: 2, name: 'Sisa Gigitan Apel', category: 'organik', categoryName: 'Organik (Hijau)', meshType: 'gltf_apple', tip: 'Sisa buah & makanan cepat membusuk menjadi pupuk kompos alami! Masukkan ke Tong Hijau (Organik).' },
-    { id: 'leaf', id_item: 3, name: 'Daun Kering', category: 'organik', categoryName: 'Organik (Hijau)', meshType: 'gltf_leaf', tip: 'Daun gugur termasuk sampah organik halaman sekolah yang sangat mudah terurai (Tong Hijau).' },
-    { id: 'bread', id_item: 4, name: 'Roti Kadaluarsa', category: 'organik', categoryName: 'Organik (Hijau)', meshType: 'gltf_bread', tip: 'Sisa roti dan bekal makanan termasuk sampah organik yang mudah membusuk (Tong Hijau).' },
-
-    // ANORGANIK (Kuning) - id_kategori: 2
-    { id: 'bottle', id_item: 5, name: 'Botol Plastik Minuman', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_bottle', tip: 'Botol plastik butuh 450 tahun untuk hancur! Wajib dipilah ke Tong Anorganik (Kuning).' },
-    { id: 'can', id_item: 6, name: 'Kaleng Minuman Soda', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_can', tip: 'Kaleng aluminium pabrik tidak bisa membusuk, namun bisa didaur ulang (Tong Kuning).' },
-    { id: 'duck', id_item: 7, name: 'Bebek Mainan Plastik', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_duck', tip: 'Mainan berbahan plastik sintetis keras termasuk sampah anorganik (Tong Kuning).' },
-    { id: 'straw', id_item: 8, name: 'Gelas Plastik & Sedotan', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_straw', tip: 'Sedotan & gelas plastik sekali pakai berbahaya jika hanyut ke sungai (Tong Kuning).' },
-    { id: 'box', id_item: 9, name: 'Kardus Box Makanan', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_box', tip: 'Kardus kemasan kertas tebal harus dipilah kering agar dapat didaur ulang (Tong Kuning).' },
-    { id: 'paper', id_item: 10, name: 'Kertas Buku Bekas', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_paper', tip: 'Kertas buku tulis termasuk sampah anorganik kering yang siap didaur ulang menjadi kertas baru (Tong Kuning).' },
-    { id: 'newspaper', id_item: 11, name: 'Koran Bekas', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_newspaper', tip: 'Kertas koran bekas tidak boleh dibakar, masukkan ke Tong Anorganik agar didaur ulang.' },
-    { id: 'carton', id_item: 12, name: 'Karton Kotak Susu', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_carton', tip: 'Karton kemasan susu memiliki lapisan pelindung, buang ke Tong Anorganik agar diolah kembali.' }
+    // ORGANIK (Hijau)
+    { id: 'banana', id_item: 1, name: 'Kulit Pisang', category: 'organik', categoryName: 'Organik (Hijau)', meshType: 'gltf_banana', tip: 'Kulit pisang cepat membusuk alami dan kaya nutrisi untuk menyuburkan tanah.' },
+    { id: 'apple', id_item: 2, name: 'Sisa Gigitan Apel', category: 'organik', categoryName: 'Organik (Hijau)', meshType: 'gltf_apple', tip: 'Sisa buah & makanan cepat membusuk menjadi pupuk kompos alami!' },
+    { id: 'leaf', id_item: 3, name: 'Daun Kering', category: 'organik', categoryName: 'Organik (Hijau)', meshType: 'gltf_leaf', tip: 'Daun gugur termasuk sampah organik yang sangat mudah terurai.' },
+    { id: 'bread', id_item: 4, name: 'Roti Kadaluarsa', category: 'organik', categoryName: 'Organik (Hijau)', meshType: 'gltf_bread', tip: 'Sisa roti dan bahan makanan dapur termasuk sampah organik.' },
+    // ANORGANIK (Kuning)
+    { id: 'bottle', id_item: 5, name: 'Botol Air Minum Plastik', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_bottle', tip: 'Botol plastik membutuhkan 450 tahun untuk hancur! Masukkan ke Anorganik.' },
+    { id: 'can', id_item: 6, name: 'Kaleng Minuman Soda', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_can', tip: 'Kaleng alumunium bisa dilebur & didaur ulang berkali-kali.' },
+    { id: 'duck', id_item: 7, name: 'Bebek Mainan Plastik', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_duck', tip: 'Mainan berbahan plastik keras termasuk sampah Anorganik.' },
+    { id: 'straw', id_item: 8, name: 'Gelas Soda & Sedotan', category: 'anorganik', categoryName: 'Anorganik (Kuning)', meshType: 'gltf_straw', tip: 'Sedotan & gelas plastik berbahaya bagi penyu dan hewan laut.' },
+    // B3 BERBAHAYA (Merah)
+    { id: 'battery', id_item: 9, name: 'Baterai Bekas', category: 'b3', categoryName: 'B3 Berbahaya (Merah)', meshType: 'gltf_battery', tip: 'Baterai bekas mengandung racun logam berat beracun!' },
+    { id: 'bulb', id_item: 10, name: 'Lampu Bohlam Bekas', category: 'b3', categoryName: 'B3 Berbahaya (Merah)', meshType: 'gltf_bulb', tip: 'Pecahan kaca bohlam & merkuri di dalamnya sangat berbahaya.' },
+    { id: 'medicine', id_item: 11, name: 'Botol Obat Kimia', category: 'b3', categoryName: 'B3 Berbahaya (Merah)', meshType: 'gltf_medicine', tip: 'Sisa obat & botol kimia mengandung bahan aktif beracun.' },
+    { id: 'thermometer', id_item: 12, name: 'Termometer Raksa', category: 'b3', categoryName: 'B3 Berbahaya (Merah)', meshType: 'gltf_thermometer', tip: 'Cairan raksa pada termometer sangat beracun bagi manusia.' },
+    // DAUR ULANG (Biru)
+    { id: 'box', id_item: 13, name: 'Kardus Box', category: 'daurulang', categoryName: 'Daur Ulang (Biru)', meshType: 'gltf_box', tip: 'Mendaur ulang kardus bisa menyelamatkan pohon di hutan!' },
+    { id: 'paper', id_item: 14, name: 'Kertas Buku Bekas', category: 'daurulang', categoryName: 'Daur Ulang (Biru)', meshType: 'gltf_paper', tip: 'Kertas bekas diproses menjadi lembaran kertas baru.' },
+    { id: 'newspaper', id_item: 15, name: 'Koran Bekas', category: 'daurulang', categoryName: 'Daur Ulang (Biru)', meshType: 'gltf_newspaper', tip: 'Koran bekas dapat diolah menjadi produk daur ulang kreatif.' },
+    { id: 'carton', id_item: 16, name: 'Karton Susu', category: 'daurulang', categoryName: 'Daur Ulang (Biru)', meshType: 'gltf_carton', tip: 'Karton bungkus minuman dipilah ke kategori Daur Ulang.' }
   ];
 
   const gltfCache = {};

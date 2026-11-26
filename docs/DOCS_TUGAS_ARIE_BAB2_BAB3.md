@@ -124,7 +124,7 @@ usecaseDiagram
 - **Alur Alternatif C: Waktu Habis Sebelum Semua Sampah Selesai**
   1. Ketika *timer* mencapai 00 detik:
      - Sistem mengunci seluruh interaksi klik.
-     - Sistem menghitung persentase akurasi: $\text{Akurasi} = \left(\frac{\text{Jumlah Benar}}{\text{Total Lemparan}}\right) \times 100\%$.
+     - Sistem menghitung persentase akurasi: **Akurasi (%)** = (Jumlah Benar / Total Lemparan) × 100%.
      - Sistem menghitung perolehan bintang (1 sampai 3 ⭐) berdasarkan target skor level.
 
 ---
@@ -596,8 +596,8 @@ Sebagai bagian dari perancangan arsitektur perangkat lunak pada Laporan Tahap 1,
 
 | Parameter Evaluasi | Godot Engine 4.x (Web Export) | WebGL Ringan (Three.js r128) - Terpilih |
 | :--- | :--- | :--- |
-| **Ukuran Bundel Aset (*Bundle Size*)** | Sangat besar ($\approx 35\text{ MB} - 45\text{ MB}$ WebAssembly binary `.wasm` + `.pck`). | Sangat ringkas ($\approx 600\text{ KB}$ runtime JavaScript Three.js). |
-| **Waktu Muat Awal (*Initial Page Load*)** | Lambat ($12 - 25$ detik pada jaringan sekolah), sering *stuck* di layar progress bar. | Sangat instan ($< 2$ detik) langsung siap interaksi. |
+| **Ukuran Bundel Aset (*Bundle Size*)** | Sangat besar (sekitar 35 MB – 45 MB WebAssembly binary .wasm + .pck). | Sangat ringkas (sekitar 600 KB runtime JavaScript Three.js). |
+| **Waktu Muat Awal (*Initial Page Load*)** | Lambat (12 – 25 detik pada jaringan sekolah), sering *stuck* di layar progress bar. | Sangat instan (< 2 detik) langsung siap interaksi. |
 | **Kebutuhan Header Server (*SharedArrayBuffer*)** | Wajib konfigurasi server khusus: `Cross-Origin-Embedder-Policy: require-corp` dan `Cross-Origin-Opener-Policy: same-origin`. Gagal jalan jika server statis standar. | Bebas konfigurasi; dapat berjalan langsung di Vercel, GitHub Pages, maupun protokol lokal `file:///`. |
 | **Kompatibilitas Perangkat Sekolah Mitra** | Kerap mengalami *crash* / *context lost* pada laptop guru berspesifikasi Intel Celeron / RAM 4GB tanpa GPU terpisah. | Sangat stabil dan lancar (60 FPS stabil) bahkan pada kartu grafis terintegrasi (*integrated graphics*). |
 | **Integrasi Basis Data & DOM Web** | Sulit menjembatani komunikasi data dua arah antara GDScript dengan LocalStorage / Cloud API. | Alami dan mulus (*native JavaScript*), langsung terikat ke DOM UI dan REST API / Supabase. |

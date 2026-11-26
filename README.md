@@ -14,32 +14,35 @@ Pemilahan sampah sejak dini merupakan fondasi penting dalam membentuk karakter p
 
 ### 💡 Tantangan Khusus & Solusi yang Kami Rancang:
 * **Larangan HP bagi Siswa SD:** Siswa sekolah dasar dilarang membawa *smartphone* ke sekolah. Oleh karena itu, game ini **tidak dirancang untuk HP pribadi siswa**, melainkan dijalankan secara **estafet (*turn-based*) di satu laptop inventaris guru yang terhubung ke proyektor kelas**.
-* **Perlindungan Privasi Anak:** Sesuai etika perlindungan data pribadi anak, permainan dirancang **tanpa formulir login siswa, tanpa pengumpulan nama lengkap, dan tanpa kamera/foto siswa**. Siswa bermain dengan gembira, dan rekapitulasi penilaian kelas tercatat otomatis bagi guru.
+* **Kemudahan Akses Tanpa Registrasi Rumit:** Siswa bermain langsung tanpa perlu membuat akun login (*password-less*). Setelah 60 detik bermain mencari skor terbaik, siswa dapat menuliskan nama dan mengambil foto/avatar melalui webcam kelas untuk langsung mencetak **Sertifikat Digital Juara SEMUTLIS**.
 * **Perangkat Rendah Daya:** Komputer inventaris sekolah umumnya berspesifikasi standar (Intel Celeron / RAM 4GB tanpa VGA diskret). Kami memilih arsitektur **Three.js WebGL Ringan (~600 KB runtime)** daripada engine game berat seperti Godot WebAssembly (~40 MB) agar game dapat dimuat dalam waktu kurang dari 2 detik dan berjalan mulus 60 FPS.
 
 ---
 
 ## 🎮 Fitur Utama Permainan
 
-### 1. Arena Pemilahan Sampah 3D Interaktif
-* **2 Kategori Tong Bermain:** Siswa berfokus memilah ke dua kategori utama yang paling sering ditemui sehari-hari:
+### 1. Arena Pemilahan Sampah 3D Interaktif (4 Kategori)
+* **4 Tempat Sampah 3D:** Siswa memilah sampah secara menyeluruh ke empat kategori standar nasional:
   * 🟢 **Tong Hijau (Organik):** Sisa buah apel, kulit pisang, daun kering, sisa roti.
-  * 🟡 **Tong Kuning (Anorganik):** Botol plastik minuman, kaleng soda, bebek mainan, kemasan kardus, sedotan.
-* **Animasi Fisika Parabola:** Objek sampah di atas meja terangkat saat diklik/disentuh, lalu meluncur masuk ke tong sampah dengan efek visual dan audio ramah anak.
-* **Umpan Balik Edukasi Cerdas:** Jika siswa keliru memasukkan sampah, permainan tidak sekadar menyalahkan, melainkan memunculkan jendela dialog singkat yang menjelaskan alasan ilmiahnya (misal: *"Botol plastik butuh 450 tahun untuk terurai di tanah! Masukkan ke Tong Kuning"*).
+  * 🟡 **Tong Kuning (Anorganik):** Botol plastik minuman, kaleng soda, kantong kresek, bebek mainan.
+  * 🔴 **Tong Merah (B3 / Berbahaya):** Baterai bekas, bohlam lampu, obat kedaluwarsa, kaleng semprot aerosol.
+  * 🔵 **Tong Biru (Daur Ulang / Kertas):** Kardus karton, buku tulis bekas, kertas koran, karton kemasan susu.
+* **16 Model Sampah 3D:** Aset 3D glTF/GLB yang dimuat secara dinamis di atas pedestal meja arena permainan.
+* **Animasi Fisika Parabola:** Objek sampah di atas meja meluncur dengan fisika parabola masuk ke tong yang dipilih pemain.
+* **Umpan Balik Edukasi Ilmiah Cerdas:** Jika siswa salah memasukkan jenis sampah, sistem memunculkan jendela dialog singkat ramah anak yang menerangkan alasan sains di balik pemilahan tersebut.
 
-### 2. Tiga Tingkat Kesulitan (Level Permainan)
-* **Level 1: Pemula (Mudah):** Durasi santai 60 detik dengan jenis sampah harian paling mendasar (cocok untuk kelas 1 SD).
-* **Level 2: Terampil (Sedang):** Durasi 45 detik dengan kombinasi sampah organik dan anorganik yang bervariasi (cocok untuk kelas 2 SD).
-* **Level 3: Juara Lingkungan (Tantangan):** Durasi cepat 30 detik untuk melatih ketangkasan dan fokus memilah.
+### 2. Mode Estafet 60 Detik & Papan Skor Sesi Kelas
+* Siswa bergantian bermain selama 60 detik untuk melatih ketangkasan dan fokus memilah.
+* Papan Skor (*Leaderboard*) mencatat ranking 1–10 secara *real-time* untuk memicu semangat kompetisi positif di kelas.
 
-### 3. Kotak Keselamatan Khusus Sampah B3 (Panduan Guru)
-Sampah kategori **B3 (Bahan Berbahaya dan Beracun)** seperti baterai bekas, pecahan bohlam, termometer raksa, dan sisa bahan kimia **sengaja tidak dimainkan di arena 3D** agar anak-anak tidak terbiasa menyentuh benda berbahaya di dunia nyata. Sebagai gantinya, modul B3 disajikan sebagai **Pesan Keselamatan Khusus Guru** di Layar Panduan untuk dipaparkan secara verbal di kelas.
+### 3. Sertifikat Digital Juara SEMUTLIS
+* Setelah menyelesaikan ronde estafet, siswa dapat mengklaim sertifikat digital penghargaan resmi.
+* Didukung pratinjau foto webcam instan, stempel emas program SEMUTLIS, dan tanda tangan ganda dari perwakilan kedua guru mitra (Bapak Agung Febriyana, S.Pd. & Bapak Tris Mulyo Purnomo, S.Pd.).
 
-### 4. Dashboard Penilaian Guru & Bank Sampah (CRUD)
-* Guru dapat melihat rekapitulasi ronde permainan kelas, rata-rata skor, akurasi pemilahan, dan log detail jawaban.
-* Guru dapat menambah item sampah baru, mengganti model 3D, menyesuaikan pesan edukasi, serta mengatur pada level berapa saja item tersebut muncul.
-* Dilengkapi tombol pembersih data riwayat sesi agar memori penyimpanan tetap ringan.
+### 4. Dashboard Penilaian Guru & Manajemen Sesi
+* **Sesi Kelas ("Main Bareng"):** Guru dapat membuka sesi belajar baru berdasarkan kode kelas (contoh: `CIAWI-2A`) dan mengaktifkannya sebagai target pencatatan nilai.
+* **Rapor Pemahaman Siswa:** Rekapitulasi nilai, akurasi, combo, dan riwayat lemparan. Dilengkapi tombol hapus nilai siswa berkonfirmasi modern untuk menjaga basis data tetap bersih dan tertib.
+* **Manajemen Bank Sampah 3D (CRUD):** Guru dapat menambah, menyunting, atau mereset item sampah 3D beserta narasi edukasinya.
 
 ---
 
